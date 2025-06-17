@@ -27,7 +27,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
      * Find existing TMDb IDs from a given set
      * This is crucial for preventing duplicates
      */
-    @Query("SELECT m.tmdbId FROM Movie m WHERE m.tmdbId IN :ids")
+    @Query("SELECT m.tmdbId FROM movies m WHERE m.tmdbId IN :ids")
     Set<Integer> findExistingIds(@Param("ids") Set<Integer> ids);
 
     /**
@@ -38,30 +38,30 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     /**
      * Find movies by title (case insensitive)
      */
-    @Query("SELECT m FROM Movie m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%'))")
+    @Query("SELECT m FROM movies m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%'))")
     List<Movie> findByTitleContainingIgnoreCase(@Param("title") String title);
 
     /**
      * Find movies with rating above threshold
      */
-    @Query("SELECT m FROM Movie m WHERE m.voteAverage >= :minRating ORDER BY m.voteAverage DESC")
+    @Query("SELECT m FROM movies m WHERE m.voteAverage >= :minRating ORDER BY m.voteAverage DESC")
     List<Movie> findByMinRating(@Param("minRating") double minRating);
 
     /**
      * Find recent movies (by release date)
      */
-    @Query("SELECT m FROM Movie m WHERE m.releaseDate >= :fromDate ORDER BY m.releaseDate DESC")
+    @Query("SELECT m FROM movies m WHERE m.releaseDate >= :fromDate ORDER BY m.releaseDate DESC")
     List<Movie> findRecentMovies(@Param("fromDate") String fromDate);
 
     /**
      * Count movies by category
      */
-    @Query("SELECT COUNT(m) FROM Movie m WHERE m.category = :category")
+    @Query("SELECT COUNT(m) FROM movies m WHERE m.category = :category")
     long countByCategory(@Param("category") String category);
 
     /**
      * Get movies that need detailed information (missing IMDB ID)
      */
-    @Query("SELECT m FROM Movie m WHERE m.imdbId IS NULL OR m.imdbId = '' ORDER BY m.tmdbId ASC")
+    @Query("SELECT m FROM movies m WHERE m.imdbId IS NULL OR m.imdbId = '' ORDER BY m.tmdbId ASC")
     List<Movie> findMoviesNeedingDetails();
 }

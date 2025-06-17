@@ -1,1 +1,8 @@
-/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/DBConnection.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/client/TMDbClient.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/MovieFetcherExample.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/service/MovieSyncService.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/config/AppConfiguration.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/controller/SyncController.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/model/MovieResponse.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/repository/MovieRepository.java
+/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/example/model/Movie.java

@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.moviemood.config.Config;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Movie {
 
@@ -13,6 +14,7 @@ public class Movie {
     private String language;
     private boolean adult;
     private double popularity;
+    private int runtime;
 
     @SerializedName("imdb_id")
     private String imdbId;
@@ -26,8 +28,7 @@ public class Movie {
     @SerializedName("backdrop_path")
     private String backdropPath;
 
-    //application.properties paths
-
+    private List<Genre> genres;
 
     public Movie() {}
 
@@ -110,6 +111,24 @@ public class Movie {
     public void setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;
     }
+
+    public int getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(int runtime) {
+        this.runtime = runtime;
+    }
+
+    public List<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
+    }
+
+    //Helper functions
 
     public String getFullPosterUrl() {
         return posterPath != null ? Config.get("posterPathBase") + posterPath : null;

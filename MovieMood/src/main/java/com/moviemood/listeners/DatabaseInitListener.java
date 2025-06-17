@@ -3,6 +3,9 @@ package com.moviemood.listeners;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+
+import com.moviemood.bean.User;
+import com.moviemood.dao.UserDao;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
@@ -21,6 +24,8 @@ public class DatabaseInitListener implements ServletContextListener {
 
             setUpDatabase(dataSource);
 
+            UserDao userDao = new UserDao(dataSource);
+            servletContextEvent.getServletContext().setAttribute("userDao", userDao);
             servletContextEvent.getServletContext().setAttribute("dataSource:", dataSource);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
@@ -36,6 +41,7 @@ public class DatabaseInitListener implements ServletContextListener {
             statement.executeUpdate("\n" +
                     "CREATE TABLE IF NOT EXISTS users (\n" +
                     "    id INT PRIMARY KEY AUTO_INCREMENT,\n" +
+                    " username VARCHAR(100) NOT NULL,\n" +
                     "    email VARCHAR(255) UNIQUE NOT NULL,\n" +
                     "    password_hash VARCHAR(255) NOT NULL,\n" +
                     "    remember_token VARCHAR(255),\n" +
@@ -51,7 +57,7 @@ public class DatabaseInitListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        BasicDataSource dataSource = (BasicDataSource) servletContextEvent.getServletContext().getAttribute("datasource");
+        BasicDataSource dataSource = (BasicDataSource) servletContextEvent.getServletContext().getAttribute("dataSource");
         try {
             dataSource.close();
         } catch (SQLException e) {

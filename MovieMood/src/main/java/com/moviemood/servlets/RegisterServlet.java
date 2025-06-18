@@ -33,12 +33,18 @@ public class RegisterServlet extends HttpServlet {
             request.setAttribute("error", error); // here error is null, so we know that everything is fine.
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } catch (IllegalArgumentException e) {
-            error = "Email already registered";
+            error = e.getMessage();
             request.setAttribute("error", error);
+            request.setAttribute("keepUsername", username);
+            request.setAttribute("keepEmail", email);
+            request.setAttribute("keepPassword", rawPassword);
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }  catch (Exception e) {
             error = "Something went wrong. Please try again.";
             request.setAttribute("error", error);
+            request.setAttribute("keepUsername", username);
+            request.setAttribute("keepEmail", email);
+            request.setAttribute("keepPassword", rawPassword);
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
 

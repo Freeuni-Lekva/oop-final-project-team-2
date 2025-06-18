@@ -86,6 +86,10 @@ public class UserDao {
             throw new IllegalArgumentException("User with this email is already registered");
         }
 
+        if (getUserByUsername(username) != null) {
+            throw new IllegalArgumentException("Username is already taken");
+        }
+
 
         String query = "INSERT INTO users (username, email, password_hash, remember_token) VALUES (?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();

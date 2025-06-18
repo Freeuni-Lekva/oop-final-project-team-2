@@ -114,4 +114,49 @@ public class UserDao {
     }
 
 
+    public void updateRememberToken(String username, String token) {
+        String query = "UPDATE users SET remember_token = ? WHERE username = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, token);
+            statement.setString(2, username);
+
+            int rows = statement.executeUpdate();
+
+            if (rows == 0) {
+                throw new RuntimeException("No user found to update remember token.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update remember token", e);
+        }
+    }
+
+
+    public User getUserByToken(String token) {
+        String query = "SELECT * FROM users WHERE remember_token = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, token);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String username = rs.getString("username");
+                String email = rs.getString("email");
+                String passwordHash = rs.getString("password_hash");
+                return new User(id, username, email, passwordHash, token);
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve user by token", e);
+        }
+    }
+
+
 }

@@ -5,10 +5,13 @@ import com.moviemood.dao.UserDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 
@@ -29,6 +32,16 @@ public class LoginServlet extends HttpServlet {
         User user = userDao.getUserByUsername(username);
         if (user != null && BCrypt.checkpw(rawPassword, user.getHashedPassword())) {
             request.getSession().setAttribute("user", user);
+            if ("true".equals(request.getParameter("rememberMe"))) {
+                String token = UUID.randomUUID().toString(); // generate random token
+                userDao.updateRememberToken(username, token);
+
+                Cookie cookie = new Cookie("remember_token", token);
+                cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+                cookie.setHttpOnly(true);
+                response.addCookie(cookie);
+            }
+
             response.sendRedirect("movies.jsp");
         } else {
             request.setAttribute("error", "Invalid username or password");

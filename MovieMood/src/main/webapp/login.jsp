@@ -33,7 +33,9 @@
         <label for="password">Password:</label><br/>
         <input type="password" id="password" name="password" value="<%= keepPassword != null ? keepPassword : "" %>" required><br/>
 
-        <input type="submit" value="Log in">
+        <input type="submit" value="Log in"><br/>
+        <input type="checkbox" name="rememberMe" value="true"> Remember me
+
     </form>
 
     <p>Don't have an account? <a href="register.jsp">Sign Up</a> </p>

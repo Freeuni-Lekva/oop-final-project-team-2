@@ -49,6 +49,34 @@ public class UserDao {
 
 
     /**
+     * Retrieves a user from the database by username.
+     * takes username as a parameter.
+     * returns User if exists or null if does not exist.
+     */
+    public User getUserByUsername(String username) {
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?")) {
+            statement.setString(1, username);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String email = rs.getString("email");
+                String passwordHash = rs.getString("password_hash");
+                String remember_token = rs.getString("remember_token");
+                return new User(id, username, email, passwordHash, remember_token);
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to make connection to database", e);
+        }
+    }
+
+
+
+    /**
      * Inserts a user in the database.
      * takes username, email and password (hashed) as parameters
      */
@@ -67,7 +95,11 @@ public class UserDao {
             statement.setString(3, passwordHash);
             statement.setNull(4, java.sql.Types.VARCHAR); // No token
 
-            statement.executeUpdate();
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new RuntimeException("Insert failed. no rows affected.");
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException("Failed to make connection to database", e);

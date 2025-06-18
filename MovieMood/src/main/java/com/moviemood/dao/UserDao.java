@@ -1,5 +1,6 @@
 package com.moviemood.dao;
 
+import com.moviemood.exceptions.UserAlreadyExistsException;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import com.moviemood.bean.User;
@@ -81,13 +82,13 @@ public class UserDao {
      * takes username, email and password (hashed) as parameters
      */
 
-    public void insertUser(String username, String email, String passwordHash) {
+    public void insertUser(String username, String email, String passwordHash) throws UserAlreadyExistsException {
         if (getUserByEmail(email) != null) {
-            throw new IllegalArgumentException("User with this email is already registered");
+            throw new UserAlreadyExistsException("Email is already registered");
         }
 
         if (getUserByUsername(username) != null) {
-            throw new IllegalArgumentException("Username is already taken");
+            throw new UserAlreadyExistsException("Username is already taken");
         }
 
 

@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import com.moviemood.exceptions.UserAlreadyExistsException;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
@@ -30,9 +32,8 @@ public class RegisterServlet extends HttpServlet {
 
         try {
             userDao.insertUser(username, email, hashedPassword);
-            request.setAttribute("error", error); // here error is null, so we know that everything is fine.
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } catch (IllegalArgumentException e) {
+            response.sendRedirect("login.jsp");
+        } catch (UserAlreadyExistsException e) {
             error = e.getMessage();
             request.setAttribute("error", error);
             request.setAttribute("keepUsername", username);
@@ -49,6 +50,7 @@ public class RegisterServlet extends HttpServlet {
         }
 
     }
+
 
 
     @Override

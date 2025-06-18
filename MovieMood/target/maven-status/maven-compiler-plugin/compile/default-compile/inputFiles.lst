@@ -1,3 +1,13 @@
-/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/bean/Movie.java
-/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/config/Config.java
-/mnt/c/Users/PCZONE.GE/Desktop/oop-final-project/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/listeners/DatabaseInitListener.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/Enums/MovieCategory.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/repository/api/model/MovieResponse.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/bean/Movie.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/repository/tmdb/TmdbMovieRepository.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/repository/api/MovieRepository.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/servlets/RegisterServlet.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/listeners/DatabaseInitListener.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/bean/Genre.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/servlets/LoginServlet.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/exceptions/UserAlreadyExistsException.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/dao/UserDao.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/config/Config.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/bean/User.java

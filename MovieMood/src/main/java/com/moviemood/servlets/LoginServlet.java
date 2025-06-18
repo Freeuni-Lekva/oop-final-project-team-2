@@ -13,7 +13,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 
 /**
- * Not implemented yet!!!
+ * Handels login
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -22,22 +22,27 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-//        UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
-//        String username = request.getParameter("username");
-//        String hashedPassword = request.getParameter("password");
-//
-//        String error = null;
+        UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
+        String username = request.getParameter("username");
+        String rawPassword = request.getParameter("password");
 
+        User user = userDao.getUserByUsername(username);
+        if (user != null && BCrypt.checkpw(rawPassword, user.getHashedPassword())) {
+            request.getSession().setAttribute("user", user);
+            response.sendRedirect("movies.jsp");
+        } else {
+            request.setAttribute("error", "Invalid username or password");
+            request.setAttribute("keepUsername", username);
+            request.setAttribute("keepPassword", rawPassword);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        }
 
-        request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 

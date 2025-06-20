@@ -26,7 +26,7 @@ public class DatabaseInitListener implements ServletContextListener {
 
             UserDao userDao = new UserDao(dataSource);
             servletContextEvent.getServletContext().setAttribute("userDao", userDao);
-            servletContextEvent.getServletContext().setAttribute("dataSource:", dataSource);
+            servletContextEvent.getServletContext().setAttribute("dataSource", dataSource);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
         }

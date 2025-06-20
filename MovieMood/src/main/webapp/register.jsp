@@ -26,7 +26,6 @@
 <%
     String keepUsername = (String) request.getAttribute("keepUsername");
     String keepEmail = (String) request.getAttribute("keepEmail");
-    String keepPassword = (String) request.getAttribute("keepPassword");
 %>
 
 <form method="post" action="register">
@@ -37,7 +36,7 @@
     <input type="email" id="email" name="email" value="<%= keepEmail != null ? keepEmail : "" %>" required><br/>
 
     <label for="password">Password:</label><br/>
-    <input type="password" id="password" name="password" value="<%= keepPassword != null ? keepPassword : "" %>" required><br/>
+    <input type="password" id="password" name="password" required><br/>
 
     <input type="submit" value="Register">
 </form>

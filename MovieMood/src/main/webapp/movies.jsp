@@ -22,5 +22,6 @@
 <body>
     <p>You are logged in as <%= user.getUsername() %></p>
     <p>Movies Page</p>
+    <a href="logout">Logout</a>
 </body>
 </html>

@@ -1,6 +1,7 @@
 /Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/Enums/MovieCategory.java
 /Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/repository/api/model/MovieResponse.java
 /Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/bean/Movie.java
+/Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/servlets/LogoutServlet.java
 /Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/repository/tmdb/TmdbMovieRepository.java
 /Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/repository/api/MovieRepository.java
 /Users/giorgidzagania/Desktop/oop-final-project-team-2/MovieMood/src/main/java/com/moviemood/filters/AuthFilter.java

@@ -43,12 +43,13 @@ public class LoginServlet extends HttpServlet {
             }
 
             response.sendRedirect("movies.jsp");
-        } else {
-            request.setAttribute("error", "Invalid username or password");
-            request.setAttribute("keepUsername", username);
-            request.setAttribute("keepPassword", rawPassword);
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
         }
+        request.setAttribute("error", "Invalid username or password");
+        request.setAttribute("keepUsername", username);
+        //request.setAttribute("keepPassword", rawPassword);
+        request.getRequestDispatcher("login.jsp").forward(request, response);
+
 
     }
 

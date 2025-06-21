@@ -77,6 +77,9 @@ public class UserDao {
 
 
 
+
+
+
     /**
      * Inserts a user in the database.
      * takes username, email and password (hashed) as parameters

@@ -15,7 +15,7 @@ import java.util.UUID;
  *
  * Performs the following operations:
  * 1. Checks if the user already has an active session
- * 2. If no active session exists, attempts to restore user authentication using a "rememberToken" cookie
+ * 2. If no active session exists, attempts to restore user authentication using a "remember_token" cookie
  * 3. Validates the remember token against the database and creates a new session if valid
  *
  * The filter works in conjunction with the LoginServlet, which creates the remember token cookie
@@ -24,9 +24,9 @@ import java.util.UUID;
  * - Server restarts (since tokens are stored in database, not server memory)
  *
  * Flow:
- * - User logs in with "Remember Me" → LoginServlet creates rememberToken cookie
+ * - User logs in with "Remember Me" → LoginServlet creates remember_token cookie
  * - User visits any page → AuthFilter checks for existing session
- * - If no session found → AuthFilter looks for rememberToken cookie
+ * - If no session found → AuthFilter looks for remember_token cookie
  * - If valid token found in database → AuthFilter creates new session and user is automatically logged in
  */
 @WebFilter("/*")
@@ -65,7 +65,7 @@ public class AuthFilter implements Filter {
                                 userDao.updateRememberToken(user.getUsername(), newToken);
 
                                 // Update the cookie with new token
-                                Cookie newCookie = new Cookie("rememberToken", newToken);
+                                Cookie newCookie = new Cookie("remember_token", newToken);
                                 newCookie.setMaxAge(60 * 60 * 24 * 30); // 30 days again
                                 newCookie.setHttpOnly(true);
                                 ((HttpServletResponse) response).addCookie(newCookie);

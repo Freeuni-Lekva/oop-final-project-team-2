@@ -48,6 +48,33 @@ public class DatabaseInitListener implements ServletContextListener {
                     "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
                     ");");
 
+            // Creates friendships table
+            statement.executeUpdate(
+                    " CREATE TABLE IF NOT EXISTS friendships (" +
+                        " user1_id INT NOT NULL, " +
+                        " user2_id INT NOT NULL, " +
+                        " creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        " FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE, " +
+                        " FOREIGN KEY (user2_ID) REFERENCES users(id) ON DELETE CASCADE, " +
+                        " PRIMARY KEY (user1_id, user2_id), " +
+                        " CHECK (user1_id < user2_id)" +
+                        ");"
+            );
+
+
+            // Creates friend_requests table
+            statement.executeUpdate(
+                    "CREATE TABLE IF NOT EXISTS friend_requests (" +
+                            "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                            "sender_id INT NOT NULL, " +
+                            "receiver_id INT NOT NULL, " +
+                            "status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending', " +
+                            "request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                            "FOREIGN KEY (sender_id) REFERENCES users(id)  ON DELETE CASCADE, " +
+                            "FOREIGN KEY (receiver_id) REFERENCES users(id)  ON DELETE CASCADE" +
+                            ");"
+            );
+
 
 
         } catch (Exception e) {

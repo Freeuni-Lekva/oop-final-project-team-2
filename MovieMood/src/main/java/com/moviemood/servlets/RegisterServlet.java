@@ -27,8 +27,20 @@ public class RegisterServlet extends HttpServlet {
         String username = request.getParameter("username");
         String email = request.getParameter("email");
         String rawPassword = request.getParameter("password");
-        String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+        String confirmRawPassword = request.getParameter("confirmPassword");
         String error = null;
+
+        // Check if passwords match
+        if (!rawPassword.equals(confirmRawPassword)) {
+            error = "Passwords do not match.";
+            request.setAttribute("error", error);
+            request.setAttribute("keepUsername", username);
+            request.setAttribute("keepEmail", email);
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
 
         try {
             userDao.insertUser(username, email, hashedPassword);

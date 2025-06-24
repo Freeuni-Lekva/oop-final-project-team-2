@@ -130,14 +130,17 @@
         %>
 
         <form method="post" action="register">
-            <label for="username">Username:</label><br/>
+            <label for="username">Username:</label>
             <input type="text" id="username" name="username" value="<%= keepUsername != null ? keepUsername : "" %>" required><br/>
 
-            <label for="email">Email:</label><br/>
+            <label for="email">Email:</label>
             <input type="email" id="email" name="email" value="<%= keepEmail != null ? keepEmail : "" %>" required><br/>
 
-            <label for="password">Password:</label><br/>
+            <label for="password">Password:</label>
             <input type="password" id="password" name="password" required><br/>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required><br/>
 
             <input type="submit" value="Register">
         </form>

@@ -31,7 +31,7 @@
         <input type="text" id="username" name="username" value="<%= keepUsername != null ? keepUsername : "" %>" required><br/>
 
         <label for="password">Password:</label><br/>
-        <input type="password" id="password" name="password" value="<%= keepPassword != null ? keepPassword : "" %>" required><br/>
+        <input type="password" id="password" name="password" required><br/>
 
         <input type="submit" value="Log in"><br/>
         <input type="checkbox" name="rememberMe" value="true"> Remember me

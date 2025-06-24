@@ -33,21 +33,17 @@ public class RegisterServlet extends HttpServlet {
         try {
             userDao.insertUser(username, email, hashedPassword);
             response.sendRedirect("login.jsp");
+            return;
         } catch (UserAlreadyExistsException e) {
             error = e.getMessage();
-            request.setAttribute("error", error);
-            request.setAttribute("keepUsername", username);
-            request.setAttribute("keepEmail", email);
-            request.setAttribute("keepPassword", rawPassword);
-            request.getRequestDispatcher("register.jsp").forward(request, response);
         }  catch (Exception e) {
             error = "Something went wrong. Please try again.";
-            request.setAttribute("error", error);
-            request.setAttribute("keepUsername", username);
-            request.setAttribute("keepEmail", email);
-            request.setAttribute("keepPassword", rawPassword);
-            request.getRequestDispatcher("register.jsp").forward(request, response);
         }
+
+        request.setAttribute("error", error);
+        request.setAttribute("keepUsername", username);
+        request.setAttribute("keepEmail", email);
+        request.getRequestDispatcher("register.jsp").forward(request, response);
 
     }
 

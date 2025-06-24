@@ -16,12 +16,26 @@
     }
 %>
 <html>
+
 <head>
     <title>Movies - MovieMood</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
 </head>
 <body>
-    <p>You are logged in as <%= user.getUsername() %></p>
+    <a href="logout" class="logout-btn">Logout</a>
+    <p>Hello <%= user.getUsername() %></p>
     <p>Movies Page</p>
-    <a href="logout">Logout</a>
 </body>
 </html>

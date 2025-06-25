@@ -33,7 +33,7 @@ public class EmailService {
         String fromEmail = "sender@sender.com";
         String toEmail = email;
         String subject = "Test email";
-        String body = "Hello, " +  username + ". Code: " + code;
+        String body = "Hello" +  username + ". Code: " + code;
 
         // Properties
         Properties properties = new Properties();

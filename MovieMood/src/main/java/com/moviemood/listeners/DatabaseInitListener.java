@@ -45,7 +45,9 @@ public class DatabaseInitListener implements ServletContextListener {
                     "    email VARCHAR(255) UNIQUE NOT NULL,\n" +
                     "    password_hash VARCHAR(255) NOT NULL,\n" +
                     "    remember_token VARCHAR(255),\n" +
-                    "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
+                    "    is_verified BOOLEAN DEFAULT FALSE,\n" +
+                    "    verification_code VARCHAR(6),\n" +
+                    "    verification_code_expiry TIMESTAMP\n" +
                     ");");
 
             // Creates friendships table

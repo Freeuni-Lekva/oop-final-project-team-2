@@ -95,15 +95,16 @@ public class DatabaseInitListener implements ServletContextListener {
     private void CreateMovieReviewsTable(Statement statement) throws SQLException {
         statement.executeUpdate(
                 "CREATE TABLE IF NOT EXISTS movie_reviews (" +
+                        "    id INT PRIMARY KEY AUTO_INCREMENT, " +
                         "    user_id INT NOT NULL, " +
                         "    movie_id INT NOT NULL, " +  // TMDB movie ID
                         "    review_text TEXT NOT NULL, " +
                         "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                        "    PRIMARY KEY (user_id, movie_id), " +
                         "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
                         ");"
         );
     }
+
 
     //create movie_ratings table
     private void createMovieRatingsTable(Statement statement) throws SQLException {

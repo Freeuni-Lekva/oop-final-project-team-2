@@ -35,48 +35,57 @@ public class DatabaseInitListener implements ServletContextListener {
 
     }
 
-    private void setUpDatabase(BasicDataSource dataSource) {
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+    // create "users" table
+    private void createUserTable(Statement statement) throws SQLException {
+        statement.executeUpdate("\n" +
+                "CREATE TABLE IF NOT EXISTS users (\n" +
+                "    id INT PRIMARY KEY AUTO_INCREMENT,\n" +
+                " username VARCHAR(100) UNIQUE NOT NULL,\n" +
+                "    email VARCHAR(255) UNIQUE NOT NULL,\n" +
+                "    password_hash VARCHAR(255) NOT NULL,\n" +
+                "    remember_token VARCHAR(255),\n" +
+                "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
+                ");");
+    }
 
-            // creating "users" table
-            statement.executeUpdate("\n" +
-                    "CREATE TABLE IF NOT EXISTS users (\n" +
-                    "    id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                    " username VARCHAR(100) UNIQUE NOT NULL,\n" +
-                    "    email VARCHAR(255) UNIQUE NOT NULL,\n" +
-                    "    password_hash VARCHAR(255) NOT NULL,\n" +
-                    "    remember_token VARCHAR(255),\n" +
-                    "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
-                    ");");
+    // create friend_requests table
+    private void createFriendRequestTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS friend_requests (" +
+                        "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                        "sender_id INT NOT NULL, " +
+                        "receiver_id INT NOT NULL, " +
+                        "status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending', " +
+                        "request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "FOREIGN KEY (sender_id) REFERENCES users(id)  ON DELETE CASCADE, " +
+                        "FOREIGN KEY (receiver_id) REFERENCES users(id)  ON DELETE CASCADE" +
+                        ");"
+        );
+    }
 
-            // Creates friendships table
-            statement.executeUpdate(
-                    " CREATE TABLE IF NOT EXISTS friendships (" +
+    // create friendships table
+    private void createFriendshipsTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                " CREATE TABLE IF NOT EXISTS friendships (" +
                         " user1_id INT NOT NULL, " +
                         " user2_id INT NOT NULL, " +
                         " creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                         " FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE, " +
-                        " FOREIGN KEY (user2_ID) REFERENCES users(id) ON DELETE CASCADE, " +
+                        " FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE, " +
                         " PRIMARY KEY (user1_id, user2_id), " +
                         " CHECK (user1_id < user2_id)" +
                         ");"
-            );
+        );
+    }
 
 
-            // Creates friend_requests table
-            statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS friend_requests (" +
-                            "id INT PRIMARY KEY AUTO_INCREMENT, " +
-                            "sender_id INT NOT NULL, " +
-                            "receiver_id INT NOT NULL, " +
-                            "status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending', " +
-                            "request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                            "FOREIGN KEY (sender_id) REFERENCES users(id)  ON DELETE CASCADE, " +
-                            "FOREIGN KEY (receiver_id) REFERENCES users(id)  ON DELETE CASCADE" +
-                            ");"
-            );
+    private void setUpDatabase(BasicDataSource dataSource) {
+        try (Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement()) {
 
+            createUserTable(statement);
+            createFriendRequestTable(statement);
+            createFriendshipsTable(statement);
 
 
         } catch (Exception e) {

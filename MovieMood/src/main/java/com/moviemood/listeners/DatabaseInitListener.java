@@ -91,6 +91,20 @@ public class DatabaseInitListener implements ServletContextListener {
         );
     }
 
+    //create movie_reviews table
+    private void CreateMovieReviewsTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS movie_reviews (" +
+                        "    user_id INT NOT NULL, " +
+                        "    movie_id INT NOT NULL, " +  // TMDB movie ID
+                        "    review_text TEXT NOT NULL, " +
+                        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "    PRIMARY KEY (user_id, movie_id), " +
+                        "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                        ");"
+        );
+    }
+
 
 
 
@@ -102,6 +116,8 @@ public class DatabaseInitListener implements ServletContextListener {
             createFriendRequestTable(statement);
             createFriendshipsTable(statement);
             createUserWatchlistTable(statement);
+            CreateMovieReviewsTable(statement);
+
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);

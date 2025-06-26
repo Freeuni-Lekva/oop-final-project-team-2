@@ -62,9 +62,37 @@ public class VerifyEmailServlet extends HttpServlet {
 
 
 
+    /*
+     * If user clicks resend, doGet handles resending,
+     * else it just redirects to jsp file.
+     */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("login.jsp").forward(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        if ("resend".equals(action)) {
+            String email = (String) request.getSession().getAttribute("waitingToVerifyEmail");
+
+            if (email != null) {
+                UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
+                User user = userDao.getUserByEmail(email);
+
+                if (user != null) {
+                    // generate new code
+                    EmailService emailService = new EmailService();
+                    String newCode = String.valueOf(emailService.generateVerificationCode());
+                    Timestamp newExpiry = Timestamp.valueOf(LocalDateTime.now().plusMinutes(10));
+
+                    userDao.updateVerificationCode(email, newCode, newExpiry);
+                    emailService.sendVerificationEmail(email, newCode, user.getUsername());
+
+                    request.setAttribute("message", "New verification code sent!");
+                }
+            }
+
+            request.getRequestDispatcher("verify-email.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("verify-email.jsp").forward(request, response);
+        }
     }
 }

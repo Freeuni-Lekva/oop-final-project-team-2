@@ -5,6 +5,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import com.moviemood.bean.User;
+import com.moviemood.config.Config;
 import com.moviemood.dao.UserDao;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -18,9 +19,10 @@ public class DatabaseInitListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
             BasicDataSource dataSource = new BasicDataSource();
-            dataSource.setUrl("jdbc:mysql://localhost:3306/moviemoodDB");
-            dataSource.setUsername("moviemood");
-            dataSource.setPassword("moviemood");
+            dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            dataSource.setUrl(Config.get("jdbc.url"));
+            dataSource.setUsername(Config.get("jdbc.username"));
+            dataSource.setPassword(Config.get("jdbc.password"));
 
             setUpDatabase(dataSource);
 
@@ -33,51 +35,101 @@ public class DatabaseInitListener implements ServletContextListener {
 
     }
 
-    private void setUpDatabase(BasicDataSource dataSource) {
-        try (Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement()) {
+    // create "users" table
+    private void createUserTable(Statement statement) throws SQLException {
+        statement.executeUpdate("\n" +
+                "CREATE TABLE IF NOT EXISTS users (\n" +
+                "    id INT PRIMARY KEY AUTO_INCREMENT,\n" +
+                " username VARCHAR(100) UNIQUE NOT NULL,\n" +
+                "    email VARCHAR(255) UNIQUE NOT NULL,\n" +
+                "    password_hash VARCHAR(255) NOT NULL,\n" +
+                "    remember_token VARCHAR(255),\n" +
+                "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
+                ");");
+    }
 
-            // creating "users" table
-            statement.executeUpdate("\n" +
-                    "CREATE TABLE IF NOT EXISTS users (\n" +
-                    "    id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                    " username VARCHAR(100) UNIQUE NOT NULL,\n" +
-                    "    email VARCHAR(255) UNIQUE NOT NULL,\n" +
-                    "    password_hash VARCHAR(255) NOT NULL,\n" +
-                    "    remember_token VARCHAR(255),\n" +
-                    "    is_verified BOOLEAN DEFAULT FALSE,\n" +
-                    "    verification_code VARCHAR(6),\n" +
-                    "    verification_code_expiry TIMESTAMP\n" +
-                    ");");
+    // create friend_requests table
+    private void createFriendRequestTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS friend_requests (" +
+                        "id INT PRIMARY KEY AUTO_INCREMENT, " +
+                        "sender_id INT NOT NULL, " +
+                        "receiver_id INT NOT NULL, " +
+                        "status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending', " +
+                        "request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "FOREIGN KEY (sender_id) REFERENCES users(id)  ON DELETE CASCADE, " +
+                        "FOREIGN KEY (receiver_id) REFERENCES users(id)  ON DELETE CASCADE" +
+                        ");"
+        );
+    }
 
-            // Creates friendships table
-            statement.executeUpdate(
-                    " CREATE TABLE IF NOT EXISTS friendships (" +
+    // create friendships table
+    private void createFriendshipsTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                " CREATE TABLE IF NOT EXISTS friendships (" +
                         " user1_id INT NOT NULL, " +
                         " user2_id INT NOT NULL, " +
                         " creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                         " FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE, " +
-                        " FOREIGN KEY (user2_ID) REFERENCES users(id) ON DELETE CASCADE, " +
+                        " FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE, " +
                         " PRIMARY KEY (user1_id, user2_id), " +
                         " CHECK (user1_id < user2_id)" +
                         ");"
-            );
+        );
+    }
+
+    // creating userWatchListTable
+    private void createUserWatchlistTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS user_watchlist (" +
+                        "    user_id INT NOT NULL," +
+                        "    movie_id INT NOT NULL," +
+                        "    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                        "    PRIMARY KEY (user_id, movie_id)," +
+                        "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                        ");"
+        );
+    }
+
+    //create movie_reviews table
+    private void CreateMovieReviewsTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS movie_reviews (" +
+                        "    user_id INT NOT NULL, " +
+                        "    movie_id INT NOT NULL, " +  // TMDB movie ID
+                        "    review_text TEXT NOT NULL, " +
+                        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "    PRIMARY KEY (user_id, movie_id), " +
+                        "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                        ");"
+        );
+    }
+
+    //create movie_ratings table
+    private void createMovieRatingsTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS movie_ratings (" +
+                        "movie_id INT NOT NULL, " +
+                        "user_id INT NOT NULL, " +
+                        "score_value DOUBLE NOT NULL, " +
+                        "score_date DATE, " +
+                        "PRIMARY KEY (user_id, movie_id), " +
+                        "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                        ");"
+        );
+    }
 
 
-            // Creates friend_requests table
-            statement.executeUpdate(
-                    "CREATE TABLE IF NOT EXISTS friend_requests (" +
-                            "id INT PRIMARY KEY AUTO_INCREMENT, " +
-                            "sender_id INT NOT NULL, " +
-                            "receiver_id INT NOT NULL, " +
-                            "status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending', " +
-                            "request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                            "FOREIGN KEY (sender_id) REFERENCES users(id)  ON DELETE CASCADE, " +
-                            "FOREIGN KEY (receiver_id) REFERENCES users(id)  ON DELETE CASCADE" +
-                            ");"
-            );
+    private void setUpDatabase(BasicDataSource dataSource) {
+        try (Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement()) {
 
-
+            createUserTable(statement);
+            createFriendRequestTable(statement);
+            createFriendshipsTable(statement);
+            createUserWatchlistTable(statement);
+            CreateMovieReviewsTable(statement);
+            createMovieRatingsTable(statement);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);

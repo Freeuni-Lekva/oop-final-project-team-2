@@ -31,6 +31,12 @@ public class LoginServlet extends HttpServlet {
 
         User user = userDao.getUserByUsername(username);
         if (user != null && BCrypt.checkpw(rawPassword, user.getHashedPassword())) {
+            // Check if user is verified
+            if (!user.isVerified()) {
+                request.getSession().setAttribute("waitingToVerifyEmail", user.getEmail());
+                response.sendRedirect("verify-email.jsp");
+                return;
+            }
             request.getSession().setAttribute("user", user);
             if ("true".equals(request.getParameter("rememberMe"))) {
                 String token = UUID.randomUUID().toString(); // generate random token

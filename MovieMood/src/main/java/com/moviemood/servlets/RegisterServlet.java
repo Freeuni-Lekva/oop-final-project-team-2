@@ -9,8 +9,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.CompletableFuture;
 
 import com.moviemood.exceptions.UserAlreadyExistsException;
+import com.moviemood.services.EmailService;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**
@@ -42,10 +48,27 @@ public class RegisterServlet extends HttpServlet {
 
         String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
 
+        // Generate verification code and calculate expiry time
+        EmailService emailService = new EmailService();
+        String verificationCode = String.valueOf(emailService.generateVerificationCode());
+
+        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(10);
+        Timestamp expiry = Timestamp.valueOf(expiryTime);
+
         try {
-            userDao.insertUser(username, email, hashedPassword);
-            response.sendRedirect("login.jsp");
+
+            userDao.insertUser(username, email, hashedPassword, verificationCode, expiry);
+            request.getSession().setAttribute("waitingToVerifyEmail", email);
+
+            // sending email asynchronously in background
+            CompletableFuture.runAsync(() -> {
+                EmailService asyncEmailService = new EmailService();
+                asyncEmailService.sendVerificationEmail(email, verificationCode, username);
+            });
+
+            response.sendRedirect("verify-email.jsp");
             return;
+
         } catch (UserAlreadyExistsException e) {
             error = e.getMessage();
         }  catch (Exception e) {

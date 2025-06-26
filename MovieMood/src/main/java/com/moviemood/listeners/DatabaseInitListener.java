@@ -5,6 +5,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import com.moviemood.bean.User;
+import com.moviemood.config.Config;
 import com.moviemood.dao.UserDao;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -18,9 +19,10 @@ public class DatabaseInitListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         try {
             BasicDataSource dataSource = new BasicDataSource();
-            dataSource.setUrl("jdbc:mysql://localhost:3306/moviemoodDB");
-            dataSource.setUsername("moviemood");
-            dataSource.setPassword("moviemood");
+            dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            dataSource.setUrl(Config.get("jdbc.url"));
+            dataSource.setUsername(Config.get("jdbc.username"));
+            dataSource.setPassword(Config.get("jdbc.password"));
 
             setUpDatabase(dataSource);
 

@@ -22,7 +22,7 @@ public class EmailService {
     }
 
     // This method sends email. For now, it uses MailTrap for testing.
-    public boolean sendVerificationEmail(String email, int code, String username) {
+    public boolean sendVerificationEmail(String email, String code, String username) {
         // Credentials (MailTrap)
         String host = "sandbox.smtp.mailtrap.io";
         int port = 2525;

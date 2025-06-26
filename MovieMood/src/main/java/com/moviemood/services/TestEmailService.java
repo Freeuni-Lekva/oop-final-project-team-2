@@ -8,7 +8,7 @@ public class TestEmailService {
     public static void main(String[] args) {
         EmailService emailService = new EmailService();
 
-        int testCode = emailService.generateVerificationCode();
+        String testCode = String.valueOf(emailService.generateVerificationCode());
         System.out.println("Generated code: " + testCode);
 
         boolean success = emailService.sendVerificationEmail(

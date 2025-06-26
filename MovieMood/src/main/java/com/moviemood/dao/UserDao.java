@@ -114,6 +114,7 @@ public class UserDao {
     /**
      * Inserts a user in the database.
      * takes username, email and password (hashed) as parameters
+     * !!!! SEE OVERLOADED VERSION BELOW
      */
 
     public void insertUser(String username, String email, String passwordHash) throws UserAlreadyExistsException {
@@ -147,8 +148,8 @@ public class UserDao {
     }
 
     /**
-     * Overloaded of insertUser method!!!
-     * Inserts a user in the database.
+     * Overloading of insertUser method!!!
+     * Inserts the user in the database.
      * takes username, email password (hashed). In this overloaded
      * version this method also takes verificationCode and expiry as parameters
      *

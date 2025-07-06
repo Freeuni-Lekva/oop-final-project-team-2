@@ -129,7 +129,7 @@
     </div>
 
     <div class="action-buttons">
-        <a href="movies.jsp" class="btn btn-success">Browse Movies</a>
+        <a href="/Home" class="btn btn-success">Browse Movies</a>
     </div>
 
     <div class="divider"></div>

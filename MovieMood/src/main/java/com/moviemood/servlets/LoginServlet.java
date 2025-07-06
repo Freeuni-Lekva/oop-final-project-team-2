@@ -48,7 +48,7 @@ public class LoginServlet extends HttpServlet {
                 response.addCookie(cookie);
             }
 
-            response.sendRedirect("movies.jsp");
+            response.sendRedirect("/Home");
             return;
         }
         request.setAttribute("error", "Invalid username or password");

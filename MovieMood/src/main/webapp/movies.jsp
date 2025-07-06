@@ -16,6 +16,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MovieMood - Find Your Perfect Movie</title>
+    <link rel="stylesheet" href="assets/css/navbar.css">
     <style>
         * {
             margin: 0;
@@ -28,73 +29,6 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             color: white;
             min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        .header {
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-
-        .logo-text {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #f39c12;
-        }
-
-        .create-account-btn {
-            background: #f39c12;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .create-account-btn:hover {
-            background: #e67e22;
         }
 
         /* Main Content */
@@ -398,10 +332,6 @@
                 font-size: 36px;
             }
 
-            .nav-links {
-                display: none;
-            }
-
             .movies-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -442,21 +372,8 @@
     </style>
 </head>
 <body>
-<header class="header">
-    <div class="container">
-        <nav class="nav">
-            <div class="logo">
-                <img src="Images/logo.png" alt="MovieMood Logo">
-                <span class="logo-text">MovieMood</span>
-            </div>
-            <div class="nav-links">
-                <a href="/films">Films</a>
-                <a href="#">Popular Lists</a>
-                <a href="/login" class="create-account-btn">Create Account</a>
-            </div>
-        </nav>
-    </div>
-</header>
+<!-- Include Navigation Bar -->
+<jsp:include page="WEB-INF/includes/navbar.jsp" />
 
 <main class="main-content">
     <div class="container">

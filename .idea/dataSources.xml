@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="moviemoodDB@localhost" uuid="086e10e7-29c1-4397-a1f0-cbff609f51e4">
+    <data-source source="LOCAL" name="moviemoodDB@localhost" uuid="b40c33a9-b984-4bdb-964e-84f1abe9ad6e">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

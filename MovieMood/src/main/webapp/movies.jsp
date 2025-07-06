@@ -180,34 +180,6 @@
             position: relative;
         }
 
-        .play-btn {
-            width: 50px;
-            height: 50px;
-            background: rgba(243, 156, 18, 0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.3s;
-            position: absolute;
-            z-index: 2;
-        }
-
-        .play-btn:hover {
-            background: rgba(243, 156, 18, 1);
-        }
-
-        .play-btn::after {
-            content: '';
-            width: 0;
-            height: 0;
-            border-left: 16px solid white;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            margin-left: 3px;
-        }
-
         .movie-info {
             padding: 15px;
         }
@@ -478,9 +450,9 @@
                 <span class="logo-text">MovieMood</span>
             </div>
             <div class="nav-links">
-                <a href="#">Films</a>
+                <a href="/films">Films</a>
                 <a href="#">Popular Lists</a>
-                <a href="#" class="create-account-btn">Create Account</a>
+                <a href="/login" class="create-account-btn">Create Account</a>
             </div>
         </nav>
     </div>
@@ -503,25 +475,26 @@
                                 for (int i = 0; i < recomededMovies.size(); i++) {
                                     Movie movie = recomededMovies.get(i);
                         %>
-                        <div class="movie-card">
-                            <div class="movie-poster">
-                                <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
-                                <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
-                                <% } else { %>
-                                <div class="movie-poster-fallback"></div>
-                                <% } %>
-                                <div class="play-btn"></div>
-                            </div>
-                            <div class="movie-info">
-                                <h3 class="movie-title"><%= movie.getTitle() %></h3>
-                                <div class="movie-meta">
-                                    <div class="rating">
-                                        <span class="stars">★★★★★</span>
+                        <a href="/movie/details?id=<%= movie.getId() %>" style="text-decoration: none; color: inherit;">
+                            <div class="movie-card">
+                                <div class="movie-poster">
+                                    <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
+                                    <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                                    <% } else { %>
+                                    <div class="movie-poster-fallback"></div>
+                                    <% } %>
+                                </div>
+                                <div class="movie-info">
+                                    <h3 class="movie-title"><%= movie.getTitle() %></h3>
+                                    <div class="movie-meta">
+                                        <div class="rating">
+                                            <span class="stars">★★★★★</span>
+                                        </div>
+                                        <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                                     </div>
-                                    <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                         <%
                                 }
                             }
@@ -559,7 +532,7 @@
                     <option>Rating</option>
                     <option>Release Date</option>
                 </select>
-                <button class="reset-btn">Reset Filters</button>
+                <button class="reset-btn">Search</button>
             </div>
             <div class="filter-tags">
                 <span class="filter-tag">Action</span>
@@ -581,28 +554,29 @@
                         for (int i = 0; i < movies.size(); i++) {
                             Movie movie = movies.get(i);
                 %>
-                <div class="movie-card">
-                    <div class="movie-poster">
-                        <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
-                        <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
-                        <% } else { %>
-                        <div class="movie-poster-fallback"></div>
-                        <% } %>
-                        <div class="play-btn"></div>
-                        <% if (i == 0) { %>
-                        <div style="position: absolute; top: 10px; left: 10px; background: #f39c12; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; z-index: 2;">NEW</div>
-                        <% } %>
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title"><%= movie.getTitle() %></h3>
-                        <div class="movie-meta">
-                            <div class="rating">
-                                <span class="stars">★★★★☆</span>
+                <a href="/movie/details?id=<%= movie.getId() %>" style="text-decoration: none; color: inherit;">
+                    <div class="movie-card">
+                        <div class="movie-poster">
+                            <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
+                            <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                            <% } else { %>
+                            <div class="movie-poster-fallback"></div>
+                            <% } %>
+                            <% if (i == 0) { %>
+                            <div style="position: absolute; top: 10px; left: 10px; background: #f39c12; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; z-index: 2;">NEW</div>
+                            <% } %>
+                        </div>
+                        <div class="movie-info">
+                            <h3 class="movie-title"><%= movie.getTitle() %></h3>
+                            <div class="movie-meta">
+                                <div class="rating">
+                                    <span class="stars">★★★★☆</span>
+                                </div>
+                                <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                             </div>
-                            <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                         </div>
                     </div>
-                </div>
+                </a>
                 <%
                         }
                     }

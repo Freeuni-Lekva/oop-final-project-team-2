@@ -1,7 +1,6 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.Movie;
-import com.moviemood.config.Config;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
@@ -10,10 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 
-@WebServlet(urlPatterns = {"/Home", "/moviemood", "/movies", "/films"})
-public class HomeServlet extends HttpServlet {
+@WebServlet("/movie/details")
+public class MovieDetailsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -22,12 +21,15 @@ public class HomeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int movie_id=Integer.parseInt(req.getParameter("id"));
         TmdbMovieRepository moviesRepo=new TmdbMovieRepository();
-        List<Movie> movies=moviesRepo.fetchAll(1);
-        List<Movie> recomededMovies=moviesRepo.fetchSimilar(278);
-        req.setAttribute("movies",movies);
-        req.setAttribute("recomededMovies",recomededMovies);
-        req.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
-        req.getRequestDispatcher("/movies.jsp").forward(req, resp);
+        Optional<Movie> movieOpt=moviesRepo.findById(movie_id);
+        if(movieOpt.isPresent()){
+            Movie movie=movieOpt.get();
+            req.setAttribute("movie",movie);
+            req.getRequestDispatcher("/movie-details.jsp").forward(req,resp);
+        }else{
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Movie not found");
+        }
     }
 }

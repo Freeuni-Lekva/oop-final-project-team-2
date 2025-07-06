@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.moviemood.Enums.MovieCategory;
 import com.moviemood.bean.Movie;
 import com.moviemood.config.Config;
+import com.moviemood.config.LocalDateAdapter;
 import com.moviemood.repository.api.MovieRepository;
 import com.moviemood.repository.api.model.MovieResponse;
 import okhttp3.OkHttpClient;
@@ -14,6 +15,7 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +35,8 @@ public class TmdbMovieRepository implements MovieRepository {
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build();
-        this.gson = new GsonBuilder().create();
+        this.gson = new GsonBuilder().registerTypeAdapter(LocalDate.class,new LocalDateAdapter())
+                .create();
     }
 
     @Override

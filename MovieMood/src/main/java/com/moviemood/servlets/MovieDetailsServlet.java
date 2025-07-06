@@ -1,6 +1,7 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.Movie;
+import com.moviemood.config.Config;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
@@ -27,6 +28,8 @@ public class MovieDetailsServlet extends HttpServlet {
         if(movieOpt.isPresent()){
             Movie movie=movieOpt.get();
             req.setAttribute("movie",movie);
+            req.setAttribute("backDropPathBaseURL", Config.get("backDropPathBase"));
+            req.setAttribute("POSTER_BASE",Config.get("posterPathBase"));
             req.getRequestDispatcher("/movie-details.jsp").forward(req,resp);
         }else{
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Movie not found");

@@ -1,6 +1,7 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.Movie;
+import com.moviemood.config.Config;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
@@ -24,8 +25,9 @@ public class HomeServlet extends HttpServlet {
         TmdbMovieRepository moviesRepo=new TmdbMovieRepository();
         List<Movie> movies=moviesRepo.fetchAll(1);
         List<Movie> recomededMovies=moviesRepo.fetchSimilar(278);
-        req.getSession().setAttribute("movies",movies);
-        req.getSession().setAttribute("recomededMovies",recomededMovies);
+        req.setAttribute("movies",movies);
+        req.setAttribute("recomededMovies",recomededMovies);
+        req.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
         req.getRequestDispatcher("/movies.jsp").forward(req, resp);
     }
 }

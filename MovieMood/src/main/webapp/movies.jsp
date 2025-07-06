@@ -9,7 +9,6 @@
 <%@ page import="com.moviemood.bean.User" %>
 <%@ page import="com.moviemood.bean.Movie" %>
 <%@ page import="java.util.List" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -124,7 +123,7 @@
         /* Movie Cards */
         .movies-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px;
             margin-bottom: 50px;
         }
@@ -145,7 +144,24 @@
 
         .movie-poster {
             width: 100%;
-            height: 350px;
+            height: 250px;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-poster-fallback {
+            width: 100%;
+            height: 250px;
             background: linear-gradient(135deg, #2c3e50, #3498db);
             display: flex;
             align-items: center;
@@ -154,8 +170,8 @@
         }
 
         .play-btn {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: rgba(243, 156, 18, 0.9);
             border-radius: 50%;
             display: flex;
@@ -163,6 +179,8 @@
             justify-content: center;
             cursor: pointer;
             transition: background 0.3s;
+            position: absolute;
+            z-index: 2;
         }
 
         .play-btn:hover {
@@ -173,21 +191,24 @@
             content: '';
             width: 0;
             height: 0;
-            border-left: 20px solid white;
-            border-top: 12px solid transparent;
-            border-bottom: 12px solid transparent;
-            margin-left: 4px;
+            border-left: 16px solid white;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            margin-left: 3px;
         }
 
         .movie-info {
-            padding: 20px;
+            padding: 15px;
         }
 
         .movie-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .movie-meta {
@@ -232,32 +253,61 @@
 
         .filter-select {
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 8px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 12px 20px;
             color: white;
             font-size: 14px;
-            min-width: 120px;
+            min-width: 140px;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #f39c12;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .filter-select:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
         }
 
         .filter-select option {
             background: #2c3e50;
             color: white;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .reset-btn {
-            background: #3498db;
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
-            padding: 8px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            outline: none;
         }
 
         .reset-btn:hover {
-            background: #2980b9;
+            background: linear-gradient(135deg, #2980b9, #1f618d);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
         }
 
         .filter-tags {
@@ -287,6 +337,12 @@
         }
 
         /* Responsive */
+        @media (max-width: 1200px) {
+            .movies-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 36px;
@@ -297,12 +353,18 @@
             }
 
             .movies-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .filter-row {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .movies-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -312,7 +374,7 @@
     <div class="container">
         <nav class="nav">
             <div class="logo">
-                <img src="WEB-INF/Images/logo.png" alt="MovieMood Logo">
+                <img src="Images/logo.png" alt="MovieMood Logo">
                 <span class="logo-text">MovieMood</span>
             </div>
             <div class="nav-links">
@@ -331,24 +393,36 @@
         <section class="suggested-section">
             <h2 class="section-title">Suggested For You</h2>
             <div class="movies-grid">
-                <c:forEach items="${recomededMovies}" var="movie" varStatus="status">
-                    <c:if test="${status.index < 4}">
-                        <div class="movie-card">
-                            <div class="movie-poster">
-                                <div class="play-btn"></div>
+                <%
+                    List<Movie> recomededMovies = (List<Movie>) request.getAttribute("recomededMovies");
+                    String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
+                    if (recomededMovies != null) {
+                        for (int i = 0; i < Math.min(5, recomededMovies.size()); i++) {
+                            Movie movie = recomededMovies.get(i);
+                %>
+                <div class="movie-card">
+                    <div class="movie-poster">
+                        <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
+                        <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                        <% } else { %>
+                        <div class="movie-poster-fallback"></div>
+                        <% } %>
+                        <div class="play-btn"></div>
+                    </div>
+                    <div class="movie-info">
+                        <h3 class="movie-title"><%= movie.getTitle() %></h3>
+                        <div class="movie-meta">
+                            <div class="rating">
+                                <span class="stars">★★★★★</span>
                             </div>
-                            <div class="movie-info">
-                                <h3 class="movie-title">${movie.title}</h3>
-                                <div class="movie-meta">
-                                    <div class="rating">
-                                        <span class="stars">★★★★★</span>
-                                    </div>
-                                    <span class="year">${movie.releaseDate.substring(0, 4)}</span>
-                                </div>
-                            </div>
+                            <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                         </div>
-                    </c:if>
-                </c:forEach>
+                    </div>
+                </div>
+                <%
+                        }
+                    }
+                %>
             </div>
         </section>
 
@@ -395,27 +469,38 @@
         <section class="popular-section">
             <h2 class="section-title">Popular Movies</h2>
             <div class="movies-grid">
-                <c:forEach items="${movies}" var="movie" varStatus="status">
-                    <c:if test="${status.index < 8}">
-                        <div class="movie-card">
-                            <div class="movie-poster">
-                                <div class="play-btn"></div>
-                                <c:if test="${status.index == 0}">
-                                    <div style="position: absolute; top: 10px; left: 10px; background: #f39c12; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">NEW</div>
-                                </c:if>
+                <%
+                    List<Movie> movies = (List<Movie>) request.getAttribute("movies");
+                    if (movies != null) {
+                        for (int i = 0; i < Math.min(10, movies.size()); i++) {
+                            Movie movie = movies.get(i);
+                %>
+                <div class="movie-card">
+                    <div class="movie-poster">
+                        <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
+                        <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                        <% } else { %>
+                        <div class="movie-poster-fallback"></div>
+                        <% } %>
+                        <div class="play-btn"></div>
+                        <% if (i == 0) { %>
+                        <div style="position: absolute; top: 10px; left: 10px; background: #f39c12; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; z-index: 2;">NEW</div>
+                        <% } %>
+                    </div>
+                    <div class="movie-info">
+                        <h3 class="movie-title"><%= movie.getTitle() %></h3>
+                        <div class="movie-meta">
+                            <div class="rating">
+                                <span class="stars">★★★★☆</span>
                             </div>
-                            <div class="movie-info">
-                                <h3 class="movie-title">${movie.title}</h3>
-                                <div class="movie-meta">
-                                    <div class="rating">
-                                        <span class="stars">★★★★☆</span>
-                                    </div>
-                                    <span class="year">${movie.releaseDate.substring(0, 4)}</span>
-                                </div>
-                            </div>
+                            <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                         </div>
-                    </c:if>
-                </c:forEach>
+                    </div>
+                </div>
+                <%
+                        }
+                    }
+                %>
             </div>
         </section>
     </div>

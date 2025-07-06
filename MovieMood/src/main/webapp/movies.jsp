@@ -120,12 +120,21 @@
             color: white;
         }
 
-        /* Movie Cards */
-        .movies-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
+        /* Slider for recommended movies */
+        .slider-container {
+            position: relative;
             margin-bottom: 50px;
+        }
+
+        .slider-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .movies-slider {
+            display: flex;
+            transition: transform 0.3s ease;
+            gap: 20px;
         }
 
         .movie-card {
@@ -135,6 +144,8 @@
             transition: transform 0.3s, box-shadow 0.3s;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            flex: 0 0 calc(20% - 16px);
+            min-width: 200px;
         }
 
         .movie-card:hover {
@@ -231,6 +242,69 @@
 
         .year {
             color: #95a5a6;
+        }
+
+        /* Slider Arrow Buttons */
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(243, 156, 18, 0.9);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider-arrow:hover {
+            background: rgba(243, 156, 18, 1);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .slider-arrow.prev {
+            left: -25px;
+        }
+
+        .slider-arrow.next {
+            right: -25px;
+        }
+
+        .slider-arrow.prev::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-right: 12px solid white;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            margin-right: 2px;
+        }
+
+        .slider-arrow.next::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 12px solid white;
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            margin-left: 2px;
+        }
+
+        /* Standard grid for other sections */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
         }
 
         /* Filters */
@@ -341,6 +415,10 @@
             .movies-grid {
                 grid-template-columns: repeat(4, 1fr);
             }
+
+            .movie-card {
+                flex: 0 0 calc(25% - 15px);
+            }
         }
 
         @media (max-width: 768px) {
@@ -356,15 +434,37 @@
                 grid-template-columns: repeat(2, 1fr);
             }
 
+            .movie-card {
+                flex: 0 0 calc(50% - 10px);
+            }
+
             .filter-row {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+
+            .slider-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .slider-arrow.prev {
+                left: -15px;
+            }
+
+            .slider-arrow.next {
+                right: -15px;
             }
         }
 
         @media (max-width: 480px) {
             .movies-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .movie-card {
+                flex: 0 0 calc(100% - 10px);
             }
         }
     </style>
@@ -392,37 +492,43 @@
 
         <section class="suggested-section">
             <h2 class="section-title">Suggested For You</h2>
-            <div class="movies-grid">
-                <%
-                    List<Movie> recomededMovies = (List<Movie>) request.getAttribute("recomededMovies");
-                    String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
-                    if (recomededMovies != null) {
-                        for (int i = 0; i < Math.min(5, recomededMovies.size()); i++) {
-                            Movie movie = recomededMovies.get(i);
-                %>
-                <div class="movie-card">
-                    <div class="movie-poster">
-                        <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
-                        <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
-                        <% } else { %>
-                        <div class="movie-poster-fallback"></div>
-                        <% } %>
-                        <div class="play-btn"></div>
-                    </div>
-                    <div class="movie-info">
-                        <h3 class="movie-title"><%= movie.getTitle() %></h3>
-                        <div class="movie-meta">
-                            <div class="rating">
-                                <span class="stars">★★★★★</span>
+            <div class="slider-container">
+                <button class="slider-arrow prev" onclick="slideMovies(-1)"></button>
+                <div class="slider-wrapper">
+                    <div class="movies-slider" id="recommendedSlider">
+                        <%
+                            List<Movie> recomededMovies = (List<Movie>) request.getAttribute("recomededMovies");
+                            String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
+                            if (recomededMovies != null) {
+                                for (int i = 0; i < recomededMovies.size(); i++) {
+                                    Movie movie = recomededMovies.get(i);
+                        %>
+                        <div class="movie-card">
+                            <div class="movie-poster">
+                                <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
+                                <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                                <% } else { %>
+                                <div class="movie-poster-fallback"></div>
+                                <% } %>
+                                <div class="play-btn"></div>
                             </div>
-                            <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
+                            <div class="movie-info">
+                                <h3 class="movie-title"><%= movie.getTitle() %></h3>
+                                <div class="movie-meta">
+                                    <div class="rating">
+                                        <span class="stars">★★★★★</span>
+                                    </div>
+                                    <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
+                                </div>
+                            </div>
                         </div>
+                        <%
+                                }
+                            }
+                        %>
                     </div>
                 </div>
-                <%
-                        }
-                    }
-                %>
+                <button class="slider-arrow next" onclick="slideMovies(1)"></button>
             </div>
         </section>
 
@@ -472,7 +578,7 @@
                 <%
                     List<Movie> movies = (List<Movie>) request.getAttribute("movies");
                     if (movies != null) {
-                        for (int i = 0; i < Math.min(10, movies.size()); i++) {
+                        for (int i = 0; i < movies.size(); i++) {
                             Movie movie = movies.get(i);
                 %>
                 <div class="movie-card">
@@ -507,6 +613,49 @@
 </main>
 
 <script>
+    let currentSlide = 0;
+    var cardsPerView = 5;
+
+    function slideMovies(direction) {
+        const slider = document.getElementById('recommendedSlider');
+        const cards = slider.querySelectorAll('.movie-card');
+        const totalCards = cards.length;
+        const maxSlide = Math.max(0, totalCards - cardsPerView);
+
+        currentSlide += direction;
+
+        if (currentSlide < 0) {
+            currentSlide = maxSlide;
+        } else if (currentSlide > maxSlide) {
+            currentSlide = 0;
+        }
+
+        const cardWidth = cards[0].offsetWidth + 20; // width + gap
+        const translateX = -currentSlide * cardWidth;
+
+        slider.style.transform = `translateX(${translateX}px)`;
+    }
+
+    // Responsive slide adjustment
+    function updateCardsPerView() {
+        const width = window.innerWidth;
+        let newCardsPerView = 5;
+
+        if (width <= 480) {
+            newCardsPerView = 1;
+        } else if (width <= 768) {
+            newCardsPerView = 2;
+        } else if (width <= 1200) {
+            newCardsPerView = 4;
+        }
+
+        cardsPerView = newCardsPerView;
+        currentSlide = 0;
+        slideMovies(0);
+    }
+
+    window.addEventListener('resize', updateCardsPerView);
+
     // Add interactivity for filter tags
     document.querySelectorAll('.filter-tag').forEach(tag => {
         tag.addEventListener('click', function() {

@@ -10,10 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendRequestDAO {
+public class FriendRequestDao {
     private final BasicDataSource dataSource;
 
-    public FriendRequestDAO(BasicDataSource dataSource) {
+    public FriendRequestDao(BasicDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -152,7 +152,7 @@ public class FriendRequestDAO {
 
 
     // might have to implement later
-//    public FriendRequest getRequest(int requestId) {
+//    public FriendRequest getRequestById(int requestId) {
 //        return null;
 //    }
 

@@ -1,6 +1,6 @@
 package com.moviemood.servlets;
 
-import com.moviemood.dao.FriendRequestDAO;
+import com.moviemood.dao.FriendRequestDao;
 import com.moviemood.dao.UserDao;
 
 import javax.servlet.ServletException;
@@ -26,7 +26,7 @@ public class SendFriendRequestServlet extends HttpServlet {
 
         int receiverId = Integer.parseInt(request.getParameter("receiverId"));
 
-        FriendRequestDAO friendRequestDAO = (FriendRequestDAO) getServletContext().getAttribute("friendRequestDAO");
+        FriendRequestDao friendRequestDAO = (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
         UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
 
         try {

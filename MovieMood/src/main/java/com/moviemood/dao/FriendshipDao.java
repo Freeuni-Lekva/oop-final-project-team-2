@@ -7,11 +7,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendshipDAO {
+public class FriendshipDao {
 
     private final BasicDataSource dataSource;
 
-    public FriendshipDAO(BasicDataSource dataSource) {
+    public FriendshipDao(BasicDataSource dataSource) {
         this.dataSource = dataSource;
     }
 

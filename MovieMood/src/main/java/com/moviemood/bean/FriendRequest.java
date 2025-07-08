@@ -10,6 +10,8 @@ public class FriendRequest implements Serializable {
     private int receiverId;
     private String status;
     private LocalDateTime requestTime;
+    private String senderUsername;
+    private String receiverUsername;
 
     public FriendRequest() {
 
@@ -46,6 +48,23 @@ public class FriendRequest implements Serializable {
     public void setReceiverId(int receiverId) {
         this.receiverId = receiverId;
     }
+
+    public String getSenderUsername() {
+        return senderUsername;
+    }
+
+    public void setSenderUsername(String senderUsername) {
+        this.senderUsername = senderUsername;
+    }
+
+    public String getReceiverUsername() {
+        return receiverUsername;
+    }
+
+    public void setReceiverUsername(String receiverUsername) {
+        this.receiverUsername = receiverUsername;
+    }
+
 
     public String getStatus() {
         return status;

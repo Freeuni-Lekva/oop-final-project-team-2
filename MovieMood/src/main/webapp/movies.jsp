@@ -55,6 +55,12 @@
         }
 
         /* Slider for recommended movies */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
         .slider-container {
             position: relative;
             margin-bottom: 50px;
@@ -67,8 +73,10 @@
 
         .movies-slider {
             display: flex;
-            transition: transform 0.3s ease;
+            white-space: nowrap;
+            transition: transform 0.5s ease;
             gap: 20px;
+            will-change: transform;
         }
 
         .movie-card {
@@ -376,6 +384,7 @@
 <jsp:include page="WEB-INF/includes/navbar.jsp" />
 
 <main class="main-content">
+    <script src="assets/js/slider.js"></script>
     <div class="container">
         <h1 class="hero-title">Find Your Perfect <span class="highlight">Movie Mood</span></h1>
 
@@ -503,66 +512,6 @@
     </div>
 </main>
 
-<script>
-    let currentSlide = 0;
-    var cardsPerView = 5;
-
-    function slideMovies(direction) {
-        const slider = document.getElementById('recommendedSlider');
-        const cards = slider.querySelectorAll('.movie-card');
-        const totalCards = cards.length;
-        const maxSlide = Math.max(0, totalCards - cardsPerView);
-
-        currentSlide += direction;
-
-        if (currentSlide < 0) {
-            currentSlide = maxSlide;
-        } else if (currentSlide > maxSlide) {
-            currentSlide = 0;
-        }
-
-        const cardWidth = cards[0].offsetWidth + 20; // width + gap
-        const translateX = -currentSlide * cardWidth;
-
-        slider.style.transform = `translateX(${translateX}px)`;
-    }
-
-    // Responsive slide adjustment
-    function updateCardsPerView() {
-        const width = window.innerWidth;
-        let newCardsPerView = 5;
-
-        if (width <= 480) {
-            newCardsPerView = 1;
-        } else if (width <= 768) {
-            newCardsPerView = 2;
-        } else if (width <= 1200) {
-            newCardsPerView = 4;
-        }
-
-        cardsPerView = newCardsPerView;
-        currentSlide = 0;
-        slideMovies(0);
-    }
-
-    window.addEventListener('resize', updateCardsPerView);
-
-    // Add interactivity for filter tags
-    document.querySelectorAll('.filter-tag').forEach(tag => {
-        tag.addEventListener('click', function() {
-            this.classList.toggle('active');
-        });
-    });
-
-    // Reset filters functionality
-    document.querySelector('.reset-btn').addEventListener('click', function() {
-        document.querySelectorAll('.filter-tag').forEach(tag => {
-            tag.classList.remove('active');
-        });
-        document.querySelectorAll('.filter-select').forEach(select => {
-            select.selectedIndex = 0;
-        });
-    });
-</script>
 </body>
 </html>
+<%--old--%>

@@ -23,12 +23,13 @@ import java.util.concurrent.TimeUnit;
 
 public class TmdbMovieRepository implements MovieRepository {
 
+    private static TmdbMovieRepository instance;
     private final String BASE_URL;
     private final String apiKey;
     private final OkHttpClient httpClient;
     private final Gson gson;
 
-    public TmdbMovieRepository() {
+    private TmdbMovieRepository() {
         BASE_URL= Config.get("tmdbBaseUrl");
         apiKey= Config.get("apiKey");
         this.httpClient = new OkHttpClient.Builder()
@@ -37,6 +38,13 @@ public class TmdbMovieRepository implements MovieRepository {
                 .build();
         this.gson = new GsonBuilder().registerTypeAdapter(LocalDate.class,new LocalDateAdapter())
                 .create();
+    }
+
+    public static synchronized TmdbMovieRepository getInstance() {
+        if (instance == null) {
+            instance = new TmdbMovieRepository();
+        }
+        return instance;
     }
 
     @Override

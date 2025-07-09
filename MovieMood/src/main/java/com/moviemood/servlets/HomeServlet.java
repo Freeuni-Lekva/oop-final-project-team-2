@@ -22,7 +22,7 @@ public class HomeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        TmdbMovieRepository moviesRepo = new TmdbMovieRepository();
+        TmdbMovieRepository moviesRepo = TmdbMovieRepository.getInstance();
 
         // Get page parameter from request, default to 1 if not present
         int page = 1;

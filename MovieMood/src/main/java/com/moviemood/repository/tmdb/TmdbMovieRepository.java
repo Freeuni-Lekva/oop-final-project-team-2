@@ -23,12 +23,13 @@ import java.util.concurrent.TimeUnit;
 
 public class TmdbMovieRepository implements MovieRepository {
 
+    private static TmdbMovieRepository instance;
     private final String BASE_URL;
     private final String apiKey;
     private final OkHttpClient httpClient;
     private final Gson gson;
 
-    public TmdbMovieRepository() {
+    private TmdbMovieRepository() {
         BASE_URL= Config.get("tmdbBaseUrl");
         apiKey= Config.get("apiKey");
         this.httpClient = new OkHttpClient.Builder()
@@ -37,6 +38,13 @@ public class TmdbMovieRepository implements MovieRepository {
                 .build();
         this.gson = new GsonBuilder().registerTypeAdapter(LocalDate.class,new LocalDateAdapter())
                 .create();
+    }
+
+    public static synchronized TmdbMovieRepository getInstance() {
+        if (instance == null) {
+            instance = new TmdbMovieRepository();
+        }
+        return instance;
     }
 
     @Override
@@ -58,6 +66,36 @@ public class TmdbMovieRepository implements MovieRepository {
         String url = String.format("%s/search/movie?api_key=%s&query=%s&page=%d",
                 BASE_URL, apiKey, URLEncoder.encode(query, StandardCharsets.UTF_8), page);
         MovieResponse response = executeRequest(url, MovieResponse.class);
+        return response.getResults();
+    }
+
+    @Override
+    public List<Movie> discoverWithFilters(String genre, String year, String runtime, int page) throws IOException {
+        StringBuilder url = new StringBuilder(BASE_URL + "/discover/movie?api_key=" + apiKey + "&page=" + page);
+
+        if (genre != null && !genre.isEmpty()) {
+            url.append("&with_genres=").append(genre);
+        }
+
+        if (year != null && !year.isEmpty()) {
+            url.append("&primary_release_year=").append(year);
+        }
+
+        if (runtime != null && !runtime.isEmpty()) {
+            switch (runtime) {
+                case "short":
+                    url.append("&with_runtime.lte=89");
+                    break;
+                case "medium":
+                    url.append("&with_runtime.gte=90&with_runtime.lte=120");
+                    break;
+                case "long":
+                    url.append("&with_runtime.gte=121");
+                    break;
+            }
+        }
+
+        MovieResponse response = executeRequest(url.toString(), MovieResponse.class);
         return response.getResults();
     }
 

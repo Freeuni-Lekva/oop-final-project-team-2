@@ -23,7 +23,7 @@ public class MovieDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int movie_id=Integer.parseInt(req.getParameter("id"));
-        TmdbMovieRepository moviesRepo=new TmdbMovieRepository();
+        TmdbMovieRepository moviesRepo=TmdbMovieRepository.getInstance();
         Optional<Movie> movieOpt=moviesRepo.findById(movie_id);
         if(movieOpt.isPresent()){
             Movie movie=movieOpt.get();

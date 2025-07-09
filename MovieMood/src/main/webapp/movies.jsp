@@ -298,6 +298,31 @@
             transform: translateY(0);
         }
 
+        .filter-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+            min-width: 180px;
+            backdrop-filter: blur(10px);
+            outline: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .filter-input::placeholder {
+            color: #ccc;
+        }
+
+        .filter-input:hover,
+        .filter-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
+        }
+
         .filter-tags {
             display: flex;
             gap: 10px;
@@ -377,14 +402,149 @@
                 flex: 0 0 calc(100% - 10px);
             }
         }
+
+        /* Pagination Styles */
+        .pagination-section {
+            margin-top: 40px;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pagination-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-numbers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .page-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .page-number:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .page-number.active {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .page-number.ellipsis {
+            cursor: default;
+            background: none;
+            pointer-events: none;
+        }
+
+        .page-number.ellipsis:hover {
+            background: none;
+            transform: none;
+        }
+
+        .pagination-info {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .pagination-container {
+                padding: 8px 10px;
+                gap: 4px;
+            }
+
+            .pagination-btn,
+            .page-number {
+                width: 35px;
+                height: 35px;
+                min-width: 35px;
+                font-size: 12px;
+            }
+
+            .pagination-numbers {
+                gap: 2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pagination-container {
+                padding: 6px 8px;
+                gap: 2px;
+            }
+
+            .pagination-btn,
+            .page-number {
+                width: 30px;
+                height: 30px;
+                min-width: 30px;
+                font-size: 11px;
+            }
+        }
+
     </style>
 </head>
-<body>
+<body data-current-page="<%= request.getAttribute("currentPage") %>" data-total-pages="<%= request.getAttribute("totalPages") %>">
 <!-- Include Navigation Bar -->
 <jsp:include page="WEB-INF/includes/navbar.jsp" />
 
 <main class="main-content">
     <script src="assets/js/slider.js"></script>
+    <script src="assets/js/pagination.js"></script>
     <div class="container">
         <h1 class="hero-title">Find Your Perfect <span class="highlight">Movie Mood</span></h1>
 
@@ -440,17 +600,30 @@
                     <option>2022</option>
                     <option>2021</option>
                 </select>
-                <select class="filter-select">
-                    <option>Genre</option>
-                    <option>Action</option>
-                    <option>Comedy</option>
-                    <option>Drama</option>
+                <select class="filter-select" name="genre">
+                    <option value="">Genre</option>
+                    <option value="12">Adventure</option>
+                    <option value="16">Animation</option>
+                    <option value="80">Crime</option>
+                    <option value="99">Documentary</option>
+                    <option value="10751">Family</option>
+                    <option value="14">Fantasy</option>
+                    <option value="36">History</option>
+                    <option value="27">Horror</option>
+                    <option value="10402">Music</option>
+                    <option value="9648">Mystery</option>
+                    <option value="10749">Romance</option>
+                    <option value="878">Science Fiction</option>
+                    <option value="10770">TV Movie</option>
+                    <option value="53">Thriller</option>
+                    <option value="10752">War</option>
+                    <option value="37">Western</option>
                 </select>
                 <select class="filter-select">
-                    <option>Rating</option>
-                    <option>5 Stars</option>
-                    <option>4+ Stars</option>
-                    <option>3+ Stars</option>
+                    <option>Runtime</option>
+                    <option>Short ( <90 mins)</option>
+                    <option>Medium (90–120 mins)</option>
+                    <option>Long (120+ mins)</option>
                 </select>
                 <select class="filter-select">
                     <option>Sort By</option>
@@ -458,16 +631,8 @@
                     <option>Rating</option>
                     <option>Release Date</option>
                 </select>
+                <input type="text" class="filter-input" placeholder="Search by title...">
                 <button class="reset-btn">Search</button>
-            </div>
-            <div class="filter-tags">
-                <span class="filter-tag">Action</span>
-                <span class="filter-tag">Comedy</span>
-                <span class="filter-tag active">Sci-Fi</span>
-                <span class="filter-tag">Drama</span>
-                <span class="filter-tag">Thriller</span>
-                <span class="filter-tag">2023</span>
-                <span class="filter-tag">4+ Stars</span>
             </div>
         </section>
 
@@ -510,6 +675,25 @@
             </div>
         </section>
     </div>
+    <section class="pagination-section">
+        <div class="pagination-container">
+            <button class="pagination-btn prev-btn" id="prevBtn" onclick="changePage(-1)">
+                <span>&lt;</span>
+            </button>
+
+            <div class="pagination-numbers" id="paginationNumbers">
+                <!-- Page numbers will be generated by JavaScript -->
+            </div>
+
+            <button class="pagination-btn next-btn" id="nextBtn" onclick="changePage(1)">
+                <span>&gt;</span>
+            </button>
+        </div>
+
+        <div class="pagination-info">
+            <span id="pageInfo">Page 1 of 500</span>
+        </div>
+    </section>
 </main>
 
 </body>

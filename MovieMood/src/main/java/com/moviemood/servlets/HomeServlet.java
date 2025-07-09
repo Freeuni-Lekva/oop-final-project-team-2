@@ -22,12 +22,37 @@ public class HomeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        TmdbMovieRepository moviesRepo=new TmdbMovieRepository();
-        List<Movie> movies=moviesRepo.fetchAll(1);
-        List<Movie> recomededMovies=moviesRepo.fetchSimilar(278);
-        req.setAttribute("movies",movies);
-        req.setAttribute("recomededMovies",recomededMovies);
+        TmdbMovieRepository moviesRepo = new TmdbMovieRepository();
+
+        // Get page parameter from request, default to 1 if not present
+        int page = 1;
+        String pageParam = req.getParameter("page");
+        if (pageParam != null && !pageParam.trim().isEmpty()) {
+            try {
+                page = Integer.parseInt(pageParam);
+                // Ensure page is within valid range
+                if (page < 1) {
+                    page = 1;
+                } else if (page > 500) {
+                    page = 500;
+                }
+            } catch (NumberFormatException e) {
+                // If parsing fails, default to page 1
+                page = 1;
+            }
+        }
+
+        // Fetch movies for the specified page
+        List<Movie> movies = moviesRepo.fetchAll(page);
+        List<Movie> recomededMovies = moviesRepo.fetchSimilar(278);
+
+        // Set attributes for JSP
+        req.setAttribute("movies", movies);
+        req.setAttribute("recomededMovies", recomededMovies);
         req.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
+        req.setAttribute("currentPage", page); // Add current page to JSP
+        req.setAttribute("totalPages", 500); // Add total pages to JSP
+
         req.getRequestDispatcher("/movies.jsp").forward(req, resp);
     }
 }

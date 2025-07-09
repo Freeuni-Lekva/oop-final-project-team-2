@@ -57,7 +57,7 @@
         }
     %>
 
-    <h2>Sent Friend Request</h2>
+    <h2>Sent Friend Requests</h2>
 
     <%
         List<FriendRequest> sentRequests = (List<FriendRequest>) request.getAttribute("sentRequests");

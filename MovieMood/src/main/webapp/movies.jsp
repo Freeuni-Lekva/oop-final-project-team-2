@@ -73,48 +73,42 @@
         </section>
 
         <section class="filters">
-            <div class="filter-row">
-                <span class="filter-label">Filters:</span>
-                <select class="filter-select">
-                    <option>Year</option>
-                    <option>2023</option>
-                    <option>2022</option>
-                    <option>2021</option>
-                </select>
-                <select class="filter-select" name="genre">
-                    <option value="">Genre</option>
-                    <option value="12">Adventure</option>
-                    <option value="16">Animation</option>
-                    <option value="80">Crime</option>
-                    <option value="99">Documentary</option>
-                    <option value="10751">Family</option>
-                    <option value="14">Fantasy</option>
-                    <option value="36">History</option>
-                    <option value="27">Horror</option>
-                    <option value="10402">Music</option>
-                    <option value="9648">Mystery</option>
-                    <option value="10749">Romance</option>
-                    <option value="878">Science Fiction</option>
-                    <option value="10770">TV Movie</option>
-                    <option value="53">Thriller</option>
-                    <option value="10752">War</option>
-                    <option value="37">Western</option>
-                </select>
-                <select class="filter-select">
-                    <option>Runtime</option>
-                    <option>Short ( <90 mins)</option>
-                    <option>Medium (90–120 mins)</option>
-                    <option>Long (120+ mins)</option>
-                </select>
-                <select class="filter-select">
-                    <option>Sort By</option>
-                    <option>Popularity</option>
-                    <option>Rating</option>
-                    <option>Release Date</option>
-                </select>
-                <input type="text" class="filter-input" placeholder="Search by title...">
-                <button class="reset-btn">Search</button>
-            </div>
+            <form method="get" action="/Home">
+                <div class="filter-row">
+                    <span class="filter-label">Filters:</span>
+                    <select class="filter-select" name="year">
+                        <option value="">Year</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                    </select>
+
+                    <select class="filter-select" name="genre">
+                        <option value="">Genre</option>
+                        <option value="12">Adventure</option>
+                        <option value="16">Animation</option>
+                        <!-- ... -->
+                    </select>
+
+                    <select class="filter-select" name="runtime">
+                        <option value="">Runtime</option>
+                        <option value="short">Short</option>
+                        <option value="medium">Medium</option>
+                        <option value="long">Long</option>
+                    </select>
+
+                    <select class="filter-select" name="sort">
+                        <option value="">Sort By</option>
+                        <option value="popularity.desc">Popularity</option>
+                        <option value="vote_average.desc">Rating</option>
+                        <option value="primary_release_date.desc">Release Date</option>
+                    </select>
+
+                    <input type="text" class="filter-input" name="title" placeholder="Search by title...">
+
+                    <button class="reset-btn" type="submit">Search</button>
+                </div>
+            </form>
         </section>
 
         <section class="popular-section">

@@ -69,6 +69,40 @@ public class TmdbMovieRepository implements MovieRepository {
         return response.getResults();
     }
 
+    public List<Movie> discoverWithFilters(String genre, String year, String sort, String runtime, int page) throws IOException {
+        StringBuilder url = new StringBuilder(BASE_URL + "/discover/movie?api_key=" + apiKey + "&page=" + page);
+
+        if (genre != null && !genre.isEmpty()) {
+            url.append("&with_genres=").append(genre);
+        }
+
+        if (year != null && !year.isEmpty()) {
+            url.append("&primary_release_year=").append(year);
+        }
+
+        if (sort != null && !sort.isEmpty()) {
+            url.append("&sort_by=").append(URLEncoder.encode(sort, StandardCharsets.UTF_8));
+        }
+
+        if (runtime != null && !runtime.isEmpty()) {
+            switch (runtime) {
+                case "short":
+                    url.append("&with_runtime.lte=89");
+                    break;
+                case "medium":
+                    url.append("&with_runtime.gte=90&with_runtime.lte=120");
+                    break;
+                case "long":
+                    url.append("&with_runtime.gte=121");
+                    break;
+            }
+        }
+
+        MovieResponse response = executeRequest(url.toString(), MovieResponse.class);
+        return response.getResults();
+    }
+
+
     @Override
     public Optional<Movie> findById(int tmdbId) throws IOException {
         String url = String.format("%s/movie/%d?api_key=%s", BASE_URL, tmdbId, apiKey);

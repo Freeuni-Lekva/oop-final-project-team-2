@@ -69,7 +69,8 @@ public class TmdbMovieRepository implements MovieRepository {
         return response.getResults();
     }
 
-    public List<Movie> discoverWithFilters(String genre, String year, String sort, String runtime, int page) throws IOException {
+    @Override
+    public List<Movie> discoverWithFilters(String genre, String year, String runtime, int page) throws IOException {
         StringBuilder url = new StringBuilder(BASE_URL + "/discover/movie?api_key=" + apiKey + "&page=" + page);
 
         if (genre != null && !genre.isEmpty()) {
@@ -78,10 +79,6 @@ public class TmdbMovieRepository implements MovieRepository {
 
         if (year != null && !year.isEmpty()) {
             url.append("&primary_release_year=").append(year);
-        }
-
-        if (sort != null && !sort.isEmpty()) {
-            url.append("&sort_by=").append(URLEncoder.encode(sort, StandardCharsets.UTF_8));
         }
 
         if (runtime != null && !runtime.isEmpty()) {
@@ -101,7 +98,6 @@ public class TmdbMovieRepository implements MovieRepository {
         MovieResponse response = executeRequest(url.toString(), MovieResponse.class);
         return response.getResults();
     }
-
 
     @Override
     public Optional<Movie> findById(int tmdbId) throws IOException {

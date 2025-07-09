@@ -17,6 +17,9 @@ public interface MovieRepository {
     // 🔹 Search movie by title or keyword
     List<Movie> search(String query, int page) throws IOException;
 
+    // 🔹 Filter with several types
+    public List<Movie> discoverWithFilters(String genre, String year, String runtime, int page) throws IOException;
+
     // 🔹 Get detailed movie info by TMDB ID
     Optional<Movie> findById(int tmdbId) throws IOException;
 

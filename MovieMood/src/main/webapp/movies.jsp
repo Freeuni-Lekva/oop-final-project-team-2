@@ -98,10 +98,11 @@
                     </select>
 
                     <select class="filter-select" name="sort">
-                        <option value="">Sort By</option>
-                        <option value="popularity.desc">Popularity</option>
-                        <option value="vote_average.desc">Rating</option>
-                        <option value="primary_release_date.desc">Release Date</option>
+                        <option value="">Category</option>
+                        <option value="popular">Popular</option>
+                        <option value="top_rated">Top Rated</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="now_playing">Now Playing</option>
                     </select>
 
                     <input type="text" class="filter-input" name="title" placeholder="Search by title...">

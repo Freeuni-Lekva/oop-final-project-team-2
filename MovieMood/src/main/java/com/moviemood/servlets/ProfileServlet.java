@@ -14,6 +14,8 @@ import java.io.IOException;
 @WebServlet("/profile")
 public class ProfileServlet extends HttpServlet {
 
+    private static final User DEMO_USER = new User(1, "DemoUser", "demo@moviemood.com", "hashedpassword", null);
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
@@ -39,17 +41,19 @@ public class ProfileServlet extends HttpServlet {
         try {
             if (username != null && !username.trim().isEmpty()) {
                 // Viewing someone else's profile
-                profileUser = userDao.getUserByUsername(username);
-                if (profileUser == null) {
+                User foundUser = userDao.getUserByUsername(username);
+                if (foundUser == null) {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
                     return;
                 }
+                // Hide email for other users' profiles
+                profileUser = new User(foundUser.getId(), foundUser.getUsername(), null, null, null);
             } else if (currentUser != null) {
                 // Viewing own profile
                 profileUser = currentUser;
             } else {
                 // Not logged in - show demo profile for testing
-                profileUser = new User(1, "DemoUser", "demo@moviemood.com", "hashedpassword", null);
+                profileUser = DEMO_USER;
                 currentUser = null; // Ensure we know this is a demo
             }
             

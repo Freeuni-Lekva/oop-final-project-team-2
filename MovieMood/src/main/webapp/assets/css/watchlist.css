@@ -1,0 +1,24 @@
+.demo-banner {
+    margin-bottom: 30px; 
+    padding: 15px; 
+    background: rgba(243, 156, 18, 0.1); 
+    border: 1px solid rgba(243, 156, 18, 0.3); 
+    border-radius: 10px; 
+    color: #f39c12;
+}
+
+.empty-watchlist {
+    grid-column: 1 / -1; 
+    text-align: center; 
+    padding: 60px 20px; 
+    color: #bdc3c7;
+}
+
+.empty-watchlist h3 {
+    font-size: 24px; 
+    margin-bottom: 10px;
+}
+
+.empty-watchlist p {
+    font-size: 16px;
+} 

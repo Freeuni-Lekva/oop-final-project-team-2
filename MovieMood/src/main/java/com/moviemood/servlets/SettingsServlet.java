@@ -218,8 +218,9 @@ public class SettingsServlet extends HttpServlet {
                 return;
             }
             
-            // Create uploads directory if it doesn't exist
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads" + File.separator + "profile-pictures";
+            // Create uploads directory in a permanent location (outside webapp)
+            String userHome = System.getProperty("user.home");
+            String uploadPath = userHome + File.separator + "moviemood-uploads" + File.separator + "profile-pictures";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
@@ -237,14 +238,29 @@ public class SettingsServlet extends HttpServlet {
             Path filePath = Paths.get(uploadPath, uniqueFileName);
             Files.copy(filePart.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             
-            // Store relative path in database
-            String relativePath = "uploads/profile-pictures/" + uniqueFileName;
+            // Store just the filename in database (file is in permanent location)
+            String relativePath = uniqueFileName;
             
             // Delete old profile picture if it exists
             if (currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) {
                 try {
-                    Path oldFilePath = Paths.get(getServletContext().getRealPath(""), currentUser.getProfilePicture());
-                    Files.deleteIfExists(oldFilePath);
+                    String oldPicture = currentUser.getProfilePicture();
+                    Path oldFilePath;
+                    
+                    // Handle both old format (with path) and new format (just filename)
+                    if (oldPicture.contains("/") || oldPicture.contains("\\")) {
+                        // Old format with path - try both locations
+                        oldFilePath = Paths.get(getServletContext().getRealPath(""), oldPicture);
+                        Files.deleteIfExists(oldFilePath);
+                        // Also try the new location in case it was already migrated
+                        oldFilePath = Paths.get(userHome, "moviemood-uploads", "profile-pictures", 
+                                               oldPicture.substring(oldPicture.lastIndexOf("/") + 1));
+                        Files.deleteIfExists(oldFilePath);
+                    } else {
+                        // New format (just filename) - delete from permanent location
+                        oldFilePath = Paths.get(userHome, "moviemood-uploads", "profile-pictures", oldPicture);
+                        Files.deleteIfExists(oldFilePath);
+                    }
                 } catch (Exception e) {
                     // Ignore errors when deleting old file
                 }

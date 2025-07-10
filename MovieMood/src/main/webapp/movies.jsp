@@ -78,31 +78,31 @@
                     <span class="filter-label">Filters:</span>
                     <select class="filter-select" name="year">
                         <option value="">Year</option>
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                        <option value="2021">2021</option>
+                        <option value="2023" <%= "2023".equals(request.getParameter("year")) ? "selected" : "" %>>2023</option>
+                        <option value="2022" <%= "2022".equals(request.getParameter("year")) ? "selected" : "" %>>2022</option>
+                        <option value="2021" <%= "2021".equals(request.getParameter("year")) ? "selected" : "" %>>2021</option>
                     </select>
 
                     <select class="filter-select" name="genre">
                         <option value="">Genre</option>
-                        <option value="12">Adventure</option>
-                        <option value="16">Animation</option>
+                        <option value="12" <%= "12".equals(request.getParameter("genre")) ? "selected" : "" %>>Adventure</option>
+                        <option value="16" <%= "16".equals(request.getParameter("genre")) ? "selected" : "" %>>Animation</option>
                         <!-- ... -->
                     </select>
 
                     <select class="filter-select" name="runtime">
                         <option value="">Runtime</option>
-                        <option value="short">Short</option>
-                        <option value="medium">Medium</option>
-                        <option value="long">Long</option>
+                        <option value="short" <%= "short".equals(request.getParameter("runtime")) ? "selected" : "" %>>Short</option>
+                        <option value="medium" <%= "medium".equals(request.getParameter("runtime")) ? "selected" : "" %>>Medium</option>
+                        <option value="long" <%= "long".equals(request.getParameter("runtime")) ? "selected" : "" %>>Long</option>
                     </select>
 
                     <select class="filter-select" name="sort">
                         <option value="">Category</option>
-                        <option value="popular">Popular</option>
-                        <option value="top_rated">Top Rated</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="now_playing">Now Playing</option>
+                        <option value="popular" <%= "popular".equals(request.getParameter("sort")) ? "selected" : "" %>>Popular</option>
+                        <option value="top_rated" <%= "top_rated".equals(request.getParameter("sort")) ? "selected" : "" %>>Top Rated</option>
+                        <option value="upcoming" <%= "upcoming".equals(request.getParameter("sort")) ? "selected" : "" %>>Upcoming</option>
+                        <option value="now_playing" <%= "now_playing".equals(request.getParameter("sort")) ? "selected" : "" %>>Now Playing</option>
                     </select>
 
                     <input type="text" class="filter-input" name="title" placeholder="Search by title...">
@@ -129,9 +129,6 @@
                             <% } else { %>
                             <div class="movie-poster-fallback"></div>
                             <% } %>
-                            <% if (i == 0) { %>
-                            <div style="position: absolute; top: 10px; left: 10px; background: #f39c12; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; z-index: 2;">NEW</div>
-                            <% } %>
                         </div>
                         <div class="movie-info">
                             <h3 class="movie-title"><%= movie.getTitle() %></h3>
@@ -139,7 +136,9 @@
                                 <div class="rating">
                                     <span class="stars">★★★★☆</span>
                                 </div>
+                                <% if (movie.getReleaseDate() != null) { %>
                                 <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
+                                <% } %>
                             </div>
                         </div>
                     </div>

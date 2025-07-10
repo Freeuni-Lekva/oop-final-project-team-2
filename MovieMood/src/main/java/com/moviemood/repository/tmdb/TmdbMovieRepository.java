@@ -1,7 +1,6 @@
 package com.moviemood.repository.tmdb;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.moviemood.Enums.MovieCategory;
 import com.moviemood.bean.Movie;
 import com.moviemood.config.Config;
@@ -147,6 +146,30 @@ public class TmdbMovieRepository implements MovieRepository {
 
     @Override
     public Optional<Movie> fetchRandomPopular() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> fetchYoutubeTrailerKey(int movieId) throws IOException {
+        String url = BASE_URL + "/movie/" + movieId + "/videos?api_key=" + apiKey;
+
+        Request request = new Request.Builder().url(url).build();
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) return Optional.empty();
+
+            String responseBody = response.body().string();
+            JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
+            JsonArray results = json.getAsJsonArray("results");
+
+            for (JsonElement element : results) {
+                JsonObject video = element.getAsJsonObject();
+                String site = video.get("site").getAsString();
+                String type = video.get("type").getAsString();
+                if ("YouTube".equalsIgnoreCase(site) && "Trailer".equalsIgnoreCase(type)) {
+                    return Optional.of(video.get("key").getAsString());
+                }
+            }
+        }
         return Optional.empty();
     }
 

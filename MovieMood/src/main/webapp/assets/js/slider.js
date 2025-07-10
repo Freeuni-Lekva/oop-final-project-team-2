@@ -65,15 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const resetButton = document.querySelector('.reset-btn');
-    if (resetButton) {
-        resetButton.addEventListener('click', function () {
-            document.querySelectorAll('.filter-tag').forEach(tag => {
-                tag.classList.remove('active');
-            });
-            document.querySelectorAll('.filter-select').forEach(select => {
-                select.selectedIndex = 0;
-            });
-        });
-    }
+    // const resetButton = document.querySelector('.reset-btn');
+    // if (resetButton) {
+    //     resetButton.addEventListener('click', function () {
+    //         document.querySelectorAll('.filter-tag').forEach(tag => {
+    //             tag.classList.remove('active');
+    //         });
+    //         document.querySelectorAll('.filter-select').forEach(select => {
+    //             select.selectedIndex = 0;
+    //         });
+    //     });
+    // }
 });

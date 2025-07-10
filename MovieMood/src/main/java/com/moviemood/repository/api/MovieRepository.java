@@ -40,4 +40,6 @@ public interface MovieRepository {
 
     // 🔹 (Optional) Get random popular movie
     Optional<Movie> fetchRandomPopular();
+
+    public Optional<String> fetchYoutubeTrailerKey(int movieId) throws IOException;
 }

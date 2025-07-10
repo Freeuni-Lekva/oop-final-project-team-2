@@ -30,6 +30,8 @@ public class MovieDetailsServlet extends HttpServlet {
             req.setAttribute("movie",movie);
             req.setAttribute("backDropPathBaseURL", Config.get("backDropPathBase"));
             req.setAttribute("POSTER_BASE",Config.get("posterPathBase"));
+            Optional<String> trailerKeyOpt = moviesRepo.fetchYoutubeTrailerKey(movie_id);
+            trailerKeyOpt.ifPresent(trailerKey -> req.setAttribute("trailerKey", trailerKey));
             req.getRequestDispatcher("/movie-details.jsp").forward(req,resp);
         }else{
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Movie not found");

@@ -12,6 +12,39 @@
     <link rel="stylesheet" href="assets/css/navbar.css">
     <link rel="stylesheet" type="text/css" href="assets/css/mainpage.css">
     <link rel="stylesheet" type="text/css" href="assets/css/watchlist.css">
+    <style>
+        .movie-card-container {
+            position: relative;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .remove-btn:hover {
+            background: rgba(220, 53, 69, 1);
+        }
+        
+        .movie-card-container:hover .remove-btn {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body data-current-page="1" data-total-pages="1">
 <!-- Include Navigation Bar -->
@@ -41,30 +74,33 @@
                     if (favoritesMovies != null && !favoritesMovies.isEmpty()) {
                         for (Movie movie : favoritesMovies) {
                 %>
-                <a href="/movie/details?id=<%= movie.getId() %>" style="text-decoration: none; color: inherit;">
-                    <div class="movie-card">
-                        <div class="movie-poster">
-                            <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
-                                <% if (movie.getPosterPath().startsWith("assets/")) { %>
-                                <img src="<%= movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                <div class="movie-card-container">
+                    <a href="/movie/details?id=<%= movie.getId() %>" style="text-decoration: none; color: inherit;">
+                        <div class="movie-card">
+                            <div class="movie-poster">
+                                <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
+                                    <% if (movie.getPosterPath().startsWith("assets/")) { %>
+                                    <img src="<%= movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                                    <% } else { %>
+                                    <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                                    <% } %>
                                 <% } else { %>
-                                <img src="<%= posterBaseUrl + movie.getPosterPath() %>" alt="<%= movie.getTitle() %>" />
+                                <div class="movie-poster-fallback"></div>
                                 <% } %>
-                            <% } else { %>
-                            <div class="movie-poster-fallback"></div>
-                            <% } %>
-                        </div>
-                        <div class="movie-info">
-                            <h3 class="movie-title"><%= movie.getTitle() %></h3>
-                            <div class="movie-meta">
-                                <div class="rating">
-                                    <span class="stars">★★★★★</span>
+                            </div>
+                            <div class="movie-info">
+                                <h3 class="movie-title"><%= movie.getTitle() %></h3>
+                                <div class="movie-meta">
+                                    <div class="rating">
+                                        <span class="stars">★★★★★</span>
+                                    </div>
+                                    <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                                 </div>
-                                <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                    <button class="remove-btn" data-movie-id="<%= movie.getId() %>" title="Remove from Favorites">♥</button>
+                </div>
                 <%
                         }
                     } else {
@@ -80,6 +116,48 @@
         </section>
     </div>
 </main>
+
+<script>
+    // Remove button functionality
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const movieId = this.getAttribute('data-movie-id');
+            const movieContainer = this.closest('.movie-card-container');
+            
+            fetch('/favorites/action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=remove&movieId=' + movieId
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the movie from the page with animation
+                    movieContainer.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    movieContainer.style.opacity = '0';
+                    movieContainer.style.transform = 'scale(0.8)';
+                    
+                    setTimeout(() => {
+                        movieContainer.remove();
+                        
+                        // Check if favorites is now empty
+                        const remainingMovies = document.querySelectorAll('.movie-card-container');
+                        if (remainingMovies.length === 0) {
+                            document.querySelector('.movies-grid').innerHTML = 
+                                '<div class="empty-watchlist">' +
+                                    '<h3>Your favorites is empty</h3>' +
+                                    '<p>Start adding movies to keep track of your all-time favorites!</p>' +
+                                '</div>';
+                        }
+                    }, 300);
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 </html> 

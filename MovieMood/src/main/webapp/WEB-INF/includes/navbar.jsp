@@ -6,6 +6,7 @@
   Time: 12:00 PM
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.moviemood.bean.User" %>
 
 <header class="header">
     <div class="container">
@@ -17,9 +18,18 @@
             <div class="nav-links">
                 <a href="/films">Films</a>
                 <a href="#">Popular Lists</a>
-                <a href="/login" class="create-account-btn">Create Account</a>
-                <%--need this tab for testing for now gotta change later --%>
-                <a href="/friend-requests">Friends</a>
+                <%
+                    User currentUser = (User) session.getAttribute("user");
+                    if (currentUser != null) {
+                %>
+                    <a href="/profile" class="create-account-btn">Profile</a>
+                <%
+                    } else {
+                %>
+                    <a href="/login" class="create-account-btn">Create Account</a>
+                <%
+                    }
+                %>
             </div>
         </nav>
     </div>

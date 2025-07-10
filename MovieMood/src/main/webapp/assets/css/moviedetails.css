@@ -197,6 +197,40 @@ body {
     transform: translateY(-2px);
 }
 
+/* Favorites Heart Button */
+#favoritesBtn {
+    font-size: 24px !important;
+    padding: 15px 20px !important;
+    border-radius: 50px !important;
+    min-width: 60px;
+    transition: all 0.3s ease !important;
+    position: relative;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+#favoritesBtn:hover {
+    transform: translateY(-3px) scale(1.05) !important;
+    background: rgba(231, 76, 60, 0.1) !important;
+    border: 2px solid rgba(231, 76, 60, 0.3) !important;
+    color: #e74c3c !important;
+}
+
+/* When favorited - use class for better compatibility */
+#favoritesBtn.favorited {
+    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+    border: 2px solid #e74c3c !important;
+    color: white !important;
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4) !important;
+}
+
+#favoritesBtn.favorited:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226) !important;
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.6) !important;
+    transform: translateY(-3px) scale(1.1) !important;
+}
+
 /* Details Section */
 .details-section {
     margin-bottom: 50px;

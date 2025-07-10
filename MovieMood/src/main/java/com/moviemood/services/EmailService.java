@@ -1,48 +1,83 @@
 package com.moviemood.services;
 
-
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
-
 import java.util.Properties;
 import java.security.SecureRandom;
 
-
-/**
- * EmailService is a service class (business logic).
- * It handles specific business operations (Sending email and Generating 6-digit random code).
- * It has 2 methods: generateVerificationCode() and sendVerificationEmail(email, code, username)
- * */
 public class EmailService {
-
 
     public int generateVerificationCode() {
         SecureRandom sr = new SecureRandom();
         return 100000 + sr.nextInt(900000);
     }
 
-    // This method sends email. For now, it uses MailTrap for testing.
     public boolean sendVerificationEmail(String email, String code, String username) {
-        // Credentials (MailTrap)
-        String host = "sandbox.smtp.mailtrap.io";
-        int port = 2525;
-        final String usernameSMTP = "0419a9ae82b7c2";
-        final String passwordSMTP = "fe1da86c024c6e";
+        if (!isValidInput(email, code, username)) {
+            return false;
+        }
 
-        // Email
-        String fromEmail = "sender@sender.com";
+        // Check if we are in test mode
+        String testMode = System.getProperty("test.mode", "false");
+        if (Boolean.parseBoolean(testMode)) {
+            return true;
+        }
+
+        return sendRealEmail(email, code, username);
+    }
+
+    private boolean isValidInput(String email, String code, String username) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+
+        if (!email.contains("@")) {
+            return false;
+        }
+
+        if (email.contains(" ")) {
+            return false;
+        }
+
+        if (email.endsWith("@")) {
+            return false;
+        }
+
+        if (code == null || code.trim().isEmpty()) {
+            return false;
+        }
+
+        if (username == null || username.trim().isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Sending email
+    private boolean sendRealEmail(String email, String code, String username) {
+
+        String host = "smtp.gmail.com";
+        int port = 587;
+        final String usernameSMTP = "official.moviemood@gmail.com";  // Your Gmail address
+        final String passwordSMTP = "efmr qbuk ichb lnpy";
+
+        String fromEmail = "official.moviemood@gmail.com";
         String toEmail = email;
-        String subject = "Test email";
-        String body = "Hello" +  username + ". Code: " + code;
+        String subject = "MovieMood - Email Verification";
+        String body =
+                "Hello " + username + ",\n\n" +
+                        "Welcome to MovieMood! Your verification code is: " + code + "\n\n" +
+                        "Please enter this code to verify your email address.\n\n" +
+                        "Best regards,\n" +
+                        "The MovieMood Team";
 
-        // Properties
         Properties properties = new Properties();
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", port);
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
 
-        //Session
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -63,6 +98,5 @@ public class EmailService {
             e.printStackTrace();
             return false;
         }
-
     }
 }

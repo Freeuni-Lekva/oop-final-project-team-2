@@ -50,6 +50,7 @@ public class DatabaseInitListener implements ServletContextListener {
 
     }
 
+    // create "users" table
     private void createUserTable(Statement statement) throws SQLException {
         statement.executeUpdate("\n" +
                 "CREATE TABLE IF NOT EXISTS users (\n" +
@@ -61,9 +62,11 @@ public class DatabaseInitListener implements ServletContextListener {
                 "    is_verified BOOLEAN DEFAULT FALSE,\n" +
                 "    verification_code VARCHAR(10),\n" +
                 "    verification_code_expiry TIMESTAMP,\n" +
+                "    profile_picture VARCHAR(500),\n" +
                 "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
                 ");");
     }
+
     // create "user_movie_preferences" table
     private void createUserMoviePreferencesTable(Statement statement) throws SQLException {
         statement.executeUpdate("\n" +
@@ -168,6 +171,8 @@ public class DatabaseInitListener implements ServletContextListener {
             Statement statement = connection.createStatement()) {
 
             createUserTable(statement);
+            // Add profile_picture column if it doesn't exist (for existing databases)
+            addProfilePictureColumnIfNotExists(statement);
             createUserMoviePreferencesTable(statement);
             createFriendRequestTable(statement);
             createFriendshipsTable(statement);
@@ -178,6 +183,21 @@ public class DatabaseInitListener implements ServletContextListener {
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
+        }
+    }
+
+    // Add profile_picture column to existing users table if it doesn't exist
+    private void addProfilePictureColumnIfNotExists(Statement statement) throws SQLException {
+        try {
+            // Try to add the column - this will fail silently if column already exists
+            statement.executeUpdate("ALTER TABLE users ADD COLUMN profile_picture VARCHAR(500)");
+        } catch (SQLException e) {
+            // Column likely already exists, which is fine
+            // Only re-throw if it's not a "column already exists" error
+            if (!e.getMessage().toLowerCase().contains("duplicate column") && 
+                !e.getMessage().toLowerCase().contains("already exists")) {
+                throw e;
+            }
         }
     }
 

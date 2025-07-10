@@ -5,6 +5,16 @@
     User currentUser = (User) request.getAttribute("currentUser");
     boolean isOwnProfile = (Boolean) request.getAttribute("isOwnProfile");
     boolean isDemoProfile = (Boolean) request.getAttribute("isDemoProfile");
+    
+    // Get real statistics
+    Integer watchlistCount = (Integer) request.getAttribute("watchlistCount");
+    Integer reviewsCount = (Integer) request.getAttribute("reviewsCount");
+    Integer favoritesCount = (Integer) request.getAttribute("favoritesCount");
+    
+    // Default to 0 if null
+    if (watchlistCount == null) watchlistCount = 0;
+    if (reviewsCount == null) reviewsCount = 0;
+    if (favoritesCount == null) favoritesCount = 0;
 %>
 
 <!DOCTYPE html>
@@ -84,6 +94,24 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             min-width: 120px;
+        }
+
+        .stat-item.clickable {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item.clickable:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .stat-item.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .stat-number {
@@ -196,19 +224,19 @@
                 <% } %>
                 
                 <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
+                    <a href="watchlist" class="stat-item clickable">
+                        <span class="stat-number"><%= watchlistCount %></span>
                         <div class="stat-label">Watchlist</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
+                    </a>
+                    <a href="favorites" class="stat-item clickable">
+                        <span class="stat-number"><%= favoritesCount %></span>
                         <div class="stat-label">Favorites</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span>
+                    </a>
+                    <a href="reviews" class="stat-item clickable">
+                        <span class="stat-number"><%= reviewsCount %></span>
                         <div class="stat-label">Reviews</div>
-                    </div>
-                    <div class="stat-item">
+                    </a>
+                    <div class="stat-item disabled">
                         <span class="stat-number">0</span>
                         <div class="stat-label">Lists</div>
                     </div>

@@ -131,5 +131,24 @@ public class MovieReviewsDao {
         }
     }
 
+    /**
+     * Get count of reviews written by a specific user
+     */
+    public int getUserReviewCount(int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM movie_reviews WHERE user_id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
 
 }

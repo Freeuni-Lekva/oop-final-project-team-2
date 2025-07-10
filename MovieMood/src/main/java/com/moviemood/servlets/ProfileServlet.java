@@ -1,7 +1,9 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.User;
+import com.moviemood.dao.MovieReviewsDao;
 import com.moviemood.dao.UserDao;
+import com.moviemood.dao.UserWatchlistDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -64,11 +66,42 @@ public class ProfileServlet extends HttpServlet {
             // Check if this is a demo profile (when not logged in)
             boolean isDemoProfile = currentUser == null && "DemoUser".equals(profileUser.getUsername());
             
-            // Set basic attributes for JSP (without detailed stats for now)
+            // Get real statistics from database
+            int watchlistCount = 0;
+            int reviewsCount = 0;
+            int favoritesCount = 0; // TODO: Will implement favorites later
+            
+            if (!isDemoProfile) {
+                try {
+                    UserWatchlistDao watchlistDao = (UserWatchlistDao) getServletContext().getAttribute("watchlistDao");
+                    MovieReviewsDao reviewsDao = (MovieReviewsDao) getServletContext().getAttribute("reviewsDao");
+                    
+                    if (watchlistDao != null) {
+                        watchlistCount = watchlistDao.getWatchlistCount(profileUser.getId());
+                    }
+                    
+                    if (reviewsDao != null) {
+                        reviewsCount = reviewsDao.getUserReviewCount(profileUser.getId());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Continue with 0 counts if database error
+                }
+            } else {
+                // Demo data for testing
+                watchlistCount = 4;
+                reviewsCount = 2;
+                favoritesCount = 3;
+            }
+            
+            // Set attributes for JSP
             request.setAttribute("profileUser", profileUser);
             request.setAttribute("isOwnProfile", isOwnProfile);
             request.setAttribute("isDemoProfile", isDemoProfile);
             request.setAttribute("currentUser", currentUser);
+            request.setAttribute("watchlistCount", watchlistCount);
+            request.setAttribute("reviewsCount", reviewsCount);
+            request.setAttribute("favoritesCount", favoritesCount);
             
             // Forward to profile JSP
             request.getRequestDispatcher("/profile.jsp").forward(request, response);

@@ -50,7 +50,6 @@ public class DatabaseInitListener implements ServletContextListener {
 
     }
 
-    // create "users" table
     private void createUserTable(Statement statement) throws SQLException {
         statement.executeUpdate("\n" +
                 "CREATE TABLE IF NOT EXISTS users (\n" +
@@ -65,7 +64,6 @@ public class DatabaseInitListener implements ServletContextListener {
                 "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
                 ");");
     }
-
     // create "user_movie_preferences" table
     private void createUserMoviePreferencesTable(Statement statement) throws SQLException {
         statement.executeUpdate("\n" +

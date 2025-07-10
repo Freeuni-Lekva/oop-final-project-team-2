@@ -1,5 +1,6 @@
 <%@ page import="com.moviemood.bean.FriendRequest" %>
-<%@ page import="java.util.List" %><%--
+<%@ page import="java.util.List" %>
+<%@ page import="com.moviemood.bean.User" %><%--
   Created by IntelliJ IDEA.
   User: User
   Date: 7/8/2025
@@ -15,8 +16,8 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="assets/css/navbar.css">
-    <link rel="stylesheet" href="friend-requests.css">
+    <link rel="stylesheet" href="assets/css/navbar.css?v=<%= System.currentTimeMillis() %>">
+    <link rel="stylesheet" href="friend-requests.css?v=<%= System.currentTimeMillis() %>">
 
     <title>Friend Requests</title>
 </head>
@@ -117,18 +118,31 @@
         <%
         } else {
         %>
-        <p class = "empty-message">You have no sent friend requests</p>
+            <p class = "empty-message">You have no sent friend requests</p>
         <%
             }
         %>
 
         <% } else if ("your_friends".equals(tab)) { %>
-            <h2>Your Friends</h2>
-            <%-- show all friends  --%>
-
-        <% } else if ("suggestions".equals(tab)) { %>
-            <h2>Suggestions</h2>
-            <%-- friend suggestions--%>
+        <h2>Your Friends</h2>
+        <%
+            List<User> allFriends = (List<User>) request.getAttribute("allFriends");
+            if (allFriends != null && !allFriends.isEmpty()) {
+        %>
+        <ul class="request-list">
+            <% for (User friend : allFriends) { %>
+            <li class="friend-request">
+                <span><%= friend.getUsername() %></span>
+            </li>
+            <% } %>
+        </ul>
+        <%
+        } else {
+        %>
+        <p class="empty-message">You don't have any friends yet.</p>
+        <%
+            }
+        %>
         <% } %>
     </div>
 </body>

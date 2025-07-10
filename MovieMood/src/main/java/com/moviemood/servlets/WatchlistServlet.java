@@ -3,6 +3,8 @@ package com.moviemood.servlets;
 import com.moviemood.bean.User;
 import com.moviemood.bean.Movie;
 import com.moviemood.config.Config;
+import com.moviemood.dao.UserWatchlistDao;
+import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @WebServlet("/watchlist")
 public class WatchlistServlet extends HttpServlet {
@@ -38,10 +41,24 @@ public class WatchlistServlet extends HttpServlet {
             isDemoWatchlist = true;
             watchlistMovies = createDemoWatchlist();
         } else {
-            // TODO: Get real user watchlist when authentication is ready
-            // For now, show demo even for logged in users
-            isDemoWatchlist = true;
-            watchlistMovies = createDemoWatchlist();
+            // Get real user watchlist from database
+            try {
+                UserWatchlistDao watchlistDao = (UserWatchlistDao) getServletContext().getAttribute("watchlistDao");
+                if (watchlistDao != null) {
+                    List<Integer> movieIds = watchlistDao.getUserWatchList(currentUser.getId());
+                    watchlistMovies = fetchMoviesFromTmdb(movieIds);
+                    isDemoWatchlist = false;
+                } else {
+                    // Fallback to demo if DAO not available
+                    isDemoWatchlist = true;
+                    watchlistMovies = createDemoWatchlist();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Fallback to demo on error
+                isDemoWatchlist = true;
+                watchlistMovies = createDemoWatchlist();
+            }
         }
         
         request.setAttribute("watchlistMovies", watchlistMovies);
@@ -50,6 +67,28 @@ public class WatchlistServlet extends HttpServlet {
         request.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
         
         request.getRequestDispatcher("/watchlist.jsp").forward(request, response);
+    }
+    
+    /**
+     * Fetch movie details from TMDB API for given movie IDs
+     */
+    private List<Movie> fetchMoviesFromTmdb(List<Integer> movieIds) {
+        List<Movie> movies = new ArrayList<>();
+        TmdbMovieRepository movieRepo = TmdbMovieRepository.getInstance();
+        
+        for (Integer movieId : movieIds) {
+            try {
+                Optional<Movie> movieOpt = movieRepo.findById(movieId);
+                if (movieOpt.isPresent()) {
+                    movies.add(movieOpt.get());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Continue with other movies if one fails
+            }
+        }
+        
+        return movies;
     }
     
     private List<Movie> createDemoWatchlist() {
@@ -91,15 +130,6 @@ public class WatchlistServlet extends HttpServlet {
         movie4.setReleaseDate(LocalDate.of(1957, 4, 10));
         movie4.setPopularity(950.0);
         movies.add(movie4);
-            
-        Movie movie5 = new Movie();
-        movie5.setId(155);
-        movie5.setTitle("The Dark Knight");
-        movie5.setOverview("When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests.");
-        movie5.setPosterPath("/qJ2tW6WMUDux911r6m7haRef0WH.jpg");
-        movie5.setReleaseDate(LocalDate.of(2008, 7, 18));
-        movie5.setPopularity(2750.0);
-        movies.add(movie5);
 
         return movies;
     }

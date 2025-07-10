@@ -50,7 +50,10 @@ public class VerifyEmailServlet extends HttpServlet {
             if (success) {
                 user.setVerified(true);
                 request.getSession().removeAttribute("waitingToVerifyEmail");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+
+                // Log the user in and redirect to movie preferences
+                request.getSession().setAttribute("user", user);
+                response.sendRedirect("/movie-preferences");
             }
         } else {
             String error = "Verification code is not correct. Try again.";

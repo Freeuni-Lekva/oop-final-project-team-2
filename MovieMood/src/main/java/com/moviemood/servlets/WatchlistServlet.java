@@ -13,15 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/watchlist")
 public class WatchlistServlet extends HttpServlet {
-
-    private static final User DEMO_USER = new User(1, "DemoUser", "demo@moviemood.com", "hashedpassword", null);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -33,36 +30,27 @@ public class WatchlistServlet extends HttpServlet {
             currentUser = (User) session.getAttribute("user");
         }
         
-        List<Movie> watchlistMovies = new ArrayList<>();
-        boolean isDemoWatchlist = false;
-        
+        // Require login
         if (currentUser == null) {
-            // Create demo watchlist for testing
-            isDemoWatchlist = true;
-            watchlistMovies = createDemoWatchlist();
-        } else {
-            // Get real user watchlist from database
-            try {
-                UserWatchlistDao watchlistDao = (UserWatchlistDao) getServletContext().getAttribute("watchlistDao");
-                if (watchlistDao != null) {
-                    List<Integer> movieIds = watchlistDao.getUserWatchList(currentUser.getId());
-                    watchlistMovies = fetchMoviesFromTmdb(movieIds);
-                    isDemoWatchlist = false;
-                } else {
-                    // Fallback to demo if DAO not available
-                    isDemoWatchlist = true;
-                    watchlistMovies = createDemoWatchlist();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                // Fallback to demo on error
-                isDemoWatchlist = true;
-                watchlistMovies = createDemoWatchlist();
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+        
+        List<Movie> watchlistMovies = new ArrayList<>();
+        
+        // Get real user watchlist from database
+        try {
+            UserWatchlistDao watchlistDao = (UserWatchlistDao) getServletContext().getAttribute("watchlistDao");
+            if (watchlistDao != null) {
+                List<Integer> movieIds = watchlistDao.getUserWatchList(currentUser.getId());
+                watchlistMovies = fetchMoviesFromTmdb(movieIds);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Continue with empty list on error
         }
         
         request.setAttribute("watchlistMovies", watchlistMovies);
-        request.setAttribute("isDemoWatchlist", isDemoWatchlist);
         request.setAttribute("currentUser", currentUser);
         request.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
         
@@ -90,47 +78,5 @@ public class WatchlistServlet extends HttpServlet {
         
         return movies;
     }
-    
-    private List<Movie> createDemoWatchlist() {
-        List<Movie> movies = new ArrayList<>();
-        
-        // Add some demo movies with real TMDB data
-        Movie movie1 = new Movie();
-        movie1.setId(278);
-        movie1.setTitle("The Gldani Redemption");
-        movie1.setOverview("Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.");
-        movie1.setPosterPath("/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg");
-        movie1.setReleaseDate(LocalDate.of(1994, 9, 23));
-        movie1.setPopularity(2550.0);
-        movies.add(movie1);
-            
-        Movie movie2 = new Movie();
-        movie2.setId(238);
-        movie2.setTitle("The Godfather");
-        movie2.setOverview("The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.");
-        movie2.setPosterPath("/3bhkrj58Vtu7enYsRolD1fZdja1.jpg");
-        movie2.setReleaseDate(LocalDate.of(1972, 3, 14));
-        movie2.setPopularity(1850.0);
-        movies.add(movie2);
-            
-        Movie movie3 = new Movie();
-        movie3.setId(424);
-        movie3.setTitle("Schindler's List");
-        movie3.setOverview("In German-occupied Poland during World War II, Oskar Schindler gradually becomes concerned for his Jewish workforce.");
-        movie3.setPosterPath("/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg");
-        movie3.setReleaseDate(LocalDate.of(1993, 12, 15));
-        movie3.setPopularity(1320.0);
-        movies.add(movie3);
-            
-        Movie movie4 = new Movie();
-        movie4.setId(389);
-        movie4.setTitle("12 Men");
-        movie4.setOverview("A jury holdout attempts to prevent a miscarriage of justice by forcing his colleagues to reconsider the evidence.");
-        movie4.setPosterPath("/ow3wq89wM8qd5X7hWKxiRfsFf9C.jpg");
-        movie4.setReleaseDate(LocalDate.of(1957, 4, 10));
-        movie4.setPopularity(950.0);
-        movies.add(movie4);
 
-        return movies;
-    }
 } 

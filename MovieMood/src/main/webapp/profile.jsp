@@ -4,7 +4,6 @@
     User profileUser = (User) request.getAttribute("profileUser");
     User currentUser = (User) request.getAttribute("currentUser");
     boolean isOwnProfile = (Boolean) request.getAttribute("isOwnProfile");
-    boolean isDemoProfile = (Boolean) request.getAttribute("isDemoProfile");
     
     // Get real statistics
     Integer watchlistCount = (Integer) request.getAttribute("watchlistCount");
@@ -217,10 +216,8 @@
             
             <div class="profile-info">
                 <h1 class="profile-name"><%= profileUser.getUsername() %></h1>
-                <% if (isOwnProfile && !isDemoProfile) { %>
+                <% if (isOwnProfile) { %>
                     <div class="profile-email"><%= profileUser.getEmail() %></div>
-                <% } else if (isDemoProfile) { %>
-                    <div class="profile-email">[DEMO] Profile - Authentication Required</div>
                 <% } %>
                 
                 <div class="profile-stats">
@@ -242,12 +239,7 @@
                     </div>
                 </div>
 
-                <% if (isDemoProfile) { %>
-                <div class="profile-actions">
-                    <a href="Home" class="btn">Browse Movies</a>
-                    <span class="btn btn-secondary" style="opacity: 0.5; cursor: not-allowed;">Login Required</span>
-                </div>
-                <% } else if (isOwnProfile) { %>
+                <% if (isOwnProfile) { %>
                 <div class="profile-actions">
                     <a href="Home" class="btn">Browse Movies</a>
                     <a href="logout" class="btn btn-secondary">Logout</a>
@@ -257,12 +249,7 @@
         </div>
 
         <div class="welcome-message">
-            <% if (isDemoProfile) { %>
-                <h3>[DEMO] Profile</h3>
-                <p><strong>This is a demo profile for testing purposes.</strong></p>
-                <p>The authentication system is not yet implemented.</p>
-                <p>Once login is available, you'll see your real profile data here!</p>
-            <% } else if (isOwnProfile) { %>
+            <% if (isOwnProfile) { %>
                 <h3>Profile Created!</h3>
                 <p>Welcome to your MovieMood profile, <%= profileUser.getUsername() %>!</p>
                 <p>Start browsing movies to build your watchlist and favorites.</p>

@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Verify Email - MovieMood</title>
-  <link rel="stylesheet" type="text/css" href="assets/css/verify-email.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/verify-email.css?v=2">
 </head>
 <body>
 <div class="container">

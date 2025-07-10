@@ -60,6 +60,12 @@ public class RegisterServlet extends HttpServlet {
             userDao.insertUser(username, email, hashedPassword, verificationCode, expiry);
             request.getSession().setAttribute("waitingToVerifyEmail", email);
 
+            // Store remember-me choice
+            String rememberMe = request.getParameter("rememberMe");
+            if ("true".equals(rememberMe)) {
+                request.getSession().setAttribute("rememberMe", "true");
+            }
+
             // sending email asynchronously in background
             CompletableFuture.runAsync(() -> {
                 EmailService asyncEmailService = new EmailService();

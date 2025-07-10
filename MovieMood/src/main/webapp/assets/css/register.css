@@ -137,3 +137,35 @@ input[type="submit"]:hover {
         font-size: 1.8em;
     }
 }
+
+.checkbox-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 10px 0 !important;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 4px !important;
+    padding: 0 !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    cursor: pointer !important;
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    background: #f39c12 !important;
+    border-color: #f39c12 !important;
+}
+
+.checkbox-group label {
+    margin: 0 !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    color: #e2e8f0 !important;
+    display: inline !important;
+}

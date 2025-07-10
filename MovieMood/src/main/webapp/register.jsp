@@ -9,7 +9,8 @@
 <html>
 <head>
     <title>Register - MovieMood</title>
-    <link rel="stylesheet" type="text/css" href="assets/css/register.css">
+
+    <link rel="stylesheet" href="assets/css/register.css?v=2">
 </head>
 <body>
     <div class="container">
@@ -42,6 +43,11 @@
 
             <label for="confirmPassword">Confirm Password:</label>
             <input type="password" id="confirmPassword" name="confirmPassword" required><br/>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="rememberMe" name="rememberMe" value="true">
+                <label for="rememberMe">Remember me</label>
+            </div>
 
             <input type="submit" value="Register">
         </form>

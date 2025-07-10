@@ -80,7 +80,21 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn btn-primary">▶ Watch Trailer</button>
+                    <%
+                        String trailerKey = (String) request.getAttribute("trailerKey");
+                        if (trailerKey != null) {
+                    %>
+                    <a class="btn btn-primary" href="https://www.youtube.com/watch?v=<%= trailerKey %>" target="_blank">
+                        ▶ Watch Trailer
+                    </a>
+                    <%
+                    } else {
+                    %>
+                    <button class="btn btn-secondary" disabled>Trailer Unavailable</button>
+                    <%
+                        }
+                    %>
+
                     <button class="btn btn-secondary">+ Add to Watchlist</button>
                     <button class="btn btn-secondary">♡ Add to Favorites</button>
                 </div>

@@ -136,7 +136,9 @@
                                 <div class="rating">
                                     <span class="stars">★★★★☆</span>
                                 </div>
+                                <% if (movie.getReleaseDate() != null) { %>
                                 <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
+                                <% } %>
                             </div>
                         </div>
                     </div>

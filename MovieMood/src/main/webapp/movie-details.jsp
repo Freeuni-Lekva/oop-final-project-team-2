@@ -25,6 +25,13 @@
     Movie movie = (Movie) request.getAttribute("movie");
     String backDropBaseURL = (String) request.getAttribute("backDropPathBaseURL");
     String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
+    User currentUser = (User) request.getAttribute("currentUser");
+    Boolean isInWatchlist = (Boolean) request.getAttribute("isInWatchlist");
+    Boolean isInFavorites = (Boolean) request.getAttribute("isInFavorites");
+    
+    // Default to false if null
+    if (isInWatchlist == null) isInWatchlist = false;
+    if (isInFavorites == null) isInFavorites = false;
 %>
 
 <!-- Include Navigation Bar -->
@@ -95,8 +102,17 @@
                         }
                     %>
 
-                    <button id="watchlistBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">+ Add to Watchlist</button>
-                    <button id="favoritesBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">♡ Add to Favorites</button>
+                    <% if (currentUser != null) { %>
+                        <button id="watchlistBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-watchlist="<%= isInWatchlist %>">
+                            <%= isInWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist" %>
+                        </button>
+                        <button id="favoritesBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-favorites="<%= isInFavorites %>" title="<%= isInFavorites ? "Remove from Favorites" : "Add to Favorites" %>">
+                            <%= isInFavorites ? "♥" : "♡" %>
+                        </button>
+                    <% } else { %>
+                        <button id="watchlistBtn" class="btn btn-secondary" title="Please log in to add to watchlist">+ Add to Watchlist</button>
+                        <button id="favoritesBtn" class="btn btn-secondary" title="Please log in to add to favorites">♡ Add to Favorites</button>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -304,23 +320,100 @@
     });
 
     // Watchlist and Favorites buttons
+    <% if (currentUser != null) { %>
+    
+    // Set initial favorited class based on current state
+    const favBtn = document.getElementById('favoritesBtn');
+    console.log('Initial favorites state:', favBtn.getAttribute('data-in-favorites'));
+    if (favBtn.getAttribute('data-in-favorites') === 'true') {
+        favBtn.classList.add('favorited');
+        // Force red color with inline styles to override everything
+        favBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+        favBtn.style.border = '2px solid #e74c3c';
+        favBtn.style.color = 'white';
+        favBtn.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
+        console.log('Applied red styling to favorites button');
+    }
+    
+    // Watchlist button functionality
     document.getElementById('watchlistBtn').addEventListener('click', function() {
-        const movieId = this.getAttribute('data-movie-id');
+        const btn = this;
+        const movieId = btn.getAttribute('data-movie-id');
+        const isInWatchlist = btn.getAttribute('data-in-watchlist') === 'true';
+        const action = isInWatchlist ? 'remove' : 'add';
+        
         fetch('/watchlist/action', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'action=add&movieId=' + movieId
+            body: 'action=' + action + '&movieId=' + movieId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update button state
+                const newIsInWatchlist = action === 'add';
+                btn.setAttribute('data-in-watchlist', newIsInWatchlist);
+                btn.textContent = newIsInWatchlist ? '✓ In Watchlist' : '+ Add to Watchlist';
+            }
         });
     });
 
+    // Favorites button functionality
     document.getElementById('favoritesBtn').addEventListener('click', function() {
-        const movieId = this.getAttribute('data-movie-id');
+        const btn = this;
+        const movieId = btn.getAttribute('data-movie-id');
+        const isInFavorites = btn.getAttribute('data-in-favorites') === 'true';
+        const action = isInFavorites ? 'remove' : 'add';
+        
         fetch('/favorites/action', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'action=add&movieId=' + movieId
+            body: 'action=' + action + '&movieId=' + movieId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update button state
+                const newIsInFavorites = action === 'add';
+                btn.setAttribute('data-in-favorites', newIsInFavorites);
+                btn.textContent = newIsInFavorites ? '♥' : '♡';
+                btn.title = newIsInFavorites ? 'Remove from Favorites' : 'Add to Favorites';
+                
+                // Add/remove favorited class for red styling
+                console.log('Setting favorites state to:', newIsInFavorites);
+                if (newIsInFavorites) {
+                    btn.classList.add('favorited');
+                    // Force red color with inline styles
+                    btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    btn.style.border = '2px solid #e74c3c';
+                    btn.style.color = 'white';
+                    btn.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
+                    console.log('Applied red styling to button');
+                } else {
+                    btn.classList.remove('favorited');
+                    // Reset to default styling
+                    btn.style.background = 'rgba(255, 255, 255, 0.05)';
+                    btn.style.border = '2px solid rgba(255, 255, 255, 0.3)';
+                    btn.style.color = 'rgba(255, 255, 255, 0.8)';
+                    btn.style.boxShadow = 'none';
+                    console.log('Reset styling to default');
+                }
+            }
         });
     });
+    
+    <% } else { %>
+    
+    // Not logged in - redirect to login
+    document.getElementById('watchlistBtn').addEventListener('click', function() {
+        window.location.href = '/login.jsp';
+    });
+
+    document.getElementById('favoritesBtn').addEventListener('click', function() {
+        window.location.href = '/login.jsp';
+    });
+    
+    <% } %>
 </script>
 </body>
 </html>

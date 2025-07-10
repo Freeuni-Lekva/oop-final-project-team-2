@@ -211,7 +211,11 @@
 
         <div class="profile-header">
             <div class="profile-avatar">
-                <%= profileUser.getUsername().substring(0, 1).toUpperCase() %>
+                <% if (profileUser.getProfilePicture() != null && !profileUser.getProfilePicture().isEmpty()) { %>
+                    <img src="<%= profileUser.getProfilePicture() %>" alt="<%= profileUser.getUsername() %>'s Profile Picture" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                <% } else { %>
+                    <%= profileUser.getUsername().substring(0, 1).toUpperCase() %>
+                <% } %>
             </div>
             
             <div class="profile-info">
@@ -242,6 +246,7 @@
                 <% if (isOwnProfile) { %>
                 <div class="profile-actions">
                     <a href="Home" class="btn">Browse Movies</a>
+                    <a href="settings" class="btn btn-secondary">Settings</a>
                     <a href="logout" class="btn btn-secondary">Logout</a>
                 </div>
                 <% } %>

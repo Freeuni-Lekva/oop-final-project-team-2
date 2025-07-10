@@ -47,12 +47,21 @@ public class UserDao {
                 boolean verified = rs.getBoolean("is_verified");
                 String verificationCode = rs.getString("verification_code");
                 Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
+                
+                // Safely get profile picture (column might not exist in older databases)
+                String profilePicture = null;
+                try {
+                    profilePicture = rs.getString("profile_picture");
+                } catch (SQLException e) {
+                    // Column doesn't exist yet, use null
+                }
 
                 // Create and return User
                 User user = new User(id, username, email, passwordHash, remember_token);
                 user.setVerified(verified);
                 user.setVerificationCode(verificationCode);
                 user.setVerificationCodeExpiry(verificationCodeExpiry);
+                user.setProfilePicture(profilePicture);
 
                 return user;
 
@@ -88,12 +97,21 @@ public class UserDao {
                 boolean verified = rs.getBoolean("is_verified");
                 String verificationCode = rs.getString("verification_code");
                 Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
+                
+                // Safely get profile picture (column might not exist in older databases)
+                String profilePicture = null;
+                try {
+                    profilePicture = rs.getString("profile_picture");
+                } catch (SQLException e) {
+                    // Column doesn't exist yet, use null
+                }
 
                 // Create and return User
                 User user = new User(id, username, email, passwordHash, remember_token);
                 user.setVerified(verified);
                 user.setVerificationCode(verificationCode);
                 user.setVerificationCodeExpiry(verificationCodeExpiry);
+                user.setProfilePicture(profilePicture);
 
                 return user;
 
@@ -238,11 +256,20 @@ public class UserDao {
                 boolean verified = rs.getBoolean("is_verified");
                 String verificationCode = rs.getString("verification_code");
                 Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
+                
+                // Safely get profile picture (column might not exist in older databases)
+                String profilePicture = null;
+                try {
+                    profilePicture = rs.getString("profile_picture");
+                } catch (SQLException e) {
+                    // Column doesn't exist yet, use null
+                }
 
                 User user = new User(id, username, email, passwordHash, token);
                 user.setVerified(verified);
                 user.setVerificationCode(verificationCode);
                 user.setVerificationCodeExpiry(verificationCodeExpiry);
+                user.setProfilePicture(profilePicture);
 
                 return user;
             } else {
@@ -294,6 +321,69 @@ public class UserDao {
             statement.setString(3, email);
             int rs = statement.executeUpdate();
             return rs > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /*
+     * Updates username for a user.
+     * Returns true if succeeds, false otherwise.
+     */
+    public boolean updateUsername(int userId, String newUsername) throws UserAlreadyExistsException {
+        // Check if username is already taken by another user
+        User existingUser = getUserByUsername(newUsername);
+        if (existingUser != null && existingUser.getId() != userId) {
+            throw new UserAlreadyExistsException("Username is already taken");
+        }
+
+        String query = "UPDATE users SET username = ? WHERE id = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, newUsername);
+            statement.setInt(2, userId);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /*
+     * Updates password for a user.
+     * Returns true if succeeds, false otherwise.
+     */
+    public boolean updatePassword(int userId, String newPasswordHash) {
+        String query = "UPDATE users SET password_hash = ? WHERE id = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, newPasswordHash);
+            statement.setInt(2, userId);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /*
+     * Updates profile picture for a user.
+     * Returns true if succeeds, false otherwise.
+     */
+    public boolean updateProfilePicture(int userId, String profilePicturePath) {
+        String query = "UPDATE users SET profile_picture = ? WHERE id = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setString(1, profilePicturePath);
+            statement.setInt(2, userId);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

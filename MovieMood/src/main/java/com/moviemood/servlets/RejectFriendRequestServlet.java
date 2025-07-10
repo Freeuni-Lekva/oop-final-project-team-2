@@ -1,5 +1,6 @@
 package com.moviemood.servlets;
 
+import com.moviemood.bean.User;
 import com.moviemood.dao.FriendRequestDao;
 
 import javax.servlet.ServletException;
@@ -12,22 +13,32 @@ import java.io.IOException;
 @WebServlet("/reject-friend-request")
 public class RejectFriendRequestServlet extends HttpServlet {
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        User user = (User) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        FriendRequestDao friendRequestDao = (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
 
         try {
-
             int requestId = Integer.parseInt(request.getParameter("requestId"));
 
-            FriendRequestDao friendRequestDao = (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
             friendRequestDao.updateRequestStatus(requestId, "rejected");
 
-            response.setStatus(HttpServletResponse.SC_OK);
+            friendRequestDao.deleteRequest(requestId);
 
-        }catch(Exception e){
+            response.sendRedirect("friend-requests?tab=incoming");
+
+        } catch (NumberFormatException e) {
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            throw new ServletException("Failed to reject friend request");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request ID");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to reject friend request");
         }
     }
-
 }

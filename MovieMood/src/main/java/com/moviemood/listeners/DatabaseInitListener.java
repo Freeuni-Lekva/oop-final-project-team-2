@@ -45,10 +45,13 @@ public class DatabaseInitListener implements ServletContextListener {
         statement.executeUpdate("\n" +
                 "CREATE TABLE IF NOT EXISTS users (\n" +
                 "    id INT PRIMARY KEY AUTO_INCREMENT,\n" +
-                " username VARCHAR(100) UNIQUE NOT NULL,\n" +
+                "    username VARCHAR(100) UNIQUE NOT NULL,\n" +
                 "    email VARCHAR(255) UNIQUE NOT NULL,\n" +
                 "    password_hash VARCHAR(255) NOT NULL,\n" +
                 "    remember_token VARCHAR(255),\n" +
+                "    is_verified BOOLEAN DEFAULT FALSE,\n" +
+                "    verification_code VARCHAR(10),\n" +
+                "    verification_code_expiry TIMESTAMP,\n" +
                 "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
                 ");");
     }

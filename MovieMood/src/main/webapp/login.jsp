@@ -12,6 +12,8 @@
 </head>
 <body>
     <div class="container">
+        <h1>Log in</h1>
+
         <%-- Show error message if exists --%>
         <%
             String error = (String) request.getAttribute("error");

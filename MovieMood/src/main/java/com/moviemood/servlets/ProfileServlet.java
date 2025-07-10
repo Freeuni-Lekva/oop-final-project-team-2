@@ -3,6 +3,7 @@ package com.moviemood.servlets;
 import com.moviemood.bean.User;
 import com.moviemood.dao.MovieReviewsDao;
 import com.moviemood.dao.UserDao;
+import com.moviemood.dao.UserFavoritesDao;
 import com.moviemood.dao.UserWatchlistDao;
 
 import javax.servlet.ServletException;
@@ -69,12 +70,13 @@ public class ProfileServlet extends HttpServlet {
             // Get real statistics from database
             int watchlistCount = 0;
             int reviewsCount = 0;
-            int favoritesCount = 0; // TODO: Will implement favorites later
+            int favoritesCount = 0;
             
             if (!isDemoProfile) {
                 try {
                     UserWatchlistDao watchlistDao = (UserWatchlistDao) getServletContext().getAttribute("watchlistDao");
                     MovieReviewsDao reviewsDao = (MovieReviewsDao) getServletContext().getAttribute("reviewsDao");
+                    UserFavoritesDao favoritesDao = (UserFavoritesDao) getServletContext().getAttribute("favoritesDao");
                     
                     if (watchlistDao != null) {
                         watchlistCount = watchlistDao.getWatchlistCount(profileUser.getId());
@@ -82,6 +84,10 @@ public class ProfileServlet extends HttpServlet {
                     
                     if (reviewsDao != null) {
                         reviewsCount = reviewsDao.getUserReviewCount(profileUser.getId());
+                    }
+                    
+                    if (favoritesDao != null) {
+                        favoritesCount = favoritesDao.getFavoritesCount(profileUser.getId());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

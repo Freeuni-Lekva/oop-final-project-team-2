@@ -9,6 +9,7 @@ import com.moviemood.dao.FriendRequestDao;
 import com.moviemood.dao.FriendshipDao;
 import com.moviemood.dao.MovieReviewsDao;
 import com.moviemood.dao.UserDao;
+import com.moviemood.dao.UserFavoritesDao;
 import com.moviemood.dao.UserWatchlistDao;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -34,12 +35,14 @@ public class DatabaseInitListener implements ServletContextListener {
             FriendshipDao friendshipDAO = new FriendshipDao(dataSource);
             UserWatchlistDao watchlistDao = new UserWatchlistDao(dataSource);
             MovieReviewsDao reviewsDao = new MovieReviewsDao(dataSource);
+            UserFavoritesDao favoritesDao = new UserFavoritesDao(dataSource);
             
             servletContextEvent.getServletContext().setAttribute("userDao", userDao);
             servletContextEvent.getServletContext().setAttribute("friendRequestDao", friendRequestDAO);
             servletContextEvent.getServletContext().setAttribute("friendshipDao", friendshipDAO);
             servletContextEvent.getServletContext().setAttribute("watchlistDao", watchlistDao);
             servletContextEvent.getServletContext().setAttribute("reviewsDao", reviewsDao);
+            servletContextEvent.getServletContext().setAttribute("favoritesDao", favoritesDao);
             servletContextEvent.getServletContext().setAttribute("dataSource", dataSource);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
@@ -148,6 +151,19 @@ public class DatabaseInitListener implements ServletContextListener {
         );
     }
 
+    // create user_favorites table
+    private void createUserFavoritesTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS user_favorites (" +
+                        "    user_id INT NOT NULL," +
+                        "    movie_id INT NOT NULL," +
+                        "    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                        "    PRIMARY KEY (user_id, movie_id)," +
+                        "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                        ");"
+        );
+    }
+
 
     private void setUpDatabase(BasicDataSource dataSource) {
         try (Connection connection = dataSource.getConnection();
@@ -160,6 +176,7 @@ public class DatabaseInitListener implements ServletContextListener {
             createUserWatchlistTable(statement);
             CreateMovieReviewsTable(statement);
             createMovieRatingsTable(statement);
+            createUserFavoritesTable(statement);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);

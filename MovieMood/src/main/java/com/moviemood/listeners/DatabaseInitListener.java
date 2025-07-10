@@ -53,6 +53,19 @@ public class DatabaseInitListener implements ServletContextListener {
                 ");");
     }
 
+    // create "user_movie_preferences" table
+    private void createUserMoviePreferencesTable(Statement statement) throws SQLException {
+        statement.executeUpdate("\n" +
+                "CREATE TABLE IF NOT EXISTS user_movie_preferences (\n" +
+                "    user_id INT NOT NULL,\n" +
+                "    username VARCHAR(100) NOT NULL,\n" +
+                "    movie_id INT NOT NULL,\n" +
+                "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
+                "    PRIMARY KEY (user_id, movie_id),\n" +
+                "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE\n" +
+                ");");
+    }
+
     // create friend_requests table
     private void createFriendRequestTable(Statement statement) throws SQLException {
         statement.executeUpdate(
@@ -131,6 +144,7 @@ public class DatabaseInitListener implements ServletContextListener {
             Statement statement = connection.createStatement()) {
 
             createUserTable(statement);
+            createUserMoviePreferencesTable(statement);
             createFriendRequestTable(statement);
             createFriendshipsTable(statement);
             createUserWatchlistTable(statement);

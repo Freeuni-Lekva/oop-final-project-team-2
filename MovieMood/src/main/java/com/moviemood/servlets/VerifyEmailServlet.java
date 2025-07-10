@@ -8,12 +8,14 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @WebServlet("/verify-email")
 public class VerifyEmailServlet extends HttpServlet {
@@ -50,7 +52,24 @@ public class VerifyEmailServlet extends HttpServlet {
             if (success) {
                 user.setVerified(true);
                 request.getSession().removeAttribute("waitingToVerifyEmail");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                request.getSession().setAttribute("user", user);
+
+                // Handle remember-me
+                String rememberMe = (String) request.getSession().getAttribute("rememberMe");
+                if ("true".equals(rememberMe)) {
+                    String token = UUID.randomUUID().toString(); // generate random token
+                    userDao.updateRememberToken(user.getUsername(), token);
+
+                    Cookie cookie = new Cookie("remember_token", token);
+                    cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
+                    cookie.setHttpOnly(true);
+                    response.addCookie(cookie);
+
+                    // Clean up session
+                    request.getSession().removeAttribute("rememberMe");
+                }
+
+                response.sendRedirect("/movie-preferences");
             }
         } else {
             String error = "Verification code is not correct. Try again.";

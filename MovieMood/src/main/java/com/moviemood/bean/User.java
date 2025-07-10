@@ -15,6 +15,7 @@ public class User {
     private boolean isVerified;
     private String verificationCode;
     private Timestamp verificationCodeExpiry;
+    private String profilePicture;
 
 
 
@@ -31,6 +32,12 @@ public class User {
     public String getEmail() { return email; }
     public String getHashedPassword() { return hashedPassword; }
     public String getToken() { return remember_token; }
+    
+    // Setters for updating user information
+    public void setUsername(String username) { this.username = username; }
+    public void setHashedPassword(String hashedPassword) { this.hashedPassword = hashedPassword; }
+    public String getProfilePicture() { return profilePicture; }
+    public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
 
     // Getters and Setters for verification fields.
     public boolean isVerified() { return isVerified; }

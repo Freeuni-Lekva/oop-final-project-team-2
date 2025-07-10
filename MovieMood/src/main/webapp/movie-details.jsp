@@ -95,8 +95,8 @@
                         }
                     %>
 
-                    <button class="btn btn-secondary">+ Add to Watchlist</button>
-                    <button class="btn btn-secondary">♡ Add to Favorites</button>
+                    <button id="watchlistBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">+ Add to Watchlist</button>
+                    <button id="favoritesBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">♡ Add to Favorites</button>
                 </div>
             </div>
         </div>
@@ -300,6 +300,25 @@
             document.querySelector(this.getAttribute('href')).scrollIntoView({
                 behavior: 'smooth'
             });
+        });
+    });
+
+    // Watchlist and Favorites buttons
+    document.getElementById('watchlistBtn').addEventListener('click', function() {
+        const movieId = this.getAttribute('data-movie-id');
+        fetch('/watchlist/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'action=add&movieId=' + movieId
+        });
+    });
+
+    document.getElementById('favoritesBtn').addEventListener('click', function() {
+        const movieId = this.getAttribute('data-movie-id');
+        fetch('/favorites/action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'action=add&movieId=' + movieId
         });
     });
 </script>

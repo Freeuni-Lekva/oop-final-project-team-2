@@ -58,6 +58,7 @@ public class DatabaseInitListener implements ServletContextListener {
         statement.executeUpdate("\n" +
                 "CREATE TABLE IF NOT EXISTS user_movie_preferences (\n" +
                 "    user_id INT NOT NULL,\n" +
+                "    username VARCHAR(100) NOT NULL,\n" +
                 "    movie_id INT NOT NULL,\n" +
                 "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
                 "    PRIMARY KEY (user_id, movie_id),\n" +

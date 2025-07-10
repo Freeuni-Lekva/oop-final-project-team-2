@@ -94,7 +94,6 @@
 
     <div id="selectionCount" style="color: white; font-size: 18px; margin: 20px 0;">Selected: 0 movies</div>
 
-    <!-- ADD THIS SUBMIT SECTION -->
     <div style="text-align: center; margin: 30px 0;">
       <button type="submit" id="submitBtn" style="
         background: linear-gradient(135deg, #f39c12, #e67e22);
@@ -157,7 +156,6 @@
       checkbox.addEventListener('change', function() {
         const selectedCount = document.querySelectorAll('.movie-checkbox:checked').length;
 
-        // Limit to 4 movies
         if (selectedCount > 4) {
           this.checked = false;
           alert('You can only select up to 4 movies!');

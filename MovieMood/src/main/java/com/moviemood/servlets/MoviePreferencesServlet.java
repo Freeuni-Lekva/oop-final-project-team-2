@@ -3,6 +3,7 @@ package com.moviemood.servlets;
 import com.moviemood.bean.Movie;
 import com.moviemood.bean.User;
 import com.moviemood.config.Config;
+import com.moviemood.dao.UserMoviePreferencesDao;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
@@ -65,11 +66,12 @@ public class MoviePreferencesServlet extends HttpServlet {
 
         try {
             BasicDataSource dataSource = (BasicDataSource) getServletContext().getAttribute("dataSource");
+            UserMoviePreferencesDao preferencesDao = new UserMoviePreferencesDao(dataSource);
 
             // Save preferences in database
             for (String movieIdStr : selectedMovieIds) {
                 int movieId = Integer.parseInt(movieIdStr);
-                saveUserPreference(dataSource, userId, movieId);
+                preferencesDao.saveUserPreference(userId, currentUser.getUsername(), movieId);
             }
 
             response.sendRedirect("/Home?firstTime=true");
@@ -81,15 +83,4 @@ public class MoviePreferencesServlet extends HttpServlet {
         }
     }
 
-    private void saveUserPreference(BasicDataSource dataSource, int userId, int movieId) throws SQLException {
-        String sql = "INSERT IGNORE INTO user_movie_preferences (user_id, movie_id) VALUES (?, ?)";
-
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, userId);
-            stmt.setInt(2, movieId);
-            stmt.executeUpdate();
-        }
-    }
 }

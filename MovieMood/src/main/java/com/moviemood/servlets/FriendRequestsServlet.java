@@ -3,6 +3,7 @@ package com.moviemood.servlets;
 import com.moviemood.bean.FriendRequest;
 import com.moviemood.bean.Friendship;
 import com.moviemood.bean.User;
+import com.moviemood.bean.FriendSuggestion;
 import com.moviemood.dao.FriendRequestDao;
 import com.moviemood.dao.FriendshipDao;
 import com.moviemood.dao.UserDao;
@@ -47,10 +48,12 @@ public class FriendRequestsServlet extends HttpServlet {
             List<FriendRequest> incomingRequests = friendRequestDao.getIncomingRequests(userId);
             List<FriendRequest> sentRequests = friendRequestDao.getSentRequests(userId);
             List<User> allFriends = friendshipDao.getFriendsByUserId(userId);
+            List<FriendSuggestion> friendSuggestions = friendshipDao.getFriendSuggestions(userId, 10); // Get top 10 suggestions
 
             request.setAttribute("incomingRequests", incomingRequests);
             request.setAttribute("sentRequests", sentRequests);
             request.setAttribute("allFriends", allFriends);
+            request.setAttribute("friendSuggestions", friendSuggestions);
             request.getRequestDispatcher("friend-requests.jsp").forward(request, response);
 
         }catch(Exception e) {

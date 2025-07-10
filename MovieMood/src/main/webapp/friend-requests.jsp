@@ -1,6 +1,7 @@
 <%@ page import="com.moviemood.bean.FriendRequest" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.moviemood.bean.User" %>
+<%@ page import="com.moviemood.bean.FriendSuggestion" %>
 <%@ page import="java.time.format.DateTimeFormatter" %><%--
   Created by IntelliJ IDEA.
   User: User
@@ -36,6 +37,20 @@
     <div class="container">
         <h1><span class="highlight">Friends</span></h1>
         <p>Manage your connections and discover new people</p>
+        
+        <% 
+            String message = request.getParameter("message");
+            String error = request.getParameter("error");
+            if (message != null && !message.isEmpty()) {
+        %>
+            <div class="success-message" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <%= message %>
+            </div>
+        <% } else if (error != null && !error.isEmpty()) { %>
+            <div class="error-message" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                <%= error %>
+            </div>
+        <% } %>
 
         <div class="tabs">
             <a href="friend-requests?tab=your_friends" class="<%= "your_friends".equals(tab) ? "active" : "" %>"><button>Your Friends</button></a>
@@ -114,6 +129,12 @@
 
                 <li class="friend-request">
                     <span>To: <%= req.getReceiverUsername()%> • Sent on <%= req.getRequestTime().format(sentDateFormatter)%></span>
+                    <div class="button-group">
+                        <form method="post" action="cancel-friend-request">
+                            <input type="hidden" name="requestId" value="<%= req.getRequestId()%>">
+                            <button type="submit" class="cancel-button">Cancel</button>
+                        </form>
+                    </div>
                 </li>
             <%
                 }
@@ -137,6 +158,9 @@
             <% for (User friend : allFriends) { %>
             <li class="friend-request">
                 <span> <%= friend.getUsername() %></span>
+                <div class="button-group">
+                    <a href="profile?user=<%= friend.getUsername() %>" class="view-profile-button">View Profile</a>
+                </div>
             </li>
             <% } %>
         </ul>
@@ -144,6 +168,41 @@
         } else {
         %>
         <p class="empty-message">You don't have any friends yet.</p>
+        <%
+            }
+        %>
+        <% } else if ("suggestions".equals(tab)) { %>
+        <h2>Friend Suggestions</h2>
+        <p>People you might know based on mutual friends</p>
+        <%
+            List<FriendSuggestion> friendSuggestions = (List<FriendSuggestion>) request.getAttribute("friendSuggestions");
+            if (friendSuggestions != null && !friendSuggestions.isEmpty()) {
+        %>
+        <ul class="request-list">
+            <% for (FriendSuggestion suggestion : friendSuggestions) { %>
+            <li class="friend-request">
+                <span>
+                    <%= suggestion.getUser().getUsername() %>
+                    <% if (suggestion.getMutualFriendCount() == 1) { %>
+                        • 1 mutual friend
+                    <% } else { %>
+                        • <%= suggestion.getMutualFriendCount() %> mutual friends
+                    <% } %>
+                </span>
+                <div class="button-group">
+                    <form method="post" action="send-friend-request" style="display: inline;">
+                        <input type="hidden" name="receiverUsername" value="<%= suggestion.getUser().getUsername() %>">
+                        <button type="submit" class="accept-button">Add Friend</button>
+                    </form>
+                    <a href="profile?user=<%= suggestion.getUser().getUsername() %>" class="view-profile-button">View Profile</a>
+                </div>
+            </li>
+            <% } %>
+        </ul>
+        <%
+        } else {
+        %>
+        <p class="empty-message">No friend suggestions available. Connect with more people to see suggestions!</p>
         <%
             }
         %>

@@ -1,0 +1,186 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #171712;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color:#f39c12;
+}
+
+h2 {
+    color:#f39c12;
+}
+
+p {
+    color: #a0a0a0;
+    margin-bottom: 30px;
+}
+
+.tabs {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid #2e2e2e;
+    padding-bottom: 20px;
+}
+
+.tabs button {
+    background: none;
+    border: none;
+    color: #f39c12;
+    padding: 10px 0;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.3s, border-bottom 0.3s;
+}
+
+.tabs button:hover,
+.tabs button.active {
+    color: #fff;
+    border-bottom: 2px solid #ccc;
+}
+
+.search-bar {
+    margin-bottom: 40px;
+    width:100%;
+    background-color: #3B3826;
+}
+
+.search-bar input[type="text"] {
+    width: 100%;
+    padding: 12px 48px 12px 16px;
+    background-color: #1f1f1f;
+    border: none;
+    border-radius: 8px;
+    color: #eee;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/*.search-bar button {*/
+/*    padding: 12px 20px;*/
+/*    background-color: #333;*/
+/*    color: #fff;*/
+/*    border: none;*/
+/*    border-radius: 0 8px 8px 0;*/
+/*    cursor: pointer;*/
+/*    transition: background-color 0.3s;*/
+/*}*/
+
+
+h2 {
+    font-size: 22px;
+    margin-top: 40px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #2e2e2e;
+    padding-bottom: 5px;
+}
+
+.empty-message {
+    color: #777;
+    font-style: italic;
+}
+
+ul.request-list {
+    list-style: none;
+    padding: 0;
+}
+
+.friend-request {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.friend-request span {
+    font-size: 16px;
+    margin-right: 20px;
+}
+
+.friend-request form {
+    display: inline;
+    margin: 5px;
+}
+
+.accept-button,
+.reject-button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.accept-button {
+    background-color: #2ecc71;
+    color: #fff;
+}
+
+.accept-button:hover {
+    background-color: #27ae60;
+}
+
+.reject-button {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.reject-button:hover {
+    background-color: #c0392b;
+}
+
+.search-wrapper {
+    position: relative;
+    width:100%;
+}
+
+.icon-button {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    background-color: transparent;
+}
+
+.icon-button:hover {
+    background-color: gray;
+    opacity: 0.1;
+}
+
+.icon-button:active {
+    opacity:0.6;
+}
+
+.icon-button img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+}
+
+

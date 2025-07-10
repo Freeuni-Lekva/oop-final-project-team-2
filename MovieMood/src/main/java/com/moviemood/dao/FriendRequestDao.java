@@ -86,14 +86,25 @@ public class FriendRequestDao {
      */
     public List<FriendRequest> getIncomingRequests(int userId) {
         List<FriendRequest> requests = new ArrayList<>();
-        String query = "SELECT * FROM friend_requests WHERE receiver_id = ?";
+        String query = "SELECT requests.id, requests.sender_id, requests.receiver_id, requests.status, requests.request_date, u.username AS sender_username " +
+                "FROM friend_requests requests " +
+                "JOIN users u ON requests.sender_id = u.id " +
+                "WHERE requests.receiver_id = ? AND requests.status = 'pending'";
         try(Connection con = dataSource.getConnection();
             PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                requests.add(new FriendRequest(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4), rs.getTimestamp(5).toLocalDateTime()));
+                FriendRequest req = new FriendRequest(
+                        rs.getInt(1),  // id
+                        rs.getInt(2),  // sender_id
+                        rs.getInt(3),  // receiver_id
+                        rs.getString(4), // status
+                        rs.getTimestamp(5).toLocalDateTime()
+                );
+                req.setSenderUsername(rs.getString("sender_username"));
+                requests.add(req);
             }
 
         }catch(SQLException e) {
@@ -111,14 +122,25 @@ public class FriendRequestDao {
      */
     public List<FriendRequest> getSentRequests(int userId) {
         List<FriendRequest> requests = new ArrayList<>();
-        String query = "SELECT * FROM friend_requests WHERE sender_id = ?";
+        String query = "SELECT requests.id, requests.sender_id, requests.receiver_id, requests.status, requests.request_date, u.username AS receiver_username " +
+                "FROM friend_requests requests " +
+                "JOIN users u ON requests.receiver_id = u.id " +
+                "WHERE requests.sender_id = ? AND requests.status = 'pending'";
         try(Connection con = dataSource.getConnection();
             PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             while(rs.next()) {
-                requests.add(new FriendRequest(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4), rs.getTimestamp(5).toLocalDateTime()));
+                FriendRequest req = new FriendRequest(
+                        rs.getInt(1),
+                        rs.getInt(2),
+                        rs.getInt(3),
+                        rs.getString(4),
+                        rs.getTimestamp(5).toLocalDateTime()
+                );
+                req.setReceiverUsername(rs.getString("receiver_username"));
+                requests.add(req);
             }
 
         }catch(SQLException e) {

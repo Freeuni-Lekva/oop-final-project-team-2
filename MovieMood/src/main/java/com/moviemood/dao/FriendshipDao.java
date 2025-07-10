@@ -1,6 +1,7 @@
 package com.moviemood.dao;
 
 import com.moviemood.bean.Friendship;
+import com.moviemood.bean.User;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.*;
@@ -110,6 +111,37 @@ public class FriendshipDao {
         }catch(SQLException e) {
             throw new RuntimeException("Failed to make connection to database", e);
         }
+    }
+
+    public List<User> getFriendsByUserId(int userId) {
+        List<User> friends = new ArrayList<>();
+        String query = "SELECT u.id, u.username, u.email, u.password_hash, u.remember_token " +
+                "FROM friendships f " +
+                "JOIN users u ON (" +
+                "    (u.id = f.user1_id AND f.user2_id = ?) OR " +
+                "    (u.id = f.user2_id AND f.user1_id = ?))";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, userId);
+            stmt.setInt(2, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    User friend = new User(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("password_hash"),
+                            rs.getString("remember_token")
+                    );
+                    friends.add(friend);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return friends;
     }
 }
 

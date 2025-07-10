@@ -1,6 +1,7 @@
 <%@ page import="com.moviemood.bean.FriendRequest" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.moviemood.bean.User" %><%--
+<%@ page import="com.moviemood.bean.User" %>
+<%@ page import="java.time.format.DateTimeFormatter" %><%--
   Created by IntelliJ IDEA.
   User: User
   Date: 7/8/2025
@@ -17,7 +18,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="assets/css/navbar.css?v=<%= System.currentTimeMillis() %>">
-    <link rel="stylesheet" href="friend-requests.css?v=<%= System.currentTimeMillis() %>">
+    <link rel="stylesheet" href="assets/css/friend-requests.css?v=<%= System.currentTimeMillis() %>">
 
     <title>Friend Requests</title>
 </head>
@@ -33,14 +34,14 @@
     %>
 
     <div class="container">
-        <h1>Friends</h1>
-        <p>Manage Your connections and discover new people</p>
+        <h1><span class="highlight">Friends</span></h1>
+        <p>Manage your connections and discover new people</p>
 
         <div class="tabs">
-            <a href="friend-requests.jsp?tab=your_friends" class="<%= "your_friends".equals(tab) ? "active" : "" %>"><button>Your Friends</button></a>
-            <a href="friend-requests.jsp?tab=suggestions" class="<%= "suggestions".equals(tab) ? "active" : "" %>"><button>Suggestions</button></a>
-            <a href="friend-requests.jsp?tab=incoming" class="<%= "incoming".equals(tab) ? "active" : "" %>"><button>Friend Requests</button></a>
-            <a href="friend-requests.jsp?tab=sent" class="<%= "sent".equals(tab) ? "active" : "" %>"><button>Sent Requests</button></a>
+            <a href="friend-requests?tab=your_friends" class="<%= "your_friends".equals(tab) ? "active" : "" %>"><button>Your Friends</button></a>
+            <a href="friend-requests?tab=suggestions" class="<%= "suggestions".equals(tab) ? "active" : "" %>"><button>Suggestions</button></a>
+            <a href="friend-requests?tab=incoming" class="<%= "incoming".equals(tab) ? "active" : "" %>"><button>Friend Requests</button></a>
+            <a href="friend-requests?tab=sent" class="<%= "sent".equals(tab) ? "active" : "" %>"><button>Sent Requests</button></a>
         </div>
 
         <div class = "search-bar">
@@ -59,6 +60,7 @@
         <h2>Incoming Requests</h2>
         <%
             List<FriendRequest> incomingRequests = (List<FriendRequest>) request.getAttribute("incomingRequests");
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
             if (incomingRequests != null && !incomingRequests.isEmpty()) {
         %>
         <ul class="request-list">
@@ -66,20 +68,21 @@
                 for(FriendRequest req : incomingRequests) {
             %>
                 <li class="friend-request">
-                    <span><%= req.getSenderUsername()%> Sent a request on <%= req.getRequestTime() %></span>
-                    <form method = "post" action="accept-friend-request">
-                        <input type="hidden" name = "requestId" value = "<%= req.getRequestId()%>">
-                        <!-- could delete this 2 hidden inputs later -->
-                        <input type="hidden" name = "senderId" value = "<%= req.getSenderId()%>">
-                        <input type="hidden" name = "receiverId" value = "<%= req.getReceiverId()%>">
-                        <button type="submit" class="accept-button">Accept</button>
-                    </form>
+                    <span><%= req.getSenderUsername()%> sent a request on <%= req.getRequestTime().format(dateFormatter) %></span>
+                    <div class="button-group">
+                        <form method = "post" action="accept-friend-request">
+                            <input type="hidden" name = "requestId" value = "<%= req.getRequestId()%>">
+                            <!-- could delete this 2 hidden inputs later -->
+                            <input type="hidden" name = "senderId" value = "<%= req.getSenderId()%>">
+                            <input type="hidden" name = "receiverId" value = "<%= req.getReceiverId()%>">
+                            <button type="submit" class="accept-button">Accept</button>
+                        </form>
 
-                    <form method = "post" action="reject-friend-request">
-                        <input type="hidden" name = "requestId" value = "<%= req.getRequestId()%>">
-                        <button type = "submit" class="reject-button">Reject</button>
-                    </form>
-
+                        <form method = "post" action="reject-friend-request">
+                            <input type="hidden" name = "requestId" value = "<%= req.getRequestId()%>">
+                            <button type = "submit" class="reject-button">Reject</button>
+                        </form>
+                    </div>
                 </li>
             <%
                 }
@@ -100,6 +103,7 @@
 
         <%
             List<FriendRequest> sentRequests = (List<FriendRequest>) request.getAttribute("sentRequests");
+            DateTimeFormatter sentDateFormatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
             if(sentRequests != null && !sentRequests.isEmpty()) {
         %>
 
@@ -109,7 +113,7 @@
             %>
 
                 <li class="friend-request">
-                    <span>To: <%= req.getReceiverUsername()%>  Sent on <%= req.getRequestTime()%></span>
+                    <span>To: <%= req.getReceiverUsername()%> • Sent on <%= req.getRequestTime().format(sentDateFormatter)%></span>
                 </li>
             <%
                 }
@@ -132,7 +136,7 @@
         <ul class="request-list">
             <% for (User friend : allFriends) { %>
             <li class="friend-request">
-                <span><%= friend.getUsername() %></span>
+                <span> <%= friend.getUsername() %></span>
             </li>
             <% } %>
         </ul>

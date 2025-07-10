@@ -20,14 +20,29 @@ import java.util.List;
 public class FriendRequestsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getSession().getAttribute("username").toString();
+        // im using this for testing
+        String hardcodedTestUser = "alice";
+        
+        UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
+        User user = userDao.getUserByUsername(hardcodedTestUser);
+        
+        if (user != null) {
+            request.getSession().setAttribute("user", user); // Set in session for consistency
+        } else {
+            throw new ServletException("Test user '" + hardcodedTestUser + "' not found in database");
+        }
+        
+
+        // User user = (User) request.getSession().getAttribute("user");
+        // if (user == null) {
+        //     throw new ServletException("No user found in session. Please login first.");
+        // }
 
         try {
             FriendRequestDao friendRequestDao =  (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
-            UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
             FriendshipDao friendshipDao = (FriendshipDao) getServletContext().getAttribute("friendshipDao");
 
-            int userId = userDao.getUserByUsername(username).getId();
+            int userId = user.getId();
 
             List<FriendRequest> incomingRequests = friendRequestDao.getIncomingRequests(userId);
             List<FriendRequest> sentRequests = friendRequestDao.getSentRequests(userId);

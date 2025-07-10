@@ -18,6 +18,8 @@
                 <a href="/films">Films</a>
                 <a href="#">Popular Lists</a>
                 <a href="/login" class="create-account-btn">Create Account</a>
+                <%--need this tab for testing for now gotta change later --%>
+                <a href="/friend-requests">Friends</a>
             </div>
         </nav>
     </div>

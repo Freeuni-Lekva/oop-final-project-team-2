@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Tests for dao classes using H2 in-memory database.
@@ -48,7 +49,7 @@ public class UserDaoTest {
      * Helper method to insert a test user directly into database.
      */
     private void insertTestUserDirectly(String username, String email, String passwordHash) throws SQLException {
-        TestDatabaseHelper.clearUsersTable(testDataSource);
+//        TestDatabaseHelper.clearUsersTable(testDataSource);
         String sql = "INSERT INTO users (username, email, password_hash, is_verified) VALUES (?, ?, ?, ?)";
         try (var conn = testDataSource.getConnection();
              var stmt = conn.prepareStatement(sql)) {
@@ -349,6 +350,131 @@ public class UserDaoTest {
         } catch (RuntimeException e) {
             assertTrue(e.getMessage().contains("Failed to make connection"));
         }
+    }
+
+
+    @Test
+    public void testSearchUserByQuery1() throws SQLException {
+        insertTestUserDirectly("gio", "gio@gio.com", "ra");
+        insertTestUserDirectly("lali", "lali@lali.com", "ra2");
+        insertTestUserDirectly("nata", "nata@nata.com", "ra3");
+
+        List<User> results = userDao.searchUserByQuery("gio");
+
+        assertEquals(1, results.size());
+        assertEquals( "gio", results.get(0).getUsername());
+    }
+
+    @Test
+    public void testSearchUserByQuery2_PartialMatch() throws SQLException {
+        insertTestUserDirectly("johnson", "johnson@gmail.com", "ra");
+        insertTestUserDirectly("johnny", "johnny@yahoo.com", "ra2");
+        insertTestUserDirectly("john", "john@tahoo.com", "ra3");
+
+        List<User> results = userDao.searchUserByQuery("john");
+
+        assertEquals(3, results.size());
+
+        for (User user : results) {
+            assertTrue(user.getUsername().toLowerCase().contains("john"));
+        }
+    }
+
+
+    @Test
+    public void testSearchUserByQuery3_EmptyQuery() throws SQLException {
+        insertTestUserDirectly("user1", "user1@someth.com", "la");
+        insertTestUserDirectly("user2", "user2@someth.com", "bla");
+
+        List<User> results = userDao.searchUserByQuery("");
+
+        assertEquals(2, results.size());
+    }
+
+
+
+    @Test
+    public void testSearchUserByQuery4_Verification() throws SQLException, UserAlreadyExistsException {
+        Timestamp expiry = new Timestamp(System.currentTimeMillis() + 3600000);
+        userDao.insertUser("verifieduser", "verified@gmail.com", "ka", "123456", expiry);
+
+        List<User> results = userDao.searchUserByQuery("verified");
+
+        assertEquals(1, results.size());
+        User user = results.get(0);
+        assertEquals("123456", user.getVerificationCode());
+        assertEquals(expiry, user.getVerificationCodeExpiry());
+        assertFalse(user.isVerified());
+    }
+
+
+
+    @Test
+    public void testUpdateUsername1() throws SQLException, UserAlreadyExistsException {
+        insertTestUserDirectly("oldname", "vigac@cigac.com", "bla");
+        User user = userDao.getUserByEmail("vigac@cigac.com");
+
+        boolean result = userDao.updateUsername(user.getId(), "newname");
+
+        assertTrue(result);
+
+        User updatedUser = userDao.getUserByEmail("vigac@cigac.com");
+        assertEquals( "newname", updatedUser.getUsername());
+
+        User userByNewName = userDao.getUserByUsername("newname");
+        assertNotNull(userByNewName);
+
+        User userByOldName = userDao.getUserByUsername("oldname");
+        assertNull(userByOldName);
+    }
+
+    @Test(expected = UserAlreadyExistsException.class)
+    public void testUpdateUsername2_DuplicateUsername() throws SQLException, UserAlreadyExistsException {
+        insertTestUserDirectly("gio", "gio@gio", "bla");
+        insertTestUserDirectly("gio2", "gio2@gio2", "blu");
+        User user1 = userDao.getUserByEmail("gio@gio");
+
+        userDao.updateUsername(user1.getId(), "gio2");
+    }
+
+
+    @Test
+    public void testUpdatePassword1() throws SQLException {
+        insertTestUserDirectly("testuser", "test@test.com", "hey");
+        User user = userDao.getUserByEmail("test@test.com");
+
+        boolean result = userDao.updatePassword(user.getId(), "new");
+
+        assertTrue(result);
+
+        User updatedUser = userDao.getUserByEmail("test@test.com");
+        assertEquals("new", updatedUser.getHashedPassword());
+    }
+
+    @Test
+    public void testUpdateProfilePicture1() throws SQLException {
+        insertTestUserDirectly("picturee", "pic@pic.com", "hash");
+        User user = userDao.getUserByEmail("pic@pic.com");
+
+        boolean result = userDao.updateProfilePicture(user.getId(), "/path/to/picture.jpg");
+
+        assertTrue(result);
+
+        User updatedUser = userDao.getUserByEmail("pic@pic.com");
+        assertEquals("/path/to/picture.jpg", updatedUser.getProfilePicture());
+    }
+
+    @Test
+    public void testUpdateProfilePicture2_Null() throws SQLException {
+        insertTestUserDirectly("nulll", "nullable@null.com", "bla");
+        User user = userDao.getUserByEmail("nullable@null.com");
+
+        boolean result = userDao.updateProfilePicture(user.getId(), null);
+
+        assertTrue(result);
+
+        User updatedUser = userDao.getUserByEmail("nullable@null.com");
+        assertNull(updatedUser.getProfilePicture());
     }
 
 

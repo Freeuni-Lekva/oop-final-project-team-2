@@ -2,8 +2,10 @@ package com.moviemood.servlets;
 
 import com.moviemood.bean.Movie;
 import com.moviemood.bean.User;
+import com.moviemood.bean.UserList;
 import com.moviemood.config.Config;
 import com.moviemood.dao.UserFavoritesDao;
+import com.moviemood.dao.UserListDao;
 import com.moviemood.dao.UserWatchlistDao;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @WebServlet("/movie/details")
@@ -51,12 +54,25 @@ public class MovieDetailsServlet extends HttpServlet {
                 try {
                     UserWatchlistDao watchlistDao = (UserWatchlistDao) getServletContext().getAttribute("watchlistDao");
                     UserFavoritesDao favoritesDao = (UserFavoritesDao) getServletContext().getAttribute("favoritesDao");
+                    UserListDao listDao = (UserListDao) getServletContext().getAttribute("listsDao");
                     
                     if (watchlistDao != null) {
                         isInWatchlist = watchlistDao.isMovieInWatchlist(currentUser.getId(), movie_id);
                     }
                     if (favoritesDao != null) {
                         isInFavorites = favoritesDao.isMovieInFavorites(currentUser.getId(), movie_id);
+                    }
+                    
+                    // Get user's lists and check which lists contain this movie
+                    if (listDao != null) {
+                        List<UserList> userLists = listDao.getUserLists(currentUser.getId());
+                        req.setAttribute("userLists", userLists);
+                        
+                        // For each list, check if the movie is in it
+                        for (UserList list : userLists) {
+                            boolean isInList = listDao.isMovieInList(list.getId(), movie_id);
+                            list.setContainsCurrentMovie(isInList); // We'll need to add this field to UserList
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

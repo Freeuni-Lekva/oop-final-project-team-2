@@ -41,10 +41,55 @@ document.addEventListener('DOMContentLoaded', function () {
             ratingText.textContent = ratingTexts[currentRating] || 'Click a star to rate';
         }
 
+        // Replace the existing submit rating button event listener with this code:
         submitRatingBtn.addEventListener('click', () => {
             if (currentRating > 0) {
-                alert(`Thank you for rating this movie ${currentRating} stars!`);
-                // Send to server logic goes here
+                // Get movie ID from the rating container
+                const movieId = document.querySelector('.rating-container').getAttribute('data-movie-id');
+
+                // Create form data
+                const formData = new FormData();
+                formData.append('movieId', movieId);
+                formData.append('rating', currentRating);
+
+                // Submit to RatingServlet
+                fetch(window.contextPath + '/rating', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'movieId=' + movieId + '&rating=' + currentRating
+                })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        console.log('Response headers:', response.headers.get('content-type'));
+
+                        // Check if response is JSON
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            return response.json();
+                        } else {
+                            // If not JSON, get text to see what was returned
+                            return response.text().then(text => {
+                                console.log('Non-JSON response:', text);
+                                throw new Error('Server returned non-JSON response: ' + text.substring(0, 100));
+                            });
+                        }
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Thank you for rating this movie ${currentRating} stars!`);
+                            // Optionally disable the rating form after successful submission
+                            submitRatingBtn.disabled = true;
+                            submitRatingBtn.textContent = 'Rating Submitted';
+                        } else {
+                            alert('Failed to submit rating: ' + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting rating:', error);
+                        alert('Error submitting rating: ' + error.message);
+                    });
             } else {
                 alert('Please select a rating first!');
             }

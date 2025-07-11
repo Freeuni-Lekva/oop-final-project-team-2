@@ -52,15 +52,16 @@
 
             <!-- Second Row: Statistics -->
             <div class="profile-stats">
-                <a href="watchlist" class="stat-card">
+                <% String userParam = isOwnProfile ? "" : "?user=" + profileUser.getUsername(); %>
+                <a href="watchlist<%= userParam %>" class="stat-card">
                     <span class="stat-number"><%= watchlistCount %></span>
                     <div class="stat-label">Watchlist</div>
                 </a>
-                <a href="favorites" class="stat-card">
+                <a href="favorites<%= userParam %>" class="stat-card">
                     <span class="stat-number"><%= favoritesCount %></span>
                     <div class="stat-label">Favorites</div>
                 </a>
-                <a href="reviews" class="stat-card">
+                <a href="reviews<%= userParam %>" class="stat-card">
                     <span class="stat-number"><%= reviewsCount %></span>
                     <div class="stat-label">Reviews</div>
                 </a>
@@ -68,7 +69,7 @@
                     <span class="stat-number"><%= friendsCount %></span>
                     <div class="stat-label">Friends</div>
                 </a>
-                <a href="lists" class="stat-card">
+                <a href="lists<%= userParam %>" class="stat-card">
                     <span class="stat-number"><%= listsCount %></span>
                     <div class="stat-label">Lists</div>
                 </a>

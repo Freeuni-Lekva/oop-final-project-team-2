@@ -90,6 +90,45 @@ public class UserListDao {
     }
 
     /**
+     * Get only public lists for a specific user (for viewing other users' profiles)
+     * @param userId The user ID
+     * @return List of public UserList objects
+     */
+    public List<UserList> getPublicUserLists(int userId) {
+        List<UserList> lists = new ArrayList<>();
+        String sql = "SELECT id, user_id, name, description, is_public, created_at, updated_at " +
+                    "FROM user_lists WHERE user_id = ? AND is_public = 1 ORDER BY updated_at DESC";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    UserList list = new UserList(
+                        resultSet.getInt("id"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getBoolean("is_public"),
+                        resultSet.getTimestamp("created_at"),
+                        resultSet.getTimestamp("updated_at")
+                    );
+                    lists.add(list);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error retrieving public lists for user ID: " + userId);
+            e.printStackTrace();
+            throw new RuntimeException("Failed to retrieve public user lists", e);
+        }
+
+        return lists;
+    }
+
+    /**
      * Get a specific list by ID
      * @param listId The list ID
      * @return UserList object or null if not found

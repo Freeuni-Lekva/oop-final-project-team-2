@@ -5,6 +5,7 @@ import com.moviemood.bean.MovieReview;
 import com.moviemood.bean.User;
 import com.moviemood.config.Config;
 import com.moviemood.dao.MovieReviewsDao;
+import com.moviemood.dao.UserDao;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
@@ -38,6 +39,28 @@ public class ReviewsServlet extends HttpServlet {
             return;
         }
         
+        // Determine whose reviews to show
+        String username = request.getParameter("user");
+        User targetUser = currentUser; // Default to current user
+        boolean isOwnReviews = true;
+        
+        if (username != null && !username.trim().isEmpty()) {
+            // Viewing someone else's reviews
+            try {
+                UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
+                if (userDao != null) {
+                    User foundUser = userDao.getUserByUsername(username);
+                    if (foundUser != null) {
+                        targetUser = foundUser;
+                        isOwnReviews = (currentUser.getId() == foundUser.getId());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Fall back to current user if error
+            }
+        }
+        
         try {
             MovieReviewsDao reviewsDao = (MovieReviewsDao) getServletContext().getAttribute("reviewsDao");
             TmdbMovieRepository movieRepo = TmdbMovieRepository.getInstance();
@@ -47,7 +70,7 @@ public class ReviewsServlet extends HttpServlet {
                 return;
             }
             
-            List<MovieReview> userReviews = reviewsDao.getUserMovieReviews(currentUser.getId());
+            List<MovieReview> userReviews = reviewsDao.getUserMovieReviews(targetUser.getId());
             Map<Integer, Movie> movieMap = new HashMap<>();
             
             for (MovieReview review : userReviews) {
@@ -65,6 +88,8 @@ public class ReviewsServlet extends HttpServlet {
             request.setAttribute("movieMap", movieMap);
             request.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
             request.setAttribute("currentUser", currentUser);
+            request.setAttribute("targetUser", targetUser);
+            request.setAttribute("isOwnReviews", isOwnReviews);
             
             request.getRequestDispatcher("/reviews.jsp").forward(request, response);
             

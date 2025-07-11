@@ -10,6 +10,7 @@
 <%@ page import="com.moviemood.bean.User" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.moviemood.bean.Genre" %>
+<%@ page import="com.moviemood.bean.UserList" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +20,78 @@
     <title>MovieMood - <%= ((Movie) request.getAttribute("movie")).getTitle() %></title>
     <link rel="stylesheet" href="<%= request.getContextPath() %>/assets/css/navbar.css">
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/assets/css/moviedetails.css">
+    <style>
+        /* Add to List dropdown styles */
+        .add-to-list-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .list-dropdown {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            min-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 9999;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            margin-top: 5px;
+        }
+        
+        .list-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .list-option:hover {
+            background: rgba(243, 156, 18, 0.2);
+        }
+        
+        .list-option:last-child {
+            border-bottom: none;
+        }
+        
+        .list-name {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+        
+        .list-status {
+            color: #f39c12;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .list-option[data-in-list="true"] .list-status {
+            color: #27ae60;
+        }
+        
+        .no-lists-message {
+            padding: 16px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .create-list-link {
+            color: #f39c12;
+            text-decoration: none;
+            display: block;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .create-list-link:hover {
+            color: #e67e22;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <%
@@ -109,9 +182,39 @@
                         <button id="favoritesBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-favorites="<%= isInFavorites %>" title="<%= isInFavorites ? "Remove from Favorites" : "Add to Favorites" %>">
                             <%= isInFavorites ? "♥" : "♡" %>
                         </button>
+                        
+                        <!-- Add to List Button with Dropdown -->
+                        <div class="add-to-list-container" style="position: relative; display: inline-block;">
+                            <button id="addToListBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">
+                                📝 Add to List
+                            </button>
+                            <div id="listDropdown" class="list-dropdown" style="display: none;">
+                                <%
+                                    List<UserList> userLists = (List<UserList>) request.getAttribute("userLists");
+                                    if (userLists != null && !userLists.isEmpty()) {
+                                        for (UserList list : userLists) {
+                                %>
+                                <div class="list-option" data-list-id="<%= list.getId() %>" data-in-list="<%= list.isContainsCurrentMovie() %>">
+                                    <span class="list-name"><%= list.getName() %></span>
+                                    <span class="list-status"><%= list.isContainsCurrentMovie() ? "✓" : "+" %></span>
+                                </div>
+                                <%
+                                        }
+                                    } else {
+                                %>
+                                <div class="no-lists-message">
+                                    <span>No lists found</span>
+                                    <a href="/lists" class="create-list-link">Create your first list</a>
+                                </div>
+                                <%
+                                    }
+                                %>
+                            </div>
+                        </div>
                     <% } else { %>
                         <button id="watchlistBtn" class="btn btn-secondary" title="Please log in to add to watchlist">+ Add to Watchlist</button>
                         <button id="favoritesBtn" class="btn btn-secondary" title="Please log in to add to favorites">♡ Add to Favorites</button>
+                        <button id="addToListBtn" class="btn btn-secondary" title="Please log in to create lists">📝 Add to List</button>
                     <% } %>
                 </div>
             </div>
@@ -401,6 +504,71 @@
             }
         });
     });
+
+    // Add to List button functionality
+    const addToListBtn = document.getElementById('addToListBtn');
+    const listDropdown = document.getElementById('listDropdown');
+    
+    if (addToListBtn && listDropdown) {
+        // Toggle dropdown on button click
+        addToListBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isVisible = listDropdown.style.display === 'block';
+            
+            if (isVisible) {
+                listDropdown.style.display = 'none';
+            } else {
+                // Position the dropdown relative to the button
+                const rect = addToListBtn.getBoundingClientRect();
+                listDropdown.style.top = (rect.bottom + 5) + 'px';
+                listDropdown.style.left = rect.left + 'px';
+                listDropdown.style.display = 'block';
+            }
+        });
+        
+        // Handle list option clicks
+        document.querySelectorAll('.list-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                const listId = this.getAttribute('data-list-id');
+                const isInList = this.getAttribute('data-in-list') === 'true';
+                const movieId = addToListBtn.getAttribute('data-movie-id');
+                const action = isInList ? 'remove' : 'add';
+                
+                fetch('/list/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'action=' + action + '&movieId=' + movieId + '&listId=' + listId
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the option state
+                        const newIsInList = action === 'add';
+                        this.setAttribute('data-in-list', newIsInList);
+                        
+                        const statusSpan = this.querySelector('.list-status');
+                        statusSpan.textContent = newIsInList ? '✓' : '+';
+                        
+                        // Show success message
+                        const listName = this.querySelector('.list-name').textContent;
+                        console.log(data.message + ': ' + listName);
+                    } else {
+                        console.error('Failed:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            listDropdown.style.display = 'none';
+        });
+    }
     
     <% } else { %>
     
@@ -412,6 +580,14 @@
     document.getElementById('favoritesBtn').addEventListener('click', function() {
         window.location.href = '/login.jsp';
     });
+    
+    // Add to List button for non-logged in users
+    const addToListBtn = document.getElementById('addToListBtn');
+    if (addToListBtn) {
+        addToListBtn.addEventListener('click', function() {
+            window.location.href = '/login.jsp';
+        });
+    }
     
     <% } %>
 </script>

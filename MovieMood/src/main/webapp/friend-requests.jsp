@@ -133,8 +133,8 @@
                 <li class="friend-request">
                     <span>To: <%= req.getReceiverUsername()%> • Sent on <%= req.getRequestTime().format(sentDateFormatter)%></span>
                     <div class="button-group">
-                        <form method="post" action="cancel-friend-request">
-                            <input type="hidden" name="requestId" value="<%= req.getRequestId()%>">
+                        <form method="post" action="cancel-sent-request">
+                            <input type="hidden" name="receiverUsername" value="<%= req.getReceiverUsername()%>">
                             <button type="submit" class="cancel-button">Cancel</button>
                         </form>
                     </div>

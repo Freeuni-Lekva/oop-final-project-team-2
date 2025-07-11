@@ -110,10 +110,13 @@ public class FriendRequestsServlet extends HttpServlet {
                 suggestionIds.add(suggestion.getUser().getId());
             }
             
+            Set<Integer> excludedIds = friendshipDao.getExcludedUserIds(userId);
+            
             for (User searchResult : searchResults) {
                 if (searchResult.getId() != userId && 
                     !friendIds.contains(searchResult.getId()) && 
-                    !suggestionIds.contains(searchResult.getId())) {
+                    !suggestionIds.contains(searchResult.getId()) &&
+                    !excludedIds.contains(searchResult.getId())) {
                     
                     FriendSuggestion newSuggestion = new FriendSuggestion(searchResult, 0);
                     results.add(newSuggestion);

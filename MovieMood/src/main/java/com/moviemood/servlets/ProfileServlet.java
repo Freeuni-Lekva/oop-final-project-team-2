@@ -1,6 +1,7 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.User;
+import com.moviemood.dao.FriendshipDao;
 import com.moviemood.dao.MovieReviewsDao;
 import com.moviemood.dao.UserDao;
 import com.moviemood.dao.UserFavoritesDao;
@@ -67,11 +68,13 @@ public class ProfileServlet extends HttpServlet {
             int watchlistCount = 0;
             int reviewsCount = 0;
             int favoritesCount = 0;
+            int friendsCount = 0;
             
             try {
                 UserWatchlistDao watchlistDao = (UserWatchlistDao) getServletContext().getAttribute("watchlistDao");
                 MovieReviewsDao reviewsDao = (MovieReviewsDao) getServletContext().getAttribute("reviewsDao");
                 UserFavoritesDao favoritesDao = (UserFavoritesDao) getServletContext().getAttribute("favoritesDao");
+                FriendshipDao friendshipDao = (FriendshipDao) getServletContext().getAttribute("friendshipDao");
                 
                 if (watchlistDao != null) {
                     watchlistCount = watchlistDao.getWatchlistCount(profileUser.getId());
@@ -83,6 +86,10 @@ public class ProfileServlet extends HttpServlet {
                 
                 if (favoritesDao != null) {
                     favoritesCount = favoritesDao.getFavoritesCount(profileUser.getId());
+                }
+                
+                if (friendshipDao != null) {
+                    friendsCount = friendshipDao.getFriendsByUserId(profileUser.getId()).size();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -96,6 +103,7 @@ public class ProfileServlet extends HttpServlet {
             request.setAttribute("watchlistCount", watchlistCount);
             request.setAttribute("reviewsCount", reviewsCount);
             request.setAttribute("favoritesCount", favoritesCount);
+            request.setAttribute("friendsCount", friendsCount);
             
             // Forward to profile JSP
             request.getRequestDispatcher("/profile.jsp").forward(request, response);

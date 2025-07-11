@@ -111,7 +111,6 @@
     if (user != null) {
         userId=user.getId();
     }
-    User currentUser = (User) request.getAttribute("currentUser");
     Boolean isInWatchlist = (Boolean) request.getAttribute("isInWatchlist");
     Boolean isInFavorites = (Boolean) request.getAttribute("isInFavorites");
 
@@ -185,7 +184,7 @@
                     %>
                     <button class="btn btn-secondary" disabled>Trailer Unavailable</button>
                     <% } %>
-                    <% if (currentUser != null) { %>
+                    <% if (user != null) { %>
                         <button id="watchlistBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-watchlist="<%= isInWatchlist %>">
                             <%= isInWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist" %>
                         </button>

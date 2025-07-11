@@ -5,13 +5,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import com.moviemood.config.Config;
-import com.moviemood.dao.FriendRequestDao;
-import com.moviemood.dao.FriendshipDao;
-import com.moviemood.dao.MovieReviewsDao;
-import com.moviemood.dao.UserDao;
-import com.moviemood.dao.UserFavoritesDao;
-import com.moviemood.dao.UserListDao;
-import com.moviemood.dao.UserWatchlistDao;
+import com.moviemood.dao.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
@@ -38,6 +32,7 @@ public class DatabaseInitListener implements ServletContextListener {
             MovieReviewsDao reviewsDao = new MovieReviewsDao(dataSource);
             UserFavoritesDao favoritesDao = new UserFavoritesDao(dataSource);
             UserListDao listsDao = new UserListDao(dataSource);
+            UserMoviePreferencesDao  moviePreferencesDao = new UserMoviePreferencesDao(dataSource);
 
             servletContextEvent.getServletContext().setAttribute("userDao", userDao);
             servletContextEvent.getServletContext().setAttribute("friendRequestDao", friendRequestDAO);
@@ -47,6 +42,7 @@ public class DatabaseInitListener implements ServletContextListener {
             servletContextEvent.getServletContext().setAttribute("favoritesDao", favoritesDao);
             servletContextEvent.getServletContext().setAttribute("listsDao", listsDao);
             servletContextEvent.getServletContext().setAttribute("dataSource", dataSource);
+            servletContextEvent.getServletContext().setAttribute("moviePreferencesDao", moviePreferencesDao);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
         }

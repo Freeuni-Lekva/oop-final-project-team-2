@@ -1,7 +1,6 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.FriendRequest;
-import com.moviemood.bean.Friendship;
 import com.moviemood.bean.User;
 import com.moviemood.bean.FriendSuggestion;
 import com.moviemood.dao.FriendRequestDao;
@@ -14,8 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 @WebServlet("/friend-requests")
 public class FriendRequestsServlet extends HttpServlet {
@@ -50,6 +51,18 @@ public class FriendRequestsServlet extends HttpServlet {
             List<User> allFriends = friendshipDao.getFriendsByUserId(userId);
             List<FriendSuggestion> friendSuggestions = friendshipDao.getFriendSuggestions(userId, 10); // Get top 10 suggestions
 
+            String searchQuery = request.getParameter("search");
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                String currentTab = request.getParameter("tab");
+                if (currentTab == null) currentTab = "your_friends";
+                
+                if ("your_friends".equals(currentTab)) {
+                    allFriends = searchFriends(allFriends, searchQuery);
+                } else if ("suggestions".equals(currentTab)) {
+                    friendSuggestions = searchInSuggestionsAndOthers(friendSuggestions, searchQuery, userId, userDao, friendshipDao);
+                }
+            }
+
             request.setAttribute("incomingRequests", incomingRequests);
             request.setAttribute("sentRequests", sentRequests);
             request.setAttribute("allFriends", allFriends);
@@ -60,5 +73,67 @@ public class FriendRequestsServlet extends HttpServlet {
             e.printStackTrace();
             throw new ServletException("Failed to load friend requests");
         }
+    }
+    
+    /**
+     * Search within existing friends list
+     */
+    private List<User> searchFriends(List<User> friends, String searchQuery) {
+        List<User> filteredFriends = new ArrayList<>();
+        String query = searchQuery.toLowerCase().trim();
+        
+        for (User friend : friends) {
+            if (friend.getUsername().toLowerCase().contains(query)) {
+                filteredFriends.add(friend);
+            }
+        }
+        
+        return filteredFriends;
+    }
+    
+    /**
+     * Search within suggestions and add other users if needed
+     */
+    private List<FriendSuggestion> searchInSuggestionsAndOthers(List<FriendSuggestion> suggestions, 
+                                                               String searchQuery, int userId, 
+                                                               UserDao userDao, FriendshipDao friendshipDao) {
+        List<FriendSuggestion> results = new ArrayList<>();
+        String query = searchQuery.toLowerCase().trim();
+        
+        for (FriendSuggestion suggestion : suggestions) {
+            if (suggestion.getUser().getUsername().toLowerCase().contains(query)) {
+                results.add(suggestion);
+            }
+        }
+        
+        try {
+            List<User> searchResults = userDao.searchUserByQuery(query);
+            
+            List<User> currentFriends = friendshipDao.getFriendsByUserId(userId);
+            Set<Integer> friendIds = new HashSet<>();
+            for (User friend : currentFriends) {
+                friendIds.add(friend.getId());
+            }
+            
+            Set<Integer> suggestionIds = new HashSet<>();
+            for (FriendSuggestion suggestion : results) {
+                suggestionIds.add(suggestion.getUser().getId());
+            }
+            
+            for (User searchResult : searchResults) {
+                if (searchResult.getId() != userId && 
+                    !friendIds.contains(searchResult.getId()) && 
+                    !suggestionIds.contains(searchResult.getId())) {
+                    
+                    FriendSuggestion newSuggestion = new FriendSuggestion(searchResult, 0);
+                    results.add(newSuggestion);
+                }
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return results;
     }
 }

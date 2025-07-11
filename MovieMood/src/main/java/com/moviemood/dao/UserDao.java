@@ -6,6 +6,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import com.moviemood.bean.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is DAO for the User entity.
@@ -124,10 +126,62 @@ public class UserDao {
         }
     }
 
+    /**
+     * Searches for users by username using partial matching
+     * @param searchQuery The search query to match against usernames
+     * @return List of users whose usernames contain the search query
+     */
+    public List<User> searchUserByQuery(String searchQuery) {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT * FROM users WHERE username LIKE ? ORDER BY username";
+        
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            
+            statement.setString(1, "%" + searchQuery + "%");
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String username = rs.getString("username");
+                String email = rs.getString("email");
+                String passwordHash = rs.getString("password_hash");
+                String remember_token = rs.getString("remember_token");
 
+                // Safely get verification fields (columns might not exist in older databases)
+                boolean verified = false;
+                String verificationCode = null;
+                Timestamp verificationCodeExpiry = null;
+                try {
+                    verified = rs.getBoolean("is_verified");
+                    verificationCode = rs.getString("verification_code");
+                    verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
+                } catch (SQLException e) {
+                    // Columns don't exist yet, use defaults
+                }
 
+                // Safely get profile picture (column might not exist in older databases)
+                String profilePicture = null;
+                try {
+                    profilePicture = rs.getString("profile_picture");
+                } catch (SQLException e) {
+                    // Column doesn't exist yet, use null
+                }
 
-
+                User user = new User(id, username, email, passwordHash, remember_token);
+                user.setVerified(verified);
+                user.setVerificationCode(verificationCode);
+                user.setVerificationCodeExpiry(verificationCodeExpiry);
+                user.setProfilePicture(profilePicture);
+                users.add(user);
+            }
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to search users", e);
+        }
+        
+        return users;
+    }
 
     /**
      * Inserts a user in the database.

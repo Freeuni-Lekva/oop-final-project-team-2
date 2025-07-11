@@ -59,16 +59,19 @@
             <a href="friend-requests?tab=sent" class="<%= "sent".equals(tab) ? "active" : "" %>"><button>Sent Requests</button></a>
         </div>
 
+        <% if ("your_friends".equals(tab) || "suggestions".equals(tab)) { %>
         <div class = "search-bar">
-            <form action="send-friend-request" method="post">
+            <form action="friend-requests" method="get">
                 <div class="search-wrapper">
-                    <input type="text" name="receiverUsername" placeholder="Search For Friends">
+                    <input type="text" name="search" placeholder="Search For Friends" value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
+                    <input type="hidden" name="tab" value="<%= tab %>">
                     <button type="submit" class="icon-button">
                         <i class="fa-solid fa-magnifying-glass" style="color:#f39c12"><img src="Images/magnifying-glass-solid.svg" alt=""></i>
                     </button>
                 </div>
             </form>
         </div>
+        <% } %>
 
 
         <% if("incoming".equals(tab)) { %>
@@ -151,6 +154,12 @@
         <% } else if ("your_friends".equals(tab)) { %>
         <h2>Your Friends</h2>
         <%
+            String searchQuery = request.getParameter("search");
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+        %>
+            <p>Search results for "<%= searchQuery %>" in your friends</p>
+        <% } %>
+        <%
             List<User> allFriends = (List<User>) request.getAttribute("allFriends");
             if (allFriends != null && !allFriends.isEmpty()) {
         %>
@@ -167,13 +176,26 @@
         <%
         } else {
         %>
-        <p class="empty-message">You don't have any friends yet.</p>
+        <%
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+        %>
+            <p class="empty-message">No friends found matching "<%= searchQuery %>".</p>
+        <% } else { %>
+            <p class="empty-message">You don't have any friends yet.</p>
+        <% } %>
         <%
             }
         %>
         <% } else if ("suggestions".equals(tab)) { %>
         <h2>Friend Suggestions</h2>
-        <p>People you might know based on mutual friends</p>
+        <%
+            String searchQuery = request.getParameter("search");
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+        %>
+            <p>Search results for "<%= searchQuery %>" in suggestions and other users</p>
+        <% } else { %>
+            <p>People you might know based on mutual friends</p>
+        <% } %>
         <%
             List<FriendSuggestion> friendSuggestions = (List<FriendSuggestion>) request.getAttribute("friendSuggestions");
             if (friendSuggestions != null && !friendSuggestions.isEmpty()) {
@@ -183,7 +205,9 @@
             <li class="friend-request">
                 <span>
                     <%= suggestion.getUser().getUsername() %>
-                    <% if (suggestion.getMutualFriendCount() == 1) { %>
+                    <% if (suggestion.getMutualFriendCount() == 0) { %>
+                        • No mutual friends
+                    <% } else if (suggestion.getMutualFriendCount() == 1) { %>
                         • 1 mutual friend
                     <% } else { %>
                         • <%= suggestion.getMutualFriendCount() %> mutual friends
@@ -202,7 +226,13 @@
         <%
         } else {
         %>
-        <p class="empty-message">No friend suggestions available. Connect with more people to see suggestions!</p>
+        <%
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+        %>
+            <p class="empty-message">No users found matching "<%= searchQuery %>".</p>
+        <% } else { %>
+            <p class="empty-message">No friend suggestions available. Connect with more people to see suggestions!</p>
+        <% } %>
         <%
             }
         %>

@@ -107,9 +107,39 @@ public class UserDao {
     }
 
 
+    public User getUserById(int id) {
+        String query = "SELECT * FROM users WHERE id = ?";
 
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
 
+            if (rs.next()) {
+                String username = rs.getString("username");
+                String email = rs.getString("email");
+                String passwordHash = rs.getString("password_hash");
+                String rememberToken = rs.getString("remember_token");
+
+                boolean verified = rs.getBoolean("is_verified");
+                String verificationCode = rs.getString("verification_code");
+                Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
+
+                User user = new User(id, username, email, passwordHash, rememberToken);
+                user.setVerified(verified);
+                user.setVerificationCode(verificationCode);
+                user.setVerificationCodeExpiry(verificationCodeExpiry);
+
+                return user;
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve user by ID", e);
+        }
+    }
 
     /**
      * Inserts a user in the database.

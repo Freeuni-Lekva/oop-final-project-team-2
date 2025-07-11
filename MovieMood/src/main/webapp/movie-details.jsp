@@ -10,6 +10,9 @@
 <%@ page import="com.moviemood.bean.User" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.moviemood.bean.Genre" %>
+<%@ page import="com.moviemood.dao.UserDao" %>
+<%@ page import="com.moviemood.bean.MovieReview" %>
+<%@ page import="com.moviemood.dao.MovieReviewsDao" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,8 +27,17 @@
 <script src="<%= request.getContextPath() %>/assets/js/movie-details.js"></script>
 <%
     Movie movie = (Movie) request.getAttribute("movie");
+    int movieId=movie.getId();
+    MovieReviewsDao movieReviewsDao=(MovieReviewsDao)request.getServletContext().getAttribute("movieReviewsDao");
+    List<MovieReview> reviews=movieReviewsDao.getMovieReviews(movieId);
     String backDropBaseURL = (String) request.getAttribute("backDropPathBaseURL");
     String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
+    User user=(User) request.getSession().getAttribute("user");
+    Integer userId = null;
+
+    if (user != null) {
+        userId=user.getId();
+    }
 %>
 
 <!-- Include Navigation Bar -->
@@ -51,10 +63,6 @@
             </div>
             <div class="movie-info-main">
                 <h1 class="movie-title-main"><%= movie.getTitle() %></h1>
-<%--                <% if (movie.getTagline() != null && !movie.getTagline().isEmpty()) { %>--%>
-<%--                <p class="movie-tagline">"<%= movie.getTagline() %>"</p>--%>
-<%--                <% } %>--%>
-
                 <div class="movie-meta-main">
                     <div class="meta-item">
                         <span class="meta-label">Release Date:</span>
@@ -94,11 +102,16 @@
                     <button class="btn btn-secondary" disabled>Trailer Unavailable</button>
                     <%
                         }
-                    %>
 
+                        if (user != null) {
+                    %>
                     <button class="btn btn-secondary">+ Add to Watchlist</button>
                     <button class="btn btn-secondary">♡ Add to Favorites</button>
+                    <%
+                        }
+                    %>
                 </div>
+
             </div>
         </div>
     </div>
@@ -130,6 +143,7 @@
         </div>
     </section>
 
+    <% if (user != null) { %>
     <section class="rating-section">
         <h2 class="section-title">Rate This Movie</h2>
         <div class="rating-container">
@@ -144,53 +158,55 @@
             <button class="submit-rating" id="submitRating">Submit Rating</button>
         </div>
     </section>
+    <% } %>
+
 
     <section class="reviews-section">
         <h2 class="section-title">Reviews</h2>
 
+        <% if (user!=null) { %>
         <div class="review-form">
             <h3 style="margin-bottom: 20px; color: #f39c12;">Write a Review</h3>
-            <form id="reviewForm">
+            <form id="reviewForm" action="<%= request.getContextPath() %>/add-review" method="POST">
+            <input type="hidden" name="movieId" value="<%=movieId%>" />
+                <input type="hidden" name="userId" value="<%=userId%>" />
+
                 <div class="form-group">
                     <textarea id="reviewText" name="reviewText" placeholder="Share your thoughts about this movie..." required></textarea>
                 </div>
+
                 <button type="submit" class="btn btn-primary">Submit Review</button>
             </form>
+
         </div>
+        <% } %>
 
         <div class="reviews-list" id="reviewsList">
-            <!-- Sample Reviews -->
+            <% if (reviews == null || reviews.isEmpty()) { %>
+            <p style="color: gray; font-style: italic;">No reviews yet. Be the first to write one!</p>
+            <% } else {
+                for (MovieReview review : reviews) {
+                    UserDao userDao = (UserDao) application.getAttribute("userDao");
+                    String reviewerName = userDao.getUserById(review.getUserId()).getUsername();
+                    String initials = reviewerName.trim().isEmpty() ? "?" : reviewerName.substring(0, 1).toUpperCase();
+            %>
             <div class="review-item">
                 <div class="review-header">
                     <div class="reviewer-info">
-                        <div class="reviewer-avatar">JD</div>
+                        <div class="reviewer-avatar"><%= initials %></div>
                         <div>
-                            <div class="reviewer-name">John Doe</div>
-                            <div class="review-date">July 5, 2025</div>
+                            <div class="reviewer-name"><%= reviewerName %></div>
+                            <div class="review-date"><%= review.getFormattedDate() %></div>
                         </div>
                     </div>
-                    <div class="review-rating">★★★★☆</div>
+                    <div class="review-rating">★★★★☆</div> <!-- You can customize this if you add rating support -->
                 </div>
-                <div class="review-text">
-                    An absolutely captivating film that keeps you on the edge of your seat from start to finish. The cinematography is breathtaking and the performances are outstanding. Highly recommend this movie to anyone looking for a great cinematic experience.
-                </div>
+                <div class="review-text"><%= review.getReviewText() %></div>
             </div>
-
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar">MS</div>
-                        <div>
-                            <div class="reviewer-name">Movie Enthusiast</div>
-                            <div class="review-date">July 4, 2025</div>
-                        </div>
-                    </div>
-                    <div class="review-rating">★★★★★</div>
-                </div>
-                <div class="review-text">
-                    This movie exceeded all my expectations! The plot is engaging, the characters are well-developed, and the ending is satisfying. A must-watch for fans of the genre.
-                </div>
-            </div>
+            <%
+                    } // end for
+                } // end else
+            %>
         </div>
     </section>
 </main>

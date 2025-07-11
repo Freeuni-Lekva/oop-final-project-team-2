@@ -1,6 +1,7 @@
 package com.moviemood.bean;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 public class MovieReview {
     private int id;
@@ -60,6 +61,11 @@ public class MovieReview {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getFormattedDate() {
+        if (createdAt == null) return "";
+        return new SimpleDateFormat("MMMM d, yyyy").format(createdAt);
     }
 
     // Optional: toString()

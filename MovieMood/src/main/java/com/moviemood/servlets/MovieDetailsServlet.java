@@ -1,7 +1,9 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.Movie;
+import com.moviemood.bean.User;
 import com.moviemood.config.Config;
+import com.moviemood.dao.UserDao;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;

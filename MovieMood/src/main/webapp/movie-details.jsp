@@ -220,10 +220,6 @@
                                 %>
                             </div>
                         </div>
-                    <% } else { %>
-                        <button id="watchlistBtn" class="btn btn-secondary" title="Please log in to add to watchlist">+ Add to Watchlist</button>
-                        <button id="favoritesBtn" class="btn btn-secondary" title="Please log in to add to favorites">♡ Add to Favorites</button>
-                        <button id="addToListBtn" class="btn btn-secondary" title="Please log in to create lists">📝 Add to List</button>
                     <% } %>
                 </div>
 

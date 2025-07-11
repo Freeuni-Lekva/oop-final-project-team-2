@@ -3,6 +3,7 @@ package com.moviemood.servlets;
 import com.moviemood.bean.User;
 import com.moviemood.bean.UserList;
 import com.moviemood.dao.UserListDao;
+import com.moviemood.dao.UserDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,13 +34,41 @@ public class ListsServlet extends HttpServlet {
             return;
         }
         
+        // Determine whose lists to show
+        String username = request.getParameter("user");
+        User targetUser = currentUser; // Default to current user
+        boolean isOwnLists = true;
+        
+        if (username != null && !username.trim().isEmpty()) {
+            // Viewing someone else's lists
+            try {
+                UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
+                if (userDao != null) {
+                    User foundUser = userDao.getUserByUsername(username);
+                    if (foundUser != null) {
+                        targetUser = foundUser;
+                        isOwnLists = (currentUser.getId() == foundUser.getId());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Fall back to current user if error
+            }
+        }
+        
         List<UserList> userLists = new ArrayList<>();
         
-        // Get real user lists from database
+        // Get user lists from database
         try {
             UserListDao listsDao = (UserListDao) getServletContext().getAttribute("listsDao");
             if (listsDao != null) {
-                userLists = listsDao.getUserLists(currentUser.getId());
+                if (isOwnLists) {
+                    // Show all lists for own profile
+                    userLists = listsDao.getUserLists(targetUser.getId());
+                } else {
+                    // Show only public lists for other users' profiles
+                    userLists = listsDao.getPublicUserLists(targetUser.getId());
+                }
                 
                 // Populate movie counts for each list
                 for (UserList list : userLists) {
@@ -47,7 +76,7 @@ public class ListsServlet extends HttpServlet {
                     list.setMovieCount(movieCount);
                 }
                 
-                System.out.println("Retrieved " + userLists.size() + " lists for user: " + currentUser.getUsername());
+                System.out.println("Retrieved " + userLists.size() + " lists for user: " + targetUser.getUsername());
             } else {
                 System.err.println("ListsDao is null - not properly initialized");
             }
@@ -60,6 +89,8 @@ public class ListsServlet extends HttpServlet {
         // Set attributes for JSP
         request.setAttribute("userLists", userLists);
         request.setAttribute("currentUser", currentUser);
+        request.setAttribute("targetUser", targetUser);
+        request.setAttribute("isOwnLists", isOwnLists);
         
         // Forward to the lists page
         request.getRequestDispatcher("/lists.jsp").forward(request, response);

@@ -75,19 +75,6 @@
         </section>
         <% } %>
 
-
-        <%
-            User currentUser = (User) session.getAttribute("user");
-            if (currentUser != null) {
-        %>
-        <div class="activity-button-container">
-            <a href="friends-activity" class="friends-activity-btn">
-                <span class="btn-text">Friends' Activity</span>
-                <span class="btn-subtitle">See what your friends are watching</span>
-            </a>
-        </div>
-        <% } %>
-
         <section class="filters">
             <form method="get" action="/Home">
                 <div class="filter-row">

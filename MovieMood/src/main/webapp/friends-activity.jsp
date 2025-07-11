@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friends' Activity - MovieMood</title>
     <link rel="stylesheet" href="assets/css/navbar.css?v=<%= System.currentTimeMillis() %>">
-    <link rel="stylesheet" href="assets/css/friend-requests.css?v=<%= System.currentTimeMillis() %>">
+    <link rel="stylesheet" href="assets/css/mainpage.css?v=<%= System.currentTimeMillis() %>">
     <link rel="stylesheet" href="assets/css/friends-activity.css?v=<%= System.currentTimeMillis() %>">
 </head>
 <body>
@@ -68,18 +68,17 @@
                                 </a>
                             <% } %>
                             
-                            <% if ("created_list".equals(activity.getActivityType()) && activity.getListName() != null) { %>
+                            <% if ("added_to_list".equals(activity.getActivityType()) && activity.getListName() != null) { %>
                                 <span class="list-name">"<%= activity.getListName() %>"</span>
-                                <% if (activity.getAdditionalInfo() != null && !activity.getAdditionalInfo().trim().isEmpty()) { %>
-                                    <div class="review-preview">
-                                        <%= activity.getAdditionalInfo() %>
-                                    </div>
-                                <% } %>
                             <% } %>
                             
-                            <% if ("reviewed".equals(activity.getActivityType()) && activity.getAdditionalInfo() != null) { %>
+                            <% if (("created_list".equals(activity.getActivityType()) || "reviewed".equals(activity.getActivityType())) && activity.getAdditionalInfo() != null && !activity.getAdditionalInfo().trim().isEmpty()) { %>
                                 <div class="review-preview">
-                                    "<%= activity.getAdditionalInfo() %>..."
+                                    <% if ("reviewed".equals(activity.getActivityType())) { %>
+                                        "<%= activity.getAdditionalInfo() %>..."
+                                    <% } else { %>
+                                        <%= activity.getAdditionalInfo() %>
+                                    <% } %>
                                 </div>
                             <% } %>
                         </div>

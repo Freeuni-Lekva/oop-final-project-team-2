@@ -65,53 +65,53 @@ public class FriendshipDao {
     }
 
 
-    /**
-     * returns all Friendships present in the table for the given user
-     *
-     * @param userId ID of the user
-     * @return ArrayList of Friendships for given user
-     */
-    public List<Friendship> getFriendshipsForUser(int userId) {
-        List<Friendship> friendships = new ArrayList<>();
-        String query = "SELECT * FROM friendships where user1_id = ? OR user2_id = ?";
+//    /**
+//     * returns all Friendships present in the table for the given user
+//     *
+//     * @param userId ID of the user
+//     * @return ArrayList of Friendships for given user
+//     */
+//    public List<Friendship> getFriendshipsForUser(int userId) {
+//        List<Friendship> friendships = new ArrayList<>();
+//        String query = "SELECT * FROM friendships where user1_id = ? OR user2_id = ?";
+//
+//        try(Connection con = dataSource.getConnection();
+//        PreparedStatement stmt = con.prepareStatement(query)) {
+//
+//            stmt.setInt(1, userId);
+//            stmt.setInt(2, userId);
+//            ResultSet rs = stmt.executeQuery();
+//            while(rs.next()) {
+//                friendships.add(new Friendship(rs.getInt(1), rs.getInt(2), rs.getTimestamp(3).toLocalDateTime()));
+//            }
+//
+//        }catch(SQLException e) {
+//            throw new RuntimeException("Failed to make connection to database", e);
+//        }
+//        return friendships;
+//    }
 
-        try(Connection con = dataSource.getConnection();
-        PreparedStatement stmt = con.prepareStatement(query)) {
 
-            stmt.setInt(1, userId);
-            stmt.setInt(2, userId);
-            ResultSet rs = stmt.executeQuery();
-            while(rs.next()) {
-                friendships.add(new Friendship(rs.getInt(1), rs.getInt(2), rs.getTimestamp(3).toLocalDateTime()));
-            }
-
-        }catch(SQLException e) {
-            throw new RuntimeException("Failed to make connection to database", e);
-        }
-        return friendships;
-    }
-
-
-    /**
-     * Checks whether given friendship exists in the table
-     *
-     * @param friendship
-     * @return returns true if Friendship exists in the table
-     */
-    public boolean friendshipExists(Friendship friendship) {
-        String query = "SELECT 1 FROM friendships WHERE user1_id = ? AND user2_id = ?";
-        try(Connection con = dataSource.getConnection();
-        PreparedStatement stmt = con.prepareStatement(query)) {
-
-            stmt.setInt(1, friendship.getUser1Id());
-            stmt.setInt(2, friendship.getUser2Id());
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
-
-        }catch(SQLException e) {
-            throw new RuntimeException("Failed to make connection to database", e);
-        }
-    }
+//    /**
+//     * Checks whether given friendship exists in the table
+//     *
+//     * @param friendship
+//     * @return returns true if Friendship exists in the table
+//     */
+//    public boolean friendshipExists(Friendship friendship) {
+//        String query = "SELECT 1 FROM friendships WHERE user1_id = ? AND user2_id = ?";
+//        try(Connection con = dataSource.getConnection();
+//        PreparedStatement stmt = con.prepareStatement(query)) {
+//
+//            stmt.setInt(1, friendship.getUser1Id());
+//            stmt.setInt(2, friendship.getUser2Id());
+//            ResultSet rs = stmt.executeQuery();
+//            return rs.next();
+//
+//        }catch(SQLException e) {
+//            throw new RuntimeException("Failed to make connection to database", e);
+//        }
+//    }
 
     public List<User> getFriendsByUserId(int userId) {
         List<User> friends = new ArrayList<>();

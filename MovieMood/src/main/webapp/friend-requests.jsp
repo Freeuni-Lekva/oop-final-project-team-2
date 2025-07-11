@@ -19,6 +19,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="assets/css/navbar.css?v=<%= System.currentTimeMillis() %>">
+    <link rel="stylesheet" href="assets/css/mainpage.css?v=<%= System.currentTimeMillis() %>">
     <link rel="stylesheet" href="assets/css/friend-requests.css?v=<%= System.currentTimeMillis() %>">
 
     <title>Friend Requests</title>
@@ -34,7 +35,7 @@
         }
     %>
 
-    <div class="container">
+    <div class="friends-container">
         <h1><span class="highlight">Friends</span></h1>
         <p>Manage your connections and discover new people</p>
         

@@ -4,6 +4,7 @@ import com.moviemood.bean.User;
 import com.moviemood.bean.Movie;
 import com.moviemood.config.Config;
 import com.moviemood.dao.UserFavoritesDao;
+import com.moviemood.dao.UserDao;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
@@ -36,13 +37,35 @@ public class FavoritesServlet extends HttpServlet {
             return;
         }
         
+        // Determine whose favorites to show
+        String username = request.getParameter("user");
+        User targetUser = currentUser; // Default to current user
+        boolean isOwnFavorites = true;
+        
+        if (username != null && !username.trim().isEmpty()) {
+            // Viewing someone else's favorites
+            try {
+                UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
+                if (userDao != null) {
+                    User foundUser = userDao.getUserByUsername(username);
+                    if (foundUser != null) {
+                        targetUser = foundUser;
+                        isOwnFavorites = (currentUser.getId() == foundUser.getId());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Fall back to current user if error
+            }
+        }
+        
         List<Movie> favoritesMovies = new ArrayList<>();
         
-        // Get real user favorites from database
+        // Get user favorites from database
         try {
             UserFavoritesDao favoritesDao = (UserFavoritesDao) getServletContext().getAttribute("favoritesDao");
             if (favoritesDao != null) {
-                List<Integer> movieIds = favoritesDao.getUserFavorites(currentUser.getId());
+                List<Integer> movieIds = favoritesDao.getUserFavorites(targetUser.getId());
                 favoritesMovies = fetchMoviesFromTmdb(movieIds);
             }
         } catch (Exception e) {
@@ -52,6 +75,8 @@ public class FavoritesServlet extends HttpServlet {
         
         request.setAttribute("favoritesMovies", favoritesMovies);
         request.setAttribute("currentUser", currentUser);
+        request.setAttribute("targetUser", targetUser);
+        request.setAttribute("isOwnFavorites", isOwnFavorites);
         request.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
         
         request.getRequestDispatcher("/favorites.jsp").forward(request, response);

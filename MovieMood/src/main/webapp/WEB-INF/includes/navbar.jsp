@@ -23,6 +23,7 @@
                     if (currentUser != null) {
                 %>
                     <a href="/friend-requests">Friends</a>
+                    <a href="/friends-activity">Activity</a>
                     <a href="/profile" class="create-account-btn">Profile</a>
                 <%
                     } else {

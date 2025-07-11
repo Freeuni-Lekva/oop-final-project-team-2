@@ -5,7 +5,7 @@ body {
     min-height: 100vh;
 }
 
-.container {
+.friends-container {
     max-width: 1000px;
     margin: 0 auto;
     padding: 40px 20px;
@@ -372,7 +372,7 @@ ul.request-list {
 }
 
 @media (max-width: 768px) {
-    .container {
+    .friends-container {
         padding: 20px 15px;
     }
     

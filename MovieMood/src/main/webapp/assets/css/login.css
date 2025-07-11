@@ -1,3 +1,4 @@
+/* login.css */
 * {
     margin: 0;
     padding: 0;
@@ -149,6 +150,30 @@ input[type="submit"]:hover {
 
 .signup-link a:hover {
     color: #e67e22;
+    text-decoration: underline;
+}
+
+.home-link {
+    text-align: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.home-link p {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.home-link a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.home-link a:hover {
+    color: #ffffff;
     text-decoration: underline;
 }
 

@@ -43,6 +43,7 @@
 
     <%
         String keepUsername = (String) request.getAttribute("keepUsername");
+        String keepPassword = (String) request.getAttribute("keepPassword");
     %>
 
     <form method="post" action="login">
@@ -62,6 +63,10 @@
 
     <div class="signup-link">
         <p>Don't have an account? <a href="register.jsp">Sign Up</a> </p>
+    </div>
+
+    <div class="home-link">
+        <p><a href="index.jsp">← Back to Home</a></p>
     </div>
 </div>
 </body>

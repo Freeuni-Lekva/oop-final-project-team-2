@@ -115,7 +115,7 @@ public class FriendshipDao {
 
     public List<User> getFriendsByUserId(int userId) {
         List<User> friends = new ArrayList<>();
-        String query = "SELECT u.id, u.username, u.email, u.password_hash, u.remember_token " +
+        String query = "SELECT u.id, u.username, u.email, u.password_hash, u.remember_token, u.profile_picture " +
                 "FROM friendships f " +
                 "JOIN users u ON (" +
                 "    (u.id = f.user1_id AND f.user2_id = ?) OR " +
@@ -135,6 +135,7 @@ public class FriendshipDao {
                             rs.getString("password_hash"),
                             rs.getString("remember_token")
                     );
+                    friend.setProfilePicture(rs.getString("profile_picture"));
                     friends.add(friend);
                 }
             }
@@ -188,7 +189,7 @@ public class FriendshipDao {
         });
         
         List<FriendSuggestion> suggestions = new ArrayList<>();
-        String getUserQuery = "SELECT id, username FROM users WHERE id = ?";
+        String getUserQuery = "SELECT id, username, profile_picture FROM users WHERE id = ?";
         
         int count = 0;
         for (Map.Entry<Integer, Integer> entry : sortedEntries) {
@@ -205,6 +206,7 @@ public class FriendshipDao {
                                 rs.getString("username"),
                                 null, null, null
                         );
+                        user.setProfilePicture(rs.getString("profile_picture"));
                         FriendSuggestion suggestion = new FriendSuggestion(user, entry.getValue());
                         suggestions.add(suggestion);
                         count++;
@@ -218,7 +220,7 @@ public class FriendshipDao {
         return suggestions;
     }
     
-    private Set<Integer> getExcludedUserIds(int userId) {
+    public Set<Integer> getExcludedUserIds(int userId) {
         Set<Integer> excludedIds = new HashSet<>();
         String query = 
             "SELECT receiver_id FROM friend_requests WHERE sender_id = ? AND status = 'pending' " +

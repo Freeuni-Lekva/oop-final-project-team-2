@@ -13,7 +13,7 @@
         <nav class="nav">
             <div class="logo">
                 <a href="/Home">
-                    <img src=<%=request.getContextPath()%>"/Images/logo.png" alt="MovieMood Logo">
+                    <img src="<%=request.getContextPath()%>/Images/logo.png" alt="MovieMood Logo">
                     <span class="logo-text">MovieMood</span>
                 </a>
             </div>
@@ -22,13 +22,19 @@
                     User currentUser = (User) session.getAttribute("user");
                     if (currentUser != null) {
                 %>
-                    <a href="/friend-requests">Friends</a>
-                    <a href="/friends-activity">Activity</a>
-                    <a href="/profile" class="create-account-btn">Profile</a>
+                <a href="/friend-requests">Friends</a>
+                <a href="/friends-activity">Activity</a>
+                <a href="/profile" class="profile-circle">
+                    <% if (currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) { %>
+                    <img src="/profile-picture/<%= currentUser.getProfilePicture() %>" alt="<%= currentUser.getUsername() %>'s Profile">
+                    <% } else { %>
+                    <span class="profile-initials"><%= currentUser.getUsername().substring(0, 1).toUpperCase() %></span>
+                    <% } %>
+                </a>
                 <%
-                    } else {
+                } else {
                 %>
-                    <a href="/login" class="create-account-btn">Login</a>
+                <a href="/login" class="create-account-btn">Login</a>
                 <%
                     }
                 %>

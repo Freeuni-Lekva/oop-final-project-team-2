@@ -25,10 +25,6 @@
     <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/assets/css/moviedetails.css">
     <style>
         /* Add to List dropdown styles */
-        .add-to-list-container {
-            position: relative;
-            display: inline-block;
-        }
 
         .list-dropdown {
             position: fixed;
@@ -40,7 +36,6 @@
             overflow-y: auto;
             z-index: 9999;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            margin-top: 5px;
         }
 
         .list-option {
@@ -171,6 +166,7 @@
                     <p><%= movie.getOverview() %></p>
                 </div>
 
+                <!-- Primary Action Buttons -->
                 <div class="action-buttons">
                     <%
                         String trailerKey = (String) request.getAttribute("trailerKey");
@@ -184,44 +180,49 @@
                     %>
                     <button class="btn btn-secondary" disabled>Trailer Unavailable</button>
                     <% } %>
+                    
+                    <!-- User action buttons next to trailer -->
                     <% if (user != null) { %>
-                        <button id="watchlistBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-watchlist="<%= isInWatchlist %>">
-                            <%= isInWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist" %>
-                        </button>
-                        <button id="favoritesBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-favorites="<%= isInFavorites %>" title="<%= isInFavorites ? "Remove from Favorites" : "Add to Favorites" %>">
-                            <%= isInFavorites ? "♥" : "♡" %>
-                        </button>
-
-                        <!-- Add to List Button with Dropdown -->
-                        <div class="add-to-list-container" style="position: relative; display: inline-block;">
-                            <button id="addToListBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">
-                                📝 Add to List
-                            </button>
-                            <div id="listDropdown" class="list-dropdown" style="display: none;">
-                                <%
-                                    List<UserList> userLists = (List<UserList>) request.getAttribute("userLists");
-                                    if (userLists != null && !userLists.isEmpty()) {
-                                        for (UserList list : userLists) {
-                                %>
-                                <div class="list-option" data-list-id="<%= list.getId() %>" data-in-list="<%= list.isContainsCurrentMovie() %>">
-                                    <span class="list-name"><%= list.getName() %></span>
-                                    <span class="list-status"><%= list.isContainsCurrentMovie() ? "✓" : "+" %></span>
-                                </div>
-                                <%
-                                        }
-                                    } else {
-                                %>
-                                <div class="no-lists-message">
-                                    <span>No lists found</span>
-                                    <a href="/lists" class="create-list-link">Create your first list</a>
-                                </div>
-                                <%
-                                    }
-                                %>
-                            </div>
+                    <button id="watchlistBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-watchlist="<%= isInWatchlist %>">
+                        <%= isInWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist" %>
+                    </button>
+                    
+                    <button id="addToListBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">
+                        Add to List
+                    </button>
+                    
+                    <button id="favoritesBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-favorites="<%= isInFavorites %>" title="<%= isInFavorites ? "Remove from Favorites" : "Add to Favorites" %>">
+                        <%= isInFavorites ? "♥" : "♡" %>
+                    </button>
+                    
+                    <!-- List Dropdown - positioned relative to the addToListBtn -->
+                    <div id="listDropdown" class="list-dropdown" style="display: none;">
+                        <%
+                            List<UserList> userLists = (List<UserList>) request.getAttribute("userLists");
+                            if (userLists != null && !userLists.isEmpty()) {
+                                for (UserList list : userLists) {
+                        %>
+                        <div class="list-option" data-list-id="<%= list.getId() %>" data-in-list="<%= list.isContainsCurrentMovie() %>">
+                            <span class="list-name"><%= list.getName() %></span>
+                            <span class="list-status"><%= list.isContainsCurrentMovie() ? "✓" : "+" %></span>
                         </div>
+                        <%
+                                }
+                            } else {
+                        %>
+                        <div class="no-lists-message">
+                            <span>No lists found</span>
+                            <a href="/lists" class="create-list-link">Create your first list</a>
+                        </div>
+                        <%
+                            }
+                        %>
+                    </div>
                     <% } %>
                 </div>
+                </div>
+
+
 
             </div>
         </div>

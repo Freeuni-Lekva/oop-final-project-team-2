@@ -25,6 +25,21 @@
     gap: 10px;
 }
 
+.logo a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo a:hover,
+.logo a:visited,
+.logo a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
 .logo img {
     width: 40px;
     height: 40px;
@@ -66,6 +81,46 @@
 
 .create-account-btn:hover {
     background: #e67e22;
+}
+
+/* Profile Circle Button */
+.profile-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid #f39c12;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+.profile-circle:hover {
+    transform: scale(1.1);
+    border-color: #e67e22;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+}
+
+.profile-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-initials {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    line-height: 1;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Responsive Navigation */

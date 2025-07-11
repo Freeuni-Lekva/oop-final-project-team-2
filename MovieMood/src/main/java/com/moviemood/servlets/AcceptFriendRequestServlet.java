@@ -41,7 +41,17 @@ public class AcceptFriendRequestServlet extends HttpServlet {
 
             friendRequestDao.deleteRequest(requestId);
 
-            response.sendRedirect("friend-requests?tab=incoming");
+            String redirectTo = request.getParameter("redirectTo");
+            if ("profile".equals(redirectTo)) {
+                String redirectUser = request.getParameter("redirectUser");
+                if (redirectUser != null) {
+                    response.sendRedirect("profile?user=" + redirectUser + "&message=Friend request accepted");
+                } else {
+                    response.sendRedirect("profile?message=Friend request accepted");
+                }
+            } else {
+                response.sendRedirect("friend-requests?tab=incoming");
+            }
 
         } catch (NumberFormatException e) {
             e.printStackTrace();

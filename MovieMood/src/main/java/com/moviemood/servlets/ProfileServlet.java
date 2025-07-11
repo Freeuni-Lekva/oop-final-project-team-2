@@ -1,6 +1,7 @@
 package com.moviemood.servlets;
 
 import com.moviemood.bean.User;
+import com.moviemood.dao.FriendRequestDao;
 import com.moviemood.dao.FriendshipDao;
 import com.moviemood.dao.MovieReviewsDao;
 import com.moviemood.dao.UserDao;
@@ -64,6 +65,57 @@ public class ProfileServlet extends HttpServlet {
             // Check if viewing own profile
             boolean isOwnProfile = currentUser.getId() == profileUser.getId();
             
+            
+            String relationshipStatus = "none"; 
+            Integer pendingRequestId = null;
+            
+            if (!isOwnProfile) {
+                try {
+                    FriendshipDao friendshipDao = (FriendshipDao) getServletContext().getAttribute("friendshipDao");
+                    FriendRequestDao friendRequestDao = (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
+                    
+                    if (friendshipDao != null && friendRequestDao != null) {
+                    
+                        boolean areFriends = false;
+                        for (User friend : friendshipDao.getFriendsByUserId(currentUser.getId())) {
+                            if (friend.getId() == profileUser.getId()) {
+                                areFriends = true;
+                                break;
+                            }
+                        }
+                        
+                        if (areFriends) {
+                            relationshipStatus = "friends";
+                        } else {
+                            boolean sentRequest = false;
+                            for (com.moviemood.bean.FriendRequest friendRequest : friendRequestDao.getSentRequests(currentUser.getId())) {
+                                if (friendRequest.getReceiverId() == profileUser.getId() && "pending".equals(friendRequest.getStatus())) {
+                                    sentRequest = true;
+                                    break;
+                                }
+                            }
+                            
+                            boolean receivedRequest = false;
+                            for (com.moviemood.bean.FriendRequest friendRequest : friendRequestDao.getIncomingRequests(currentUser.getId())) {
+                                if (friendRequest.getSenderId() == profileUser.getId() && "pending".equals(friendRequest.getStatus())) {
+                                    receivedRequest = true;
+                                    pendingRequestId = friendRequest.getRequestId();
+                                    break;
+                                }
+                            }
+                            
+                            if (sentRequest) {
+                                relationshipStatus = "request_sent";
+                            } else if (receivedRequest) {
+                                relationshipStatus = "request_received";
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
             // Get real statistics from database
             int watchlistCount = 0;
             int reviewsCount = 0;
@@ -104,6 +156,8 @@ public class ProfileServlet extends HttpServlet {
             request.setAttribute("reviewsCount", reviewsCount);
             request.setAttribute("favoritesCount", favoritesCount);
             request.setAttribute("friendsCount", friendsCount);
+            request.setAttribute("relationshipStatus", relationshipStatus);
+            request.setAttribute("pendingRequestId", pendingRequestId);
             
             // Forward to profile JSP
             request.getRequestDispatcher("/profile.jsp").forward(request, response);

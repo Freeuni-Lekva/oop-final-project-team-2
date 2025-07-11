@@ -173,6 +173,31 @@ public class FriendRequestDao {
     }
 
 
+    /**
+     * Cancels a sent friend request by updating its status to 'cancelled'
+     * 
+     * @param senderId The ID of the user who sent the request
+     * @param receiverUsername The username of the user who would receive the request
+     * @return true if the request was successfully cancelled, false otherwise
+     */
+    public boolean cancelSentRequest(int senderId, String receiverUsername) {
+        String query = "UPDATE friend_requests SET status = 'cancelled' " +
+                "WHERE sender_id = ? AND receiver_id = (SELECT id FROM users WHERE username = ?) AND status = 'pending'";
+        
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement stmt = con.prepareStatement(query)) {
+            
+            stmt.setInt(1, senderId);
+            stmt.setString(2, receiverUsername);
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to cancel friend request", e);
+        }
+    }
+
     // might have to implement later
 //    public FriendRequest getRequestById(int requestId) {
 //        return null;

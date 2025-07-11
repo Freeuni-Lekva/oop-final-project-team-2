@@ -32,6 +32,7 @@ public class DatabaseInitListener implements ServletContextListener {
             MovieReviewsDao reviewsDao = new MovieReviewsDao(dataSource);
             UserFavoritesDao favoritesDao = new UserFavoritesDao(dataSource);
             UserListDao listsDao = new UserListDao(dataSource);
+            FriendActivityDao activityDao = new FriendActivityDao(dataSource);
             UserMoviePreferencesDao  moviePreferencesDao = new UserMoviePreferencesDao(dataSource);
 
             servletContextEvent.getServletContext().setAttribute("userDao", userDao);
@@ -41,6 +42,7 @@ public class DatabaseInitListener implements ServletContextListener {
             servletContextEvent.getServletContext().setAttribute("reviewsDao", reviewsDao);
             servletContextEvent.getServletContext().setAttribute("favoritesDao", favoritesDao);
             servletContextEvent.getServletContext().setAttribute("listsDao", listsDao);
+            servletContextEvent.getServletContext().setAttribute("activityDao", activityDao);
             servletContextEvent.getServletContext().setAttribute("dataSource", dataSource);
             servletContextEvent.getServletContext().setAttribute("moviePreferencesDao", moviePreferencesDao);
         } catch (Exception e) {
@@ -210,6 +212,7 @@ public class DatabaseInitListener implements ServletContextListener {
             createUserFavoritesTable(statement);
             createUserListsTable(statement);
             createUserListItemsTable(statement);
+            createFriendsActivityView(statement);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
@@ -229,6 +232,69 @@ public class DatabaseInitListener implements ServletContextListener {
                 throw e;
             }
         }
+    }
+
+    // Create friends activity view for easy querying of all friend activities
+    private void createFriendsActivityView(Statement statement) throws SQLException {
+        try {
+            statement.executeUpdate("DROP VIEW IF EXISTS friends_activity_view");
+        } catch (SQLException e) {
+        }
+
+        statement.executeUpdate(
+            "CREATE VIEW friends_activity_view AS " +
+
+            // Favorites/Likes
+            "SELECT 'liked' as activity_type, " +
+            "       u.id as user_id, u.username, u.profile_picture, " +
+            "       f.movie_id, NULL as list_id, NULL as list_name, " +
+            "       f.added_date as activity_time, NULL as additional_info " +
+            "FROM user_favorites f " +
+            "JOIN users u ON f.user_id = u.id " +
+
+            "UNION ALL " +
+
+            // Watchlist additions
+            "SELECT 'added_to_watchlist' as activity_type, " +
+            "       u.id as user_id, u.username, u.profile_picture, " +
+            "       w.movie_id, NULL as list_id, NULL as list_name, " +
+            "       w.added_date as activity_time, NULL as additional_info " +
+            "FROM user_watchlist w " +
+            "JOIN users u ON w.user_id = u.id " +
+
+            "UNION ALL " +
+
+            // List creations
+            "SELECT 'created_list' as activity_type, " +
+            "       u.id as user_id, u.username, u.profile_picture, " +
+            "       NULL as movie_id, ul.id as list_id, ul.name as list_name, " +
+            "       ul.created_at as activity_time, ul.description as additional_info " +
+            "FROM user_lists ul " +
+            "JOIN users u ON ul.user_id = u.id " +
+            "WHERE ul.is_public = 1 " +
+
+            "UNION ALL " +
+
+            // Movie additions to lists
+            "SELECT 'added_to_list' as activity_type, " +
+            "       u.id as user_id, u.username, u.profile_picture, " +
+            "       uli.movie_id, ul.id as list_id, ul.name as list_name, " +
+            "       uli.added_at as activity_time, NULL as additional_info " +
+            "FROM user_list_items uli " +
+            "JOIN user_lists ul ON uli.list_id = ul.id " +
+            "JOIN users u ON ul.user_id = u.id " +
+            "WHERE ul.is_public = 1 " +
+
+            "UNION ALL " +
+
+            // Reviews
+            "SELECT 'reviewed' as activity_type, " +
+            "       u.id as user_id, u.username, u.profile_picture, " +
+            "       r.movie_id, NULL as list_id, NULL as list_name, " +
+            "       r.created_at as activity_time, LEFT(r.review_text, 100) as additional_info " +
+            "FROM movie_reviews r " +
+            "JOIN users u ON r.user_id = u.id"
+        );
     }
 
     @Override

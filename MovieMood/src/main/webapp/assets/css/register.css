@@ -175,3 +175,47 @@ input[type="submit"]:hover {
     color: #e2e8f0 !important;
     display: inline !important;
 }
+
+/* Google Sign-In Container */
+.google-signin-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Divider between Google and regular register */
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.divider span {
+    background: rgba(30, 41, 59, 0.95);
+    padding: 0 15px;
+    color: #94a3b8;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Google Sign-In Button Styling */
+.g_id_signin {
+    width: 100% !important;
+}
+
+.g_id_signin iframe {
+    width: 100% !important;
+    border-radius: 8px !important;
+}

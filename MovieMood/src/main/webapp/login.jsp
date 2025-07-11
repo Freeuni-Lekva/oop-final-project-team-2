@@ -4,6 +4,7 @@
     <title>Login - MovieMood</title>
     <link rel="stylesheet" type="text/css" href="assets/css/login.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="assets/js/login.js"></script>
 </head>
 <body>
 <div class="container">
@@ -65,31 +66,5 @@
         <p>Don't have an account? <a href="register.jsp">Sign Up</a> </p>
     </div>
 </div>
-
-<script>
-    function handleCredentialResponse(response) {
-        fetch('/auth/google', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                credential: response.credential
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = data.redirect;
-                } else {
-                    alert('Google Sign-In failed: ' + (data.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Google Sign-In failed. Please try again.');
-            });
-    }
-</script>
 </body>
 </html>

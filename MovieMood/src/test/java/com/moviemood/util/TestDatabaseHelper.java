@@ -5,6 +5,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Utility class for setting up H2 in-memory database for testing.
@@ -50,6 +51,19 @@ public class TestDatabaseHelper {
         executeSQL(dataSource, createUsersTableSQL);
     }
 
+    //create movie_ratings table
+    public static void createMovieRatingsTable(Statement statement) throws SQLException {
+        statement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS movie_ratings (" +
+                        "movie_id INT NOT NULL, " +
+                        "user_id INT NOT NULL, " +
+                        "score_value DOUBLE NOT NULL, " +
+                        "score_date DATE, " +
+                        "PRIMARY KEY (user_id, movie_id), " +
+                        "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                        ");"
+        );
+    }
 
     /**
      * Creates the user_movie_preferences table in the test database.

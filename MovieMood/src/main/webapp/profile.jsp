@@ -36,9 +36,6 @@
 
     <main class="main-content">
         <div class="container">
-            <!-- Navigation Button -->
-            <a href="Home" class="nav-btn">Back to Movies</a>
-
             <!-- First Row: Photo and Name -->
             <div class="profile-header">
                 <div class="profile-avatar">

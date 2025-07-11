@@ -12,11 +12,13 @@
     <div class="container">
         <nav class="nav">
             <div class="logo">
-                <img src=<%=request.getContextPath()%>"/Images/logo.png" alt="MovieMood Logo">
-                <span class="logo-text">MovieMood</span>
+                <a href="/Home">
+                    <img src=<%=request.getContextPath()%>"/Images/logo.png" alt="MovieMood Logo">
+                    <span class="logo-text">MovieMood</span>
+                </a>
             </div>
             <div class="nav-links">
-                <a href="/films">Films</a>
+                <a href="#">Popular Lists</a>
                 <%
                     User currentUser = (User) session.getAttribute("user");
                     if (currentUser != null) {
@@ -26,7 +28,6 @@
                 <%
                     } else {
                 %>
-                    <a href="#">Popular Lists</a>
                     <a href="/login" class="create-account-btn">Login</a>
                 <%
                     }

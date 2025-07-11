@@ -43,6 +43,7 @@ public class TestDatabaseHelper {
                 "    is_verified BOOLEAN DEFAULT FALSE,\n" +
                 "    verification_code VARCHAR(10),\n" +
                 "    verification_code_expiry TIMESTAMP,\n" +
+                "    profile_picture VARCHAR(500),\n" +
                 "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
                 ");";
 

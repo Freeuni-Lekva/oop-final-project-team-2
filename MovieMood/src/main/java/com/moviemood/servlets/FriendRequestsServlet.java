@@ -22,27 +22,17 @@ import java.util.HashSet;
 public class FriendRequestsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // im using this for testing
-        String hardcodedTestUser = "alice";
-        
-        UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
-        User user = userDao.getUserByUsername(hardcodedTestUser);
-        
-        if (user != null) {
-            request.getSession().setAttribute("user", user); // Set in session for consistency
-        } else {
-            throw new ServletException("Test user '" + hardcodedTestUser + "' not found in database");
+        // Get user from session
+        User user = (User) request.getSession().getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
         }
-        
-
-        // User user = (User) request.getSession().getAttribute("user");
-        // if (user == null) {
-        //     throw new ServletException("No user found in session. Please login first.");
-        // }
 
         try {
             FriendRequestDao friendRequestDao =  (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
             FriendshipDao friendshipDao = (FriendshipDao) getServletContext().getAttribute("friendshipDao");
+            UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
 
             int userId = user.getId();
 

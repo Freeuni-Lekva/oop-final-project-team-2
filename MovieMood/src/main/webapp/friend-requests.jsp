@@ -169,6 +169,10 @@
                 <span> <%= friend.getUsername() %></span>
                 <div class="button-group">
                     <a href="profile?user=<%= friend.getUsername() %>" class="view-profile-button">View Profile</a>
+                    <form method="post" action="unfriend" style="display: inline;">
+                        <input type="hidden" name="friendUsername" value="<%= friend.getUsername() %>">
+                        <button type="submit" class="unfriend-button">Unfriend</button>
+                    </form>
                 </div>
             </li>
             <% } %>

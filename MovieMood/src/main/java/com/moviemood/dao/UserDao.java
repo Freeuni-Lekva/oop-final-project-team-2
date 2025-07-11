@@ -467,10 +467,21 @@ public class UserDao {
         }
     }
 
+    /*
+     * Deletes a user and all related data by user ID.
+     * Returns true if succeeds, false otherwise.
+     */
+    public boolean deleteUser(int userId) {
+        String query = "DELETE FROM users WHERE id = ?";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
-
-
-
-
-
+            statement.setInt(1, userId);
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

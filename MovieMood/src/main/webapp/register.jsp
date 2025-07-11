@@ -1,17 +1,15 @@
+
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Register - MovieMood</title>
     <link rel="stylesheet" href="assets/css/register.css?v=2">
-    <!-- Google Sign-In Script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="assets/js/register.js"></script>
 </head>
 <body>
 <div class="container">
-    <h1>Register</h1>
-
     <%-- Show error message if exists --%>
     <%
         String error = (String) request.getAttribute("error");
@@ -42,6 +40,8 @@
     <div class="divider">
         <span>or</span>
     </div>
+
+    <h1>Register</h1>
 
     <%
         String keepUsername = (String) request.getAttribute("keepUsername");

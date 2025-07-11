@@ -1,15 +1,16 @@
 package com.moviemood.dao;
 
 import com.moviemood.bean.MovieRating;
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MovieRatingsDao {
-    private final Connection connection;
+    private final DataSource dataSource;
 
-    public MovieRatingsDao(Connection connection) {
-        this.connection = connection;
+    public MovieRatingsDao(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
@@ -24,7 +25,8 @@ public class MovieRatingsDao {
                 "score_value = VALUES(score_value), " +
                 "score_date = VALUES(score_date)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, rating.getMovieId());
             statement.setInt(2, rating.getUserId());
             statement.setDouble(3, rating.getScoreValue());
@@ -44,7 +46,8 @@ public class MovieRatingsDao {
     public MovieRating getRatingByUserAndMovie(int userId, int movieId) throws SQLException {
         String sql = "SELECT * FROM movie_ratings WHERE user_id = ? AND movie_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userId);
             statement.setInt(2, movieId);
 
@@ -67,7 +70,8 @@ public class MovieRatingsDao {
         String sql = "SELECT * FROM movie_ratings WHERE movie_id = ?";
         List<MovieRating> ratings = new ArrayList<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, movieId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -90,7 +94,8 @@ public class MovieRatingsDao {
         String sql = "SELECT * FROM movie_ratings WHERE user_id = ?";
         List<MovieRating> ratings = new ArrayList<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -112,7 +117,8 @@ public class MovieRatingsDao {
     public double getAverageRatingByMovie(int movieId) throws SQLException {
         String sql = "SELECT AVG(score_value) as avg_rating FROM movie_ratings WHERE movie_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, movieId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -133,7 +139,8 @@ public class MovieRatingsDao {
     public int getRatingCountByMovie(int movieId) throws SQLException {
         String sql = "SELECT COUNT(*) as rating_count FROM movie_ratings WHERE movie_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, movieId);
 
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -155,7 +162,8 @@ public class MovieRatingsDao {
     public boolean deleteRating(int userId, int movieId) throws SQLException {
         String sql = "DELETE FROM movie_ratings WHERE user_id = ? AND movie_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userId);
             statement.setInt(2, movieId);
 
@@ -173,7 +181,8 @@ public class MovieRatingsDao {
     public int deleteAllRatingsForMovie(int movieId) throws SQLException {
         String sql = "DELETE FROM movie_ratings WHERE movie_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, movieId);
             return statement.executeUpdate();
         }
@@ -188,7 +197,8 @@ public class MovieRatingsDao {
     public int deleteAllRatingsForUser(int userId) throws SQLException {
         String sql = "DELETE FROM movie_ratings WHERE user_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userId);
             return statement.executeUpdate();
         }
@@ -210,7 +220,8 @@ public class MovieRatingsDao {
 
         List<MovieRating> topRated = new ArrayList<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, limit);
 
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -237,7 +248,8 @@ public class MovieRatingsDao {
     public boolean hasUserRatedMovie(int userId, int movieId) throws SQLException {
         String sql = "SELECT 1 FROM movie_ratings WHERE user_id = ? AND movie_id = ?";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userId);
             statement.setInt(2, movieId);
 

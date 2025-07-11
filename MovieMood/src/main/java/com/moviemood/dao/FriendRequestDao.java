@@ -150,28 +150,6 @@ public class FriendRequestDao {
     }
 
 
-    /**
-     * Checks whether request with given senderId and receiverId exists in the table
-     *
-     * @param senderId
-     * @param receiverId
-     * @return true if row exists, false otherwise
-     */
-    public boolean requestExists(int senderId, int receiverId) {
-        String query = "SELECT * FROM friend_requests WHERE sender_id = ?  AND receiver_id = ?";
-        try(Connection con = dataSource.getConnection();
-            PreparedStatement stmt = con.prepareStatement(query)) {
-
-            stmt.setInt(1, senderId);
-            stmt.setInt(2, receiverId);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
-
-        }catch(SQLException e) {
-            throw new RuntimeException("Failed to make connection to database", e);
-        }
-    }
-
 
     /**
      * Cancels a sent friend request by updating its status to 'cancelled'
@@ -197,11 +175,5 @@ public class FriendRequestDao {
             throw new RuntimeException("Failed to cancel friend request", e);
         }
     }
-
-    // might have to implement later
-//    public FriendRequest getRequestById(int requestId) {
-//        return null;
-//    }
-
 
 }

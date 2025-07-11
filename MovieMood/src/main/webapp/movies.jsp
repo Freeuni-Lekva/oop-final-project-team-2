@@ -9,6 +9,7 @@
 <%@ page import="com.moviemood.bean.User" %>
 <%@ page import="com.moviemood.bean.Movie" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.moviemood.dao.MovieRatingsDao" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -31,6 +32,7 @@
         <h1 class="hero-title">Find Your Perfect <span class="highlight">Movie Mood</span></h1>
 
         <%
+            MovieRatingsDao ratings=(MovieRatingsDao)request.getServletContext().getAttribute("movieRatingsDao");
             User user = (User) request.getSession().getAttribute("user");
             List<Movie> recomededMovies = (List<Movie>) request.getAttribute("recomededMovies");
             String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
@@ -58,7 +60,31 @@
                                     <h3 class="movie-title"><%= movie.getTitle() %></h3>
                                     <div class="movie-meta">
                                         <div class="rating">
-                                            <span class="stars">★★★★★</span>
+                                            <%
+                                                double avgRating = ratings.getAverageMovieRating(movie.getId());
+                                                if (avgRating != -1) {
+                                                    int fullStars = (int)(avgRating / 2); // Convert 10-scale to 5
+                                                    boolean halfStar = (avgRating / 2 - fullStars) >= 0.5;
+                                                    int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+                                                    StringBuilder starsBuilder = new StringBuilder();
+                                                    for (int i = 0; i < fullStars; i++) starsBuilder.append("★");
+                                                    if (halfStar) starsBuilder.append("☆");
+                                                    for (int i = 0; i < emptyStars; i++) starsBuilder.append("✩");
+                                            %>
+                                            <div class="rating">
+                                                <span class="stars"><%= starsBuilder.toString() %></span>
+                                            </div>
+                                            <%
+                                            } else {
+                                            %>
+                                            <div class="rating">
+                                                <span class="stars" style="color: gray;">Not Rated</span>
+                                            </div>
+                                            <%
+                                                }
+                                            %>
+
                                         </div>
                                         <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
                                     </div>
@@ -137,7 +163,35 @@
                             <h3 class="movie-title"><%= movie.getTitle() %></h3>
                             <div class="movie-meta">
                                 <div class="rating">
-                                    <span class="stars">★★★★☆</span>
+                                    <div class="movie-meta">
+                                        <div class="rating">
+                                            <%
+                                                double avgRating = ratings.getAverageMovieRating(movie.getId()); // 0–10
+                                                if (avgRating != -1) {
+                                                    int fullStars = (int)(avgRating / 2); // Convert to 0–5 scale
+                                                    boolean halfStar = (avgRating / 2 - fullStars) >= 0.5;
+                                                    int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+                                                    StringBuilder starsBuilder = new StringBuilder();
+                                                    for (int j = 0; j < fullStars; j++) starsBuilder.append("★");
+                                                    if (halfStar) starsBuilder.append("☆");
+                                                    for (int j = 0; j < emptyStars; j++) starsBuilder.append("✩");
+                                            %>
+                                            <span class="stars"><%= starsBuilder.toString() %></span>
+                                            <span class="rating-score"><%= String.format("%.1f", avgRating) %></span>
+                                            <%
+                                            } else {
+                                            %>
+                                            <span class="stars" style="color: gray;">Not Rated</span>
+                                            <%
+                                                }
+                                            %>
+                                        </div>
+                                        <% if (movie.getReleaseDate() != null) { %>
+                                        <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>
+                                        <% } %>
+                                    </div>
+
                                 </div>
                                 <% if (movie.getReleaseDate() != null) { %>
                                 <span class="year"><%= movie.getReleaseDate().toString().substring(0, 4) %></span>

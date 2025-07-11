@@ -273,4 +273,32 @@ public class MovieRatingsDao {
         rating.setScoreDate(resultSet.getDate("score_date"));
         return rating;
     }
+
+    /**
+     * Get the average rating for a specific movie.
+     * Returns -1 if the movie has no ratings.
+     */
+    public double getAverageMovieRating(int movieId) throws SQLException {
+        String sql = "SELECT AVG(score_value) AS avg_rating FROM movie_ratings WHERE movie_id = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, movieId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    double avg = rs.getDouble("avg_rating");
+                    if (rs.wasNull()) {
+                        return -1; // No ratings available
+                    }
+                    return Math.round(avg*2 * 10.0) / 10.0; // Rounded to 1 decimal place
+                }
+            }
+        }
+
+        return -1;
+    }
+
+
 }

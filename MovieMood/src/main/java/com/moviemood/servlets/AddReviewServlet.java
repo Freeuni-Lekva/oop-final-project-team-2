@@ -17,7 +17,7 @@ public class AddReviewServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         // Get the DAO from the ServletContext (injected by a ContextListener)
-        reviewsDao = (MovieReviewsDao) getServletContext().getAttribute("movieReviewsDao");
+        reviewsDao = (MovieReviewsDao) getServletContext().getAttribute("reviewsDao");
         if (reviewsDao == null) {
             throw new IllegalStateException("MovieReviewsDao not initialized in ServletContext");
         }

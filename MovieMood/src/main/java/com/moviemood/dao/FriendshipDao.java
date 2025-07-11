@@ -2,11 +2,11 @@ package com.moviemood.dao;
 
 import com.moviemood.bean.Friendship;
 import com.moviemood.bean.User;
+import com.moviemood.bean.FriendSuggestion;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FriendshipDao {
 
@@ -142,6 +142,105 @@ public class FriendshipDao {
             e.printStackTrace();
         }
         return friends;
+    }
+
+    public List<FriendSuggestion> getFriendSuggestions(int userId, int limit) {
+        Map<Integer, Integer> mutualFriendCounts = new HashMap<>();
+        
+        List<User> currentUserFriends = getFriendsByUserId(userId);
+        Set<Integer> currentFriendIds = new HashSet<>();
+        for (User friend : currentUserFriends) {
+            currentFriendIds.add(friend.getId());
+        }
+        
+        for (User friend : currentUserFriends) {
+            List<User> friendsOfFriend = getFriendsByUserId(friend.getId());
+            for (User friendOfFriend : friendsOfFriend) {
+                int suggestionId = friendOfFriend.getId();
+                
+                if (suggestionId == userId || currentFriendIds.contains(suggestionId)) {
+                    continue;
+                }
+                
+                Integer currentCount = mutualFriendCounts.get(suggestionId);
+                if (currentCount == null) {
+                    mutualFriendCounts.put(suggestionId, 1);
+                } else {
+                    mutualFriendCounts.put(suggestionId, currentCount + 1);
+                }
+            }
+        }
+        
+        Set<Integer> excludedIds = getExcludedUserIds(userId);
+        
+        List<Map.Entry<Integer, Integer>> sortedEntries = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : mutualFriendCounts.entrySet()) {
+            if (!excludedIds.contains(entry.getKey())) {
+                sortedEntries.add(entry);
+            }
+        }
+        
+        sortedEntries.sort(new Comparator<Map.Entry<Integer, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Integer> e1, Map.Entry<Integer, Integer> e2) {
+                return e2.getValue().compareTo(e1.getValue());
+            }
+        });
+        
+        List<FriendSuggestion> suggestions = new ArrayList<>();
+        String getUserQuery = "SELECT id, username FROM users WHERE id = ?";
+        
+        int count = 0;
+        for (Map.Entry<Integer, Integer> entry : sortedEntries) {
+            if (count >= limit) break;
+            
+            try (Connection conn = dataSource.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(getUserQuery)) {
+                
+                stmt.setInt(1, entry.getKey());
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        User user = new User(
+                                rs.getInt("id"),
+                                rs.getString("username"),
+                                null, null, null
+                        );
+                        FriendSuggestion suggestion = new FriendSuggestion(user, entry.getValue());
+                        suggestions.add(suggestion);
+                        count++;
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return suggestions;
+    }
+    
+    private Set<Integer> getExcludedUserIds(int userId) {
+        Set<Integer> excludedIds = new HashSet<>();
+        String query = 
+            "SELECT receiver_id FROM friend_requests WHERE sender_id = ? AND status = 'pending' " +
+            "UNION " +
+            "SELECT sender_id FROM friend_requests WHERE receiver_id = ? AND status = 'pending'";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            
+            stmt.setInt(1, userId);
+            stmt.setInt(2, userId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    excludedIds.add(rs.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return excludedIds;
     }
 }
 

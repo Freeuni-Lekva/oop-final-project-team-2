@@ -191,7 +191,10 @@ ul.request-list {
 }
 
 .accept-button,
-.reject-button {
+.reject-button,
+.cancel-button,
+.view-profile-button,
+.unfriend-button {
     padding: 12px 20px;
     border: none;
     border-radius: 25px;
@@ -202,6 +205,9 @@ ul.request-list {
     min-width: 100px;
     position: relative;
     overflow: hidden;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .accept-button {
@@ -226,6 +232,46 @@ ul.request-list {
     background: rgba(231, 76, 60, 0.1);
     color: #e74c3c;
     border-color: rgba(231, 76, 60, 0.3);
+    transform: translateY(-2px);
+}
+
+.cancel-button {
+    background: transparent;
+    color: #e74c3c;
+    border: 2px solid rgba(231, 76, 60, 0.3);
+}
+
+.cancel-button:hover {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border-color: rgba(231, 76, 60, 0.5);
+    transform: translateY(-2px);
+}
+
+.view-profile-button {
+    background: transparent;
+    color: #f39c12;
+    border: 2px solid rgba(243, 156, 18, 0.3);
+}
+
+.view-profile-button:hover {
+    background: rgba(243, 156, 18, 0.1);
+    color: #e67e22;
+    border-color: rgba(243, 156, 18, 0.5);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.unfriend-button {
+    background: transparent;
+    color: #e74c3c;
+    border: 2px solid rgba(231, 76, 60, 0.3);
+}
+
+.unfriend-button:hover {
+    background: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border-color: rgba(231, 76, 60, 0.5);
     transform: translateY(-2px);
 }
 
@@ -305,7 +351,8 @@ ul.request-list {
     }
     
     .accept-button,
-    .reject-button {
+    .reject-button,
+    .unfriend-button {
         min-width: 80px;
         padding: 10px 16px;
         font-size: 13px;
@@ -333,7 +380,8 @@ ul.request-list {
     }
     
     .accept-button,
-    .reject-button {
+    .reject-button,
+    .unfriend-button {
         width: 100%;
         min-width: unset;
     }

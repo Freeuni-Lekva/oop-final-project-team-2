@@ -1,5 +1,6 @@
 package com.moviemood.servlets;
 
+import com.moviemood.bean.User;
 import com.moviemood.dao.FriendRequestDao;
 import com.moviemood.dao.UserDao;
 
@@ -17,25 +18,38 @@ import java.io.IOException;
 @WebServlet("/send-friend-request")
 public class SendFriendRequestServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //need to change attribute name here based on giorgi's login implementation
-        String username = (String) request.getSession().getAttribute("user");
-        if(username == null) {
+        User user = (User) request.getSession().getAttribute("user");
+        if(user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        int receiverId = Integer.parseInt(request.getParameter("receiverId"));
-
+        String receiverIdParam = request.getParameter("receiverId");
+        String receiverUsernameParam = request.getParameter("receiverUsername");
+        int receiverId;
+        
         FriendRequestDao friendRequestDAO = (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
         UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
 
         try {
-            int senderId = userDao.getUserByUsername(username).getId();
+            if (receiverIdParam != null && !receiverIdParam.isEmpty()) {
+                receiverId = Integer.parseInt(receiverIdParam);
+            } else if (receiverUsernameParam != null && !receiverUsernameParam.isEmpty()) {
+                User receiverUser = userDao.getUserByUsername(receiverUsernameParam);
+                if (receiverUser == null) {
+                    throw new ServletException("User not found: " + receiverUsernameParam);
+                }
+                receiverId = receiverUser.getId();
+            } else {
+                throw new ServletException("Either receiverId or receiverUsername must be provided");
+            }
+            int senderId = user.getId();
             friendRequestDAO.sendRequest(senderId, receiverId);
-            response.setStatus(HttpServletResponse.SC_OK);
+            response.sendRedirect("friend-requests?message=Friend request sent successfully");
+            
         }catch(Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            throw new ServletException("Failed to send friend request", e);
+            e.printStackTrace();
+            response.sendRedirect("friend-requests?error=Failed to send friend request");
         }
 
     }

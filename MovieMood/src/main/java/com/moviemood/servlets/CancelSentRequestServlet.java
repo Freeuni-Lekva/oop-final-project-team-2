@@ -10,32 +10,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/cancel-friend-request")
+@WebServlet("/cancel-sent-request")
 public class CancelSentRequestServlet extends HttpServlet {
     
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
-
-        FriendRequestDao friendRequestDao = (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
-
+        
+        String receiverUsername = request.getParameter("receiverUsername");
+        if (receiverUsername == null || receiverUsername.trim().isEmpty()) {
+            response.sendRedirect("profile?error=Invalid user specified");
+            return;
+        }
+        
         try {
-            int requestId = Integer.parseInt(request.getParameter("requestId"));
-
-            friendRequestDao.updateRequestStatus(requestId, "cancelled");
-
-            response.sendRedirect("friend-requests?tab=sent");
-
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request ID");
+            FriendRequestDao friendRequestDao = (FriendRequestDao) getServletContext().getAttribute("friendRequestDao");
+            
+            boolean success = friendRequestDao.cancelSentRequest(user.getId(), receiverUsername);
+            
+            if (success) {
+                response.sendRedirect("profile?user=" + receiverUsername + "&message=Friend request cancelled");
+            } else {
+                response.sendRedirect("profile?user=" + receiverUsername + "&error=Failed to cancel friend request");
+            }
+            
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to cancel friend request");
+            response.sendRedirect("profile?user=" + receiverUsername + "&error=Failed to cancel friend request");
         }
     }
 }

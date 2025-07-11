@@ -10,12 +10,15 @@
     Integer reviewsCount = (Integer) request.getAttribute("reviewsCount");
     Integer favoritesCount = (Integer) request.getAttribute("favoritesCount");
     Integer friendsCount = (Integer) request.getAttribute("friendsCount");
+    String relationshipStatus = (String) request.getAttribute("relationshipStatus");
+    Integer pendingRequestId = (Integer) request.getAttribute("pendingRequestId");
     
     // Default to 0 if null
     if (watchlistCount == null) watchlistCount = 0;
     if (reviewsCount == null) reviewsCount = 0;
     if (favoritesCount == null) favoritesCount = 0;
     if (friendsCount == null) friendsCount = 0;
+    if (relationshipStatus == null) relationshipStatus = "none";
 %>
 
 <!DOCTYPE html>
@@ -81,6 +84,40 @@
                 <a href="settings" class="action-btn secondary">Settings</a>
                 <a href="logout" class="action-btn secondary">Logout</a>
             </div>
+            <% } else { %>
+                <div class="profile-actions">
+                    <% if ("none".equals(relationshipStatus)) { %>
+                        <form method="post" action="send-friend-request" style="display: inline;">
+                            <input type="hidden" name="receiverUsername" value="<%= profileUser.getUsername() %>">
+                            <button type="submit" class="action-btn primary">Add Friend</button>
+                        </form>
+                    <% } else if ("friends".equals(relationshipStatus)) { %>
+                        <form method="post" action="unfriend" style="display: inline;">
+                            <input type="hidden" name="friendUsername" value="<%= profileUser.getUsername() %>">
+                            <button type="submit" class="action-btn danger">Unfriend</button>
+                        </form>
+                    <% } else if ("request_sent".equals(relationshipStatus)) { %>
+                        <form method="post" action="cancel-sent-request" style="display: inline;">
+                            <input type="hidden" name="receiverUsername" value="<%= profileUser.getUsername() %>">
+                            <button type="submit" class="action-btn secondary">Cancel Request</button>
+                        </form>
+                    <% } else if ("request_received".equals(relationshipStatus)) { %>
+                        <form method="post" action="accept-friend-request" style="display: inline; margin-right: 10px;">
+                            <input type="hidden" name="requestId" value="<%= pendingRequestId %>">
+                            <input type="hidden" name="senderId" value="<%= profileUser.getId() %>">
+                            <input type="hidden" name="receiverId" value="<%= currentUser.getId() %>">
+                            <input type="hidden" name="redirectTo" value="profile">
+                            <input type="hidden" name="redirectUser" value="<%= profileUser.getUsername() %>">
+                            <button type="submit" class="action-btn primary">Accept Request</button>
+                        </form>
+                        <form method="post" action="reject-friend-request" style="display: inline;">
+                            <input type="hidden" name="requestId" value="<%= pendingRequestId %>">
+                            <input type="hidden" name="redirectTo" value="profile">
+                            <input type="hidden" name="redirectUser" value="<%= profileUser.getUsername() %>">
+                            <button type="submit" class="action-btn secondary">Reject Request</button>
+                        </form>
+                    <% } %>
+                </div>
             <% } %>
         </div>
     </main>

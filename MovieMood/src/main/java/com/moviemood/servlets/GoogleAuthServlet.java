@@ -12,10 +12,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -83,6 +80,16 @@ public class GoogleAuthServlet extends HttpServlet {
                     session.setAttribute("user", user);
                     session.setAttribute("username", user.getUsername());
 
+                    // Set remember token for Google users
+                    String rememberToken = UUID.randomUUID().toString();
+                    userDao.updateRememberToken(user.getUsername(), rememberToken);
+
+                    // Set remember cookie
+                    Cookie rememberCookie = new Cookie("remember_token", rememberToken);
+                    rememberCookie.setMaxAge(30 * 24 * 60 * 60); // 30 days
+                    rememberCookie.setPath("/");
+                    response.addCookie(rememberCookie);
+
                     if (isNewUser) {
                         response.setStatus(200);
                         response.getWriter().write("{\"success\": true, \"redirect\": \"/movie-preferences\"}");
@@ -90,7 +97,7 @@ public class GoogleAuthServlet extends HttpServlet {
                         response.setStatus(200);
                         response.getWriter().write("{\"success\": true, \"redirect\": \"/index.jsp\"}");
                     }
-                } else {
+                }else {
                     response.setStatus(500);
                     response.getWriter().write("{\"error\": \"Failed to process user\"}");
                 }

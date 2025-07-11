@@ -39,12 +39,14 @@ public class LoginServlet extends HttpServlet {
             }
             request.getSession().setAttribute("user", user);
             if ("true".equals(request.getParameter("rememberMe"))) {
-                String token = UUID.randomUUID().toString(); // generate random token
+                String token = UUID.randomUUID().toString();
                 userDao.updateRememberToken(username, token);
 
                 Cookie cookie = new Cookie("remember_token", token);
                 cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days
                 cookie.setHttpOnly(true);
+                cookie.setPath("/");
+
                 response.addCookie(cookie);
             }
 
@@ -53,7 +55,6 @@ public class LoginServlet extends HttpServlet {
         }
         request.setAttribute("error", "Invalid username or password");
         request.setAttribute("keepUsername", username);
-        //request.setAttribute("keepPassword", rawPassword);
         request.getRequestDispatcher("login.jsp").forward(request, response);
 
     }

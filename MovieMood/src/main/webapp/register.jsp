@@ -1,10 +1,10 @@
-
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Register - MovieMood</title>
     <link rel="stylesheet" href="assets/css/register.css?v=2">
+    <!-- Google Sign-In Script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="assets/js/register.js"></script>
 </head>
@@ -71,6 +71,10 @@
 
     <div class="login-link">
         <p>Already have an account? <a href="login.jsp">Log in here</a>.</p>
+    </div>
+
+    <div class="home-link">
+        <p><a href="index.jsp">← Back to Home</a></p>
     </div>
 </div>
 </body>

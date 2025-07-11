@@ -17,16 +17,17 @@
             </div>
             <div class="nav-links">
                 <a href="/films">Films</a>
-                <a href="#">Popular Lists</a>
                 <%
                     User currentUser = (User) session.getAttribute("user");
                     if (currentUser != null) {
                 %>
+                    <a href="/friend-requests">Friends</a>
                     <a href="/profile" class="create-account-btn">Profile</a>
                 <%
                     } else {
                 %>
-                    <a href="/login" class="create-account-btn">Create Account</a>
+                    <a href="#">Popular Lists</a>
+                    <a href="/login" class="create-account-btn">Login</a>
                 <%
                     }
                 %>

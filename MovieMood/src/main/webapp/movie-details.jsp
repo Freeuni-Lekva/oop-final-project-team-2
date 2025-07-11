@@ -6,14 +6,11 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="com.moviemood.bean.Movie" %>
-<%@ page import="com.moviemood.bean.User" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.moviemood.bean.Genre" %>
-<%@ page import="com.moviemood.bean.UserList" %>
 <%@ page import="com.moviemood.dao.UserDao" %>
-<%@ page import="com.moviemood.bean.MovieReview" %>
 <%@ page import="com.moviemood.dao.MovieReviewsDao" %>
+<%@ page import="com.moviemood.bean.*" %>
+<%@ page import="com.moviemood.dao.MovieRatingsDao" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -107,7 +104,7 @@
     String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
     User user=(User) request.getSession().getAttribute("user");
     Integer userId = null;
-
+    MovieRatingsDao ratings=(MovieRatingsDao)request.getServletContext().getAttribute("movieRatingsDao");
     if (user != null) {
         userId=user.getId();
     }
@@ -155,10 +152,27 @@
                         <span class="meta-label">Runtime:</span>
                         <span class="meta-value"><%= movie.getRuntime() %> minutes</span>
                     </div>
+                    <%
+                        double movieRating = ratings.getAverageMovieRating(movieId);
+
+                        if (movieRating != -1) {
+                            int fullStars = (int) movieRating; // Number of full stars
+                            boolean halfStar = (movieRating - fullStars) >= 0.5;
+                            int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+                            StringBuilder starsBuilder = new StringBuilder();
+                            for (int i = 0; i < fullStars; i++) starsBuilder.append("★");
+                            if (halfStar) starsBuilder.append("☆"); // optional: use custom half-star image if needed
+                            for (int i = 0; i < emptyStars; i++) starsBuilder.append("✩"); // empty star
+                    %>
                     <div class="meta-item rating-display">
-                        <span class="stars-display">★★★★☆</span>
-                        <span class="rating-score">8.5</span>
+                        <span class="stars-display"><%= starsBuilder.toString() %></span>
+                        <span class="rating-score"><%= String.format("%.1f", movieRating) %></span>
                     </div>
+                    <%
+                        } // end if
+                    %>
+
                 </div>
 
                 <div class="genres">

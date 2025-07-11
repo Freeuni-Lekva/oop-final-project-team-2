@@ -56,7 +56,6 @@ public class LoginServlet extends HttpServlet {
         //request.setAttribute("keepPassword", rawPassword);
         request.getRequestDispatcher("login.jsp").forward(request, response);
 
-
     }
 
 

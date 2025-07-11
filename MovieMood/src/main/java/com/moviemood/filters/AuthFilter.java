@@ -59,7 +59,6 @@ public class AuthFilter implements Filter {
                             if (user != null) {
                                 HttpSession newSession = httpReq.getSession(true);
                                 newSession.setAttribute("user", user);
-
                                 // Regenerating token for security
                                 String newToken = UUID.randomUUID().toString();
                                 userDao.updateRememberToken(user.getUsername(), newToken);

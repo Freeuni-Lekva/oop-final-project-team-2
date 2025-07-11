@@ -38,7 +38,7 @@ public class DatabaseInitListener implements ServletContextListener {
             MovieReviewsDao reviewsDao = new MovieReviewsDao(dataSource);
             UserFavoritesDao favoritesDao = new UserFavoritesDao(dataSource);
             UserListDao listsDao = new UserListDao(dataSource);
-            
+
             servletContextEvent.getServletContext().setAttribute("userDao", userDao);
             servletContextEvent.getServletContext().setAttribute("friendRequestDao", friendRequestDAO);
             servletContextEvent.getServletContext().setAttribute("friendshipDao", friendshipDAO);
@@ -90,7 +90,7 @@ public class DatabaseInitListener implements ServletContextListener {
                         "id INT PRIMARY KEY AUTO_INCREMENT, " +
                         "sender_id INT NOT NULL, " +
                         "receiver_id INT NOT NULL, " +
-                        "status ENUM('pending', 'accepted', 'rejected', 'cancelled') NOT NULL DEFAULT 'pending', " +
+                        "status ENUM('pending', 'accepted', 'rejected') NOT NULL DEFAULT 'pending', " +
                         "request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                         "FOREIGN KEY (sender_id) REFERENCES users(id)  ON DELETE CASCADE, " +
                         "FOREIGN KEY (receiver_id) REFERENCES users(id)  ON DELETE CASCADE" +
@@ -228,7 +228,7 @@ public class DatabaseInitListener implements ServletContextListener {
         } catch (SQLException e) {
             // Column likely already exists, which is fine
             // Only re-throw if it's not a "column already exists" error
-            if (!e.getMessage().toLowerCase().contains("duplicate column") && 
+            if (!e.getMessage().toLowerCase().contains("duplicate column") &&
                 !e.getMessage().toLowerCase().contains("already exists")) {
                 throw e;
             }

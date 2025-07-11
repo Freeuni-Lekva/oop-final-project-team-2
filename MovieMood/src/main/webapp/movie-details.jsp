@@ -11,6 +11,9 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.moviemood.bean.Genre" %>
 <%@ page import="com.moviemood.bean.UserList" %>
+<%@ page import="com.moviemood.dao.UserDao" %>
+<%@ page import="com.moviemood.bean.MovieReview" %>
+<%@ page import="com.moviemood.dao.MovieReviewsDao" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +29,7 @@
             position: relative;
             display: inline-block;
         }
-        
+
         .list-dropdown {
             position: fixed;
             background: rgba(0, 0, 0, 0.95);
@@ -39,7 +42,7 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
             margin-top: 5px;
         }
-        
+
         .list-option {
             padding: 12px 16px;
             cursor: pointer;
@@ -49,36 +52,36 @@
             align-items: center;
             transition: all 0.3s ease;
         }
-        
+
         .list-option:hover {
             background: rgba(243, 156, 18, 0.2);
         }
-        
+
         .list-option:last-child {
             border-bottom: none;
         }
-        
+
         .list-name {
             color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
         }
-        
+
         .list-status {
             color: #f39c12;
             font-weight: bold;
             font-size: 16px;
         }
-        
+
         .list-option[data-in-list="true"] .list-status {
             color: #27ae60;
         }
-        
+
         .no-lists-message {
             padding: 16px;
             text-align: center;
             color: rgba(255, 255, 255, 0.7);
         }
-        
+
         .create-list-link {
             color: #f39c12;
             text-decoration: none;
@@ -86,7 +89,7 @@
             margin-top: 8px;
             font-weight: 500;
         }
-        
+
         .create-list-link:hover {
             color: #e67e22;
             text-decoration: underline;
@@ -94,14 +97,24 @@
     </style>
 </head>
 <body>
+<script src="<%= request.getContextPath() %>/assets/js/movie-details.js"></script>
 <%
     Movie movie = (Movie) request.getAttribute("movie");
+    int movieId=movie.getId();
+    MovieReviewsDao movieReviewsDao=(MovieReviewsDao)request.getServletContext().getAttribute("reviewsDao");
+    List<MovieReview> reviews=movieReviewsDao.getMovieReviews(movieId);
     String backDropBaseURL = (String) request.getAttribute("backDropPathBaseURL");
     String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
+    User user=(User) request.getSession().getAttribute("user");
+    Integer userId = null;
+
+    if (user != null) {
+        userId=user.getId();
+    }
     User currentUser = (User) request.getAttribute("currentUser");
     Boolean isInWatchlist = (Boolean) request.getAttribute("isInWatchlist");
     Boolean isInFavorites = (Boolean) request.getAttribute("isInFavorites");
-    
+
     // Default to false if null
     if (isInWatchlist == null) isInWatchlist = false;
     if (isInFavorites == null) isInFavorites = false;
@@ -171,10 +184,7 @@
                     } else {
                     %>
                     <button class="btn btn-secondary" disabled>Trailer Unavailable</button>
-                    <%
-                        }
-                    %>
-
+                    <% } %>
                     <% if (currentUser != null) { %>
                         <button id="watchlistBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-watchlist="<%= isInWatchlist %>">
                             <%= isInWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist" %>
@@ -182,7 +192,7 @@
                         <button id="favoritesBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>" data-in-favorites="<%= isInFavorites %>" title="<%= isInFavorites ? "Remove from Favorites" : "Add to Favorites" %>">
                             <%= isInFavorites ? "♥" : "♡" %>
                         </button>
-                        
+
                         <!-- Add to List Button with Dropdown -->
                         <div class="add-to-list-container" style="position: relative; display: inline-block;">
                             <button id="addToListBtn" class="btn btn-secondary" data-movie-id="<%= movie.getId() %>">
@@ -217,6 +227,7 @@
                         <button id="addToListBtn" class="btn btn-secondary" title="Please log in to create lists">📝 Add to List</button>
                     <% } %>
                 </div>
+
             </div>
         </div>
     </div>
@@ -248,6 +259,7 @@
         </div>
     </section>
 
+    <% if (user != null) { %>
     <section class="rating-section">
         <h2 class="section-title">Rate This Movie</h2>
         <div class="rating-container">
@@ -262,334 +274,57 @@
             <button class="submit-rating" id="submitRating">Submit Rating</button>
         </div>
     </section>
+    <% } %>
+
 
     <section class="reviews-section">
         <h2 class="section-title">Reviews</h2>
 
+        <% if (user!=null) { %>
         <div class="review-form">
             <h3 style="margin-bottom: 20px; color: #f39c12;">Write a Review</h3>
-            <form id="reviewForm">
+            <form id="reviewForm" action="<%= request.getContextPath() %>/add-review" method="POST">
+            <input type="hidden" name="movieId" value="<%=movieId%>" />
+                <input type="hidden" name="userId" value="<%=userId%>" />
+
                 <div class="form-group">
                     <textarea id="reviewText" name="reviewText" placeholder="Share your thoughts about this movie..." required></textarea>
                 </div>
+
                 <button type="submit" class="btn btn-primary">Submit Review</button>
             </form>
+
         </div>
+        <% } %>
 
         <div class="reviews-list" id="reviewsList">
-            <!-- Sample Reviews -->
+            <% if (reviews == null || reviews.isEmpty()) { %>
+            <p style="color: gray; font-style: italic;">No reviews yet. Be the first to write one!</p>
+            <% } else {
+                for (MovieReview review : reviews) {
+                    UserDao userDao = (UserDao) application.getAttribute("userDao");
+                    String reviewerName = userDao.getUserById(review.getUserId()).getUsername();
+                    String initials = reviewerName.trim().isEmpty() ? "?" : reviewerName.substring(0, 1).toUpperCase();
+            %>
             <div class="review-item">
                 <div class="review-header">
                     <div class="reviewer-info">
-                        <div class="reviewer-avatar">JD</div>
+                        <div class="reviewer-avatar"><%= initials %></div>
                         <div>
-                            <div class="reviewer-name">John Doe</div>
-                            <div class="review-date">July 5, 2025</div>
+                            <div class="reviewer-name"><%= reviewerName %></div>
+                            <div class="review-date"><%= review.getFormattedDate() %></div>
                         </div>
                     </div>
-                    <div class="review-rating">★★★★☆</div>
+                    <div class="review-rating">★★★★☆</div> <!-- You can customize this if you add rating support -->
                 </div>
-                <div class="review-text">
-                    An absolutely captivating film that keeps you on the edge of your seat from start to finish. The cinematography is breathtaking and the performances are outstanding. Highly recommend this movie to anyone looking for a great cinematic experience.
-                </div>
+                <div class="review-text"><%= review.getReviewText() %></div>
             </div>
-
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar">MS</div>
-                        <div>
-                            <div class="reviewer-name">Movie Enthusiast</div>
-                            <div class="review-date">July 4, 2025</div>
-                        </div>
-                    </div>
-                    <div class="review-rating">★★★★★</div>
-                </div>
-                <div class="review-text">
-                    This movie exceeded all my expectations! The plot is engaging, the characters are well-developed, and the ending is satisfying. A must-watch for fans of the genre.
-                </div>
-            </div>
+            <%
+                    } // end for
+                } // end else
+            %>
         </div>
     </section>
 </main>
-
-<script>
-    // Rating System
-    let currentRating = 0;
-    const stars = document.querySelectorAll('.star');
-    const ratingText = document.getElementById('ratingText');
-    const submitRatingBtn = document.getElementById('submitRating');
-
-    stars.forEach((star, index) => {
-        star.addEventListener('click', () => {
-            currentRating = index + 1;
-            updateStars();
-            updateRatingText();
-        });
-
-        star.addEventListener('mouseenter', () => {
-            highlightStars(index + 1);
-        });
-    });
-
-    document.getElementById('ratingStars').addEventListener('mouseleave', () => {
-        updateStars();
-    });
-
-    function updateStars() {
-        stars.forEach((star, index) => {
-            star.classList.toggle('active', index < currentRating);
-        });
-    }
-
-    function highlightStars(rating) {
-        stars.forEach((star, index) => {
-            star.classList.toggle('active', index < rating);
-        });
-    }
-
-    function updateRatingText() {
-        const ratingTexts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
-        ratingText.textContent = ratingTexts[currentRating] || 'Click a star to rate';
-    }
-
-    submitRatingBtn.addEventListener('click', () => {
-        if (currentRating > 0) {
-            alert(`Thank you for rating this movie ${currentRating} stars!`);
-            // Here you would typically send the rating to your server
-        } else {
-            alert('Please select a rating first!');
-        }
-    });
-
-    // Review Form
-    document.getElementById('reviewForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('reviewerName').value;
-        const review = document.getElementById('reviewText').value;
-
-        if (name && review) {
-            addReview(name, review);
-            document.getElementById('reviewForm').reset();
-        }
-    });
-
-    function addReview(name, reviewText) {
-        const reviewsList = document.getElementById('reviewsList');
-        const reviewItem = document.createElement('div');
-        reviewItem.className = 'review-item';
-
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
-        const currentDate = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-
-        reviewItem.innerHTML = `
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar">${initials}</div>
-                        <div>
-                            <div class="reviewer-name">${name}</div>
-                            <div class="review-date">${currentDate}</div>
-                        </div>
-                    </div>
-                    <div class="review-rating">★★★★☆</div>
-                </div>
-                <div class="review-text">${reviewText}</div>
-            `;
-
-        reviewsList.insertBefore(reviewItem, reviewsList.firstChild);
-
-        // Add animation
-        reviewItem.style.opacity = '0';
-        reviewItem.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            reviewItem.style.transition = 'all 0.3s ease';
-            reviewItem.style.opacity = '1';
-            reviewItem.style.transform = 'translateY(0)';
-        }, 100);
-    }
-
-    // Smooth scrolling for navigation
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-
-    // Watchlist and Favorites buttons
-    <% if (currentUser != null) { %>
-    
-    // Set initial favorited class based on current state
-    const favBtn = document.getElementById('favoritesBtn');
-    console.log('Initial favorites state:', favBtn.getAttribute('data-in-favorites'));
-    if (favBtn.getAttribute('data-in-favorites') === 'true') {
-        favBtn.classList.add('favorited');
-        // Force red color with inline styles to override everything
-        favBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
-        favBtn.style.border = '2px solid #e74c3c';
-        favBtn.style.color = 'white';
-        favBtn.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
-        console.log('Applied red styling to favorites button');
-    }
-    
-    // Watchlist button functionality
-    document.getElementById('watchlistBtn').addEventListener('click', function() {
-        const btn = this;
-        const movieId = btn.getAttribute('data-movie-id');
-        const isInWatchlist = btn.getAttribute('data-in-watchlist') === 'true';
-        const action = isInWatchlist ? 'remove' : 'add';
-        
-        fetch('/watchlist/action', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'action=' + action + '&movieId=' + movieId
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update button state
-                const newIsInWatchlist = action === 'add';
-                btn.setAttribute('data-in-watchlist', newIsInWatchlist);
-                btn.textContent = newIsInWatchlist ? '✓ In Watchlist' : '+ Add to Watchlist';
-            }
-        });
-    });
-
-    // Favorites button functionality
-    document.getElementById('favoritesBtn').addEventListener('click', function() {
-        const btn = this;
-        const movieId = btn.getAttribute('data-movie-id');
-        const isInFavorites = btn.getAttribute('data-in-favorites') === 'true';
-        const action = isInFavorites ? 'remove' : 'add';
-        
-        fetch('/favorites/action', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'action=' + action + '&movieId=' + movieId
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update button state
-                const newIsInFavorites = action === 'add';
-                btn.setAttribute('data-in-favorites', newIsInFavorites);
-                btn.textContent = newIsInFavorites ? '♥' : '♡';
-                btn.title = newIsInFavorites ? 'Remove from Favorites' : 'Add to Favorites';
-                
-                // Add/remove favorited class for red styling
-                console.log('Setting favorites state to:', newIsInFavorites);
-                if (newIsInFavorites) {
-                    btn.classList.add('favorited');
-                    // Force red color with inline styles
-                    btn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
-                    btn.style.border = '2px solid #e74c3c';
-                    btn.style.color = 'white';
-                    btn.style.boxShadow = '0 6px 20px rgba(231, 76, 60, 0.4)';
-                    console.log('Applied red styling to button');
-                } else {
-                    btn.classList.remove('favorited');
-                    // Reset to default styling
-                    btn.style.background = 'rgba(255, 255, 255, 0.05)';
-                    btn.style.border = '2px solid rgba(255, 255, 255, 0.3)';
-                    btn.style.color = 'rgba(255, 255, 255, 0.8)';
-                    btn.style.boxShadow = 'none';
-                    console.log('Reset styling to default');
-                }
-            }
-        });
-    });
-
-    // Add to List button functionality
-    const addToListBtn = document.getElementById('addToListBtn');
-    const listDropdown = document.getElementById('listDropdown');
-    
-    if (addToListBtn && listDropdown) {
-        // Toggle dropdown on button click
-        addToListBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const isVisible = listDropdown.style.display === 'block';
-            
-            if (isVisible) {
-                listDropdown.style.display = 'none';
-            } else {
-                // Position the dropdown relative to the button
-                const rect = addToListBtn.getBoundingClientRect();
-                listDropdown.style.top = (rect.bottom + 5) + 'px';
-                listDropdown.style.left = rect.left + 'px';
-                listDropdown.style.display = 'block';
-            }
-        });
-        
-        // Handle list option clicks
-        document.querySelectorAll('.list-option').forEach(option => {
-            option.addEventListener('click', function(e) {
-                e.stopPropagation();
-                
-                const listId = this.getAttribute('data-list-id');
-                const isInList = this.getAttribute('data-in-list') === 'true';
-                const movieId = addToListBtn.getAttribute('data-movie-id');
-                const action = isInList ? 'remove' : 'add';
-                
-                fetch('/list/action', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'action=' + action + '&movieId=' + movieId + '&listId=' + listId
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update the option state
-                        const newIsInList = action === 'add';
-                        this.setAttribute('data-in-list', newIsInList);
-                        
-                        const statusSpan = this.querySelector('.list-status');
-                        statusSpan.textContent = newIsInList ? '✓' : '+';
-                        
-                        // Show success message
-                        const listName = this.querySelector('.list-name').textContent;
-                        console.log(data.message + ': ' + listName);
-                    } else {
-                        console.error('Failed:', data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            });
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function() {
-            listDropdown.style.display = 'none';
-        });
-    }
-    
-    <% } else { %>
-    
-    // Not logged in - redirect to login
-    document.getElementById('watchlistBtn').addEventListener('click', function() {
-        window.location.href = '/login.jsp';
-    });
-
-    document.getElementById('favoritesBtn').addEventListener('click', function() {
-        window.location.href = '/login.jsp';
-    });
-    
-    // Add to List button for non-logged in users
-    const addToListBtn = document.getElementById('addToListBtn');
-    if (addToListBtn) {
-        addToListBtn.addEventListener('click', function() {
-            window.location.href = '/login.jsp';
-        });
-    }
-    
-    <% } %>
-</script>
 </body>
 </html>

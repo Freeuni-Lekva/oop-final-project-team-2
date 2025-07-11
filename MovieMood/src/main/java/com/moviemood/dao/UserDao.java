@@ -43,7 +43,7 @@ public class UserDao {
                 boolean verified = rs.getBoolean("is_verified");
                 String verificationCode = rs.getString("verification_code");
                 Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
-                
+
                 // Safely get profile picture (column might not exist in older databases)
                 String profilePicture = null;
                 try {
@@ -93,7 +93,7 @@ public class UserDao {
                 boolean verified = rs.getBoolean("is_verified");
                 String verificationCode = rs.getString("verification_code");
                 Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
-                
+
                 // Safely get profile picture (column might not exist in older databases)
                 String profilePicture = null;
                 try {
@@ -128,13 +128,13 @@ public class UserDao {
     public List<User> searchUserByQuery(String searchQuery) {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM users WHERE username LIKE ? ORDER BY username";
-        
+
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
-            
+
             statement.setString(1, "%" + searchQuery + "%");
             ResultSet rs = statement.executeQuery();
-            
+
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String username = rs.getString("username");
@@ -164,12 +164,46 @@ public class UserDao {
                 user.setProfilePicture(profilePicture);
                 users.add(user);
             }
-            
+
         } catch (SQLException e) {
             throw new RuntimeException("Failed to search users", e);
         }
-        
+
         return users;
+    }
+
+    public User getUserById(int id) {
+        String query = "SELECT * FROM users WHERE id = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                String username = rs.getString("username");
+                String email = rs.getString("email");
+                String passwordHash = rs.getString("password_hash");
+                String rememberToken = rs.getString("remember_token");
+
+                boolean verified = rs.getBoolean("is_verified");
+                String verificationCode = rs.getString("verification_code");
+                Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
+
+                User user = new User(id, username, email, passwordHash, rememberToken);
+                user.setVerified(verified);
+                user.setVerificationCode(verificationCode);
+                user.setVerificationCodeExpiry(verificationCodeExpiry);
+
+                return user;
+            } else {
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to retrieve user by ID", e);
+        }
     }
 
     /**
@@ -213,6 +247,10 @@ public class UserDao {
      * Inserts the user in the database.
      * takes username, email password (hashed). In this overloaded
      * version this method also takes verificationCode and expiry as parameters
+     *
+     * This method may be temporary
+     * and after completing implementation of email verification,
+     * it may be changed!!!
      */
     public void insertUser(String username, String email, String passwordHash,
                            String verificationCode, Timestamp expiry) throws UserAlreadyExistsException {
@@ -295,7 +333,7 @@ public class UserDao {
                 boolean verified = rs.getBoolean("is_verified");
                 String verificationCode = rs.getString("verification_code");
                 Timestamp verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
-                
+
                 // Safely get profile picture (column might not exist in older databases)
                 String profilePicture = null;
                 try {

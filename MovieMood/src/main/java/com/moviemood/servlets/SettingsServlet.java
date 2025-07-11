@@ -85,6 +85,8 @@ public class SettingsServlet extends HttpServlet {
                 handlePasswordUpdate(request, response, currentUser, userDao);
             } else if ("updateProfilePicture".equals(action)) {
                 handleProfilePictureUpdate(request, response, currentUser, userDao);
+            } else if ("deleteProfilePicture".equals(action)) {
+                handleProfilePictureDeletion(request, response, currentUser, userDao);
             } else if ("deleteAccount".equals(action)) {
                 handleAccountDeletion(request, response, currentUser, userDao);
             } else {
@@ -290,6 +292,70 @@ public class SettingsServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", "Error uploading profile picture: " + e.getMessage());
+            request.setAttribute("currentUser", currentUser);
+            request.getRequestDispatcher("/settings.jsp").forward(request, response);
+        }
+    }
+    
+    private void handleProfilePictureDeletion(HttpServletRequest request, HttpServletResponse response, 
+                                               User currentUser, UserDao userDao) 
+            throws ServletException, IOException {
+        
+        try {
+            String currentProfilePicture = currentUser.getProfilePicture();
+            
+            // Check if user has a profile picture
+            if (currentProfilePicture == null || currentProfilePicture.isEmpty()) {
+                request.setAttribute("infoMessage", "No profile picture to delete");
+                request.setAttribute("currentUser", currentUser);
+                request.getRequestDispatcher("/settings.jsp").forward(request, response);
+                return;
+            }
+            
+            // Delete the physical file
+            try {
+                String userHome = System.getProperty("user.home");
+                String uploadPath = userHome + File.separator + "moviemood-uploads" + File.separator + "profile-pictures";
+                Path filePath;
+                
+                // Handle both old format (with path) and new format (just filename)
+                if (currentProfilePicture.contains("/") || currentProfilePicture.contains("\\")) {
+                    // Old format with path
+                    filePath = Paths.get(getServletContext().getRealPath(""), currentProfilePicture);
+                    Files.deleteIfExists(filePath);
+                    // Also try the new location
+                    filePath = Paths.get(userHome, "moviemood-uploads", "profile-pictures", 
+                                       currentProfilePicture.substring(currentProfilePicture.lastIndexOf("/") + 1));
+                    Files.deleteIfExists(filePath);
+                } else {
+                    // New format (just filename)
+                    filePath = Paths.get(uploadPath, currentProfilePicture);
+                    Files.deleteIfExists(filePath);
+                }
+            } catch (Exception e) {
+                // Log but don't fail - continue with database update
+                e.printStackTrace();
+            }
+            
+            // Update database to remove profile picture reference
+            boolean updated = userDao.updateProfilePicture(currentUser.getId(), null);
+            if (updated) {
+                // Update the user object in session
+                currentUser.setProfilePicture(null);
+                request.getSession().setAttribute("user", currentUser);
+                
+                request.setAttribute("successMessage", "Profile picture deleted successfully!");
+                request.setAttribute("currentUser", currentUser);
+                request.getRequestDispatcher("/settings.jsp").forward(request, response);
+            } else {
+                request.setAttribute("errorMessage", "Failed to delete profile picture from database");
+                request.setAttribute("currentUser", currentUser);
+                request.getRequestDispatcher("/settings.jsp").forward(request, response);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Error deleting profile picture: " + e.getMessage());
             request.setAttribute("currentUser", currentUser);
             request.getRequestDispatcher("/settings.jsp").forward(request, response);
         }

@@ -13,57 +13,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - MovieMood</title>
+    <link rel="stylesheet" href="assets/css/navbar.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/mainpage.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/profile.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #1e1e1e;
-            color: #fff;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .navigation {
-            text-align: center;
+        /* Settings-specific styles */
+        .settings-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
             margin-bottom: 30px;
-        }
-
-        .nav-link {
-            color: #00d4ff;
-            text-decoration: none;
-            font-size: 1.1rem;
-        }
-
-        .nav-link:hover {
-            text-decoration: underline;
-        }
-
-        .settings-header {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
-            margin-bottom: 40px;
         }
 
-        .settings-header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f39c12;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f39c12;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
             color: #fff;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            text-align: center;
         }
 
-        .settings-header p {
-            color: #ccc;
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group small {
+            color: #bdc3c7;
+            display: block;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+
+        .current-info {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .current-info h4 {
+            color: #f39c12;
+            margin-bottom: 8px;
             font-size: 1.1rem;
+        }
+
+        .current-info p {
+            color: #ecf0f1;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .profile-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #f39c12;
+            margin: 10px auto 0 auto;
+            display: block;
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+            border: 3px solid #f39c12;
+            margin: 10px auto 0 auto;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .form-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .form-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .form-btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .form-btn.danger:hover {
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .danger-section {
+            border: 2px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .danger-section .section-title {
+            color: #e74c3c;
+            border-bottom-color: #e74c3c;
+        }
+
+        .warning-text {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: 500;
+            background: rgba(231, 76, 60, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
         .message {
@@ -71,6 +183,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
             text-align: center;
+            font-weight: 500;
         }
 
         .message.success {
@@ -91,139 +204,45 @@
             color: #3498db;
         }
 
-        .settings-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+        .settings-header {
+            text-align: center;
+            margin-bottom: 40px;
             padding: 30px;
-            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #00d4ff;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #00d4ff;
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
+        .settings-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
             color: #fff;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
-        }
-
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: #00d4ff;
-            color: #1e1e1e;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #00b8e6;
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .current-info {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .current-info h4 {
-            color: #00d4ff;
-            margin-bottom: 5px;
-        }
-
-        .current-info p {
-            color: #ccc;
+        .settings-header p {
+            color: #bdc3c7;
+            font-size: 1.1rem;
             margin: 0;
-        }
-
-        .current-profile-pic {
-            margin-top: 10px;
-        }
-
-        .profile-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #00d4ff;
-        }
-
-        .profile-avatar-large {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            font-weight: bold;
-            color: white;
-            border: 3px solid #00d4ff;
         }
 
         input[type="file"] {
             padding: 8px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
+            border-radius: 8px;
             color: #fff;
             width: 100%;
         }
 
         input[type="file"]:focus {
             outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px 10px;
-            }
-
             .settings-section {
                 padding: 20px;
             }
@@ -235,126 +254,139 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="navigation">
-            <a href="profile" class="nav-link">&lt; Back to Profile</a>
-        </div>
+    <!-- Include Navigation Bar -->
+    <jsp:include page="WEB-INF/includes/navbar.jsp" />
 
-        <div class="settings-header">
-            <h1>Account Settings</h1>
-            <p>Manage your MovieMood account preferences</p>
-        </div>
-
-        <% if (successMessage != null) { %>
-            <div class="message success">
-                <%= successMessage %>
+    <main class="main-content">
+        <div class="container">
+            <!-- Settings Header -->
+            <div class="settings-header">
+                <h1>Account Settings</h1>
+                <p>Manage your MovieMood account preferences</p>
             </div>
-        <% } %>
 
-        <% if (errorMessage != null) { %>
-            <div class="message error">
-                <%= errorMessage %>
-            </div>
-        <% } %>
-
-        <% if (infoMessage != null) { %>
-            <div class="message info">
-                <%= infoMessage %>
-            </div>
-        <% } %>
-
-        <!-- Profile Picture Settings -->
-        <div class="settings-section">
-            <h2 class="section-title">Profile Picture</h2>
-            
-            <div class="current-info">
-                <h4>Current Profile Picture</h4>
-                <div class="current-profile-pic">
-                    <% if (currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) { %>
-                        <img src="/profile-picture/<%= currentUser.getProfilePicture() %>" alt="Current Profile Picture" class="profile-preview">
-                    <% } else { %>
-                        <div class="profile-avatar-large">
-                            <%= currentUser.getUsername().substring(0, 1).toUpperCase() %>
-                        </div>
-                    <% } %>
+            <!-- Messages -->
+            <% if (successMessage != null) { %>
+                <div class="message success">
+                    <%= successMessage %>
                 </div>
-            </div>
+            <% } %>
 
-            <form method="post" action="settings" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="updateProfilePicture">
+            <% if (errorMessage != null) { %>
+                <div class="message error">
+                    <%= errorMessage %>
+                </div>
+            <% } %>
+
+            <% if (infoMessage != null) { %>
+                <div class="message info">
+                    <%= infoMessage %>
+                </div>
+            <% } %>
+
+            <!-- Profile Picture Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">Profile Picture</h2>
                 
-                <div class="form-group">
-                    <label for="profilePicture">Upload New Profile Picture</label>
-                    <input type="file" id="profilePicture" name="profilePicture" accept="image/*" required>
-                    <small style="color: #ccc; display: block; margin-top: 5px;">Supported formats: JPG, PNG, GIF. Max size: 5MB</small>
+                <div class="current-info">
+                    <h4>Current Profile Picture</h4>
+                    <div>
+                        <% if (currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) { %>
+                            <img src="/profile-picture/<%= currentUser.getProfilePicture() %>" alt="Current Profile Picture" class="profile-preview">
+                        <% } else { %>
+                            <div class="profile-avatar-large">
+                                <%= currentUser.getUsername().substring(0, 1).toUpperCase() %>
+                            </div>
+                        <% } %>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn">Update Profile Picture</button>
-            </form>
-        </div>
+                <form method="post" action="settings" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="updateProfilePicture">
+                    
+                    <div class="form-group">
+                        <label for="profilePicture">Upload New Profile Picture</label>
+                        <input type="file" id="profilePicture" name="profilePicture" accept="image/*" required>
+                        <small>Supported formats: JPG, PNG, GIF. Max size: 5MB</small>
+                    </div>
 
-        <!-- Username Settings -->
-        <div class="settings-section">
-            <h2 class="section-title">Username</h2>
-            
-            <div class="current-info">
-                <h4>Current Username</h4>
-                <p><%= currentUser.getUsername() %></p>
+                    <button type="submit" class="form-btn">Update Profile Picture</button>
+                </form>
+
+                <% if (currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) { %>
+                <form method="post" action="settings" style="margin-top: 15px;">
+                    <input type="hidden" name="action" value="deleteProfilePicture">
+                    <button type="submit" class="form-btn" style="background: linear-gradient(135deg, #95a5a6, #7f8c8d); box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);" 
+                            onclick="return confirm('Are you sure you want to delete your profile picture?')">
+                        Delete Profile Picture
+                    </button>
+                </form>
+                <% } %>
             </div>
 
-            <form method="post" action="settings">
-                <input type="hidden" name="action" value="updateUsername">
+            <!-- Username Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">Username</h2>
                 
-                <div class="form-group">
-                    <label for="newUsername">New Username</label>
-                    <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username" required>
+                <div class="current-info">
+                    <h4>Current Username</h4>
+                    <p><%= currentUser.getUsername() %></p>
                 </div>
 
-                <button type="submit" class="btn">Update Username</button>
-            </form>
-        </div>
+                <form method="post" action="settings">
+                    <input type="hidden" name="action" value="updateUsername">
+                    
+                    <div class="form-group">
+                        <label for="newUsername">New Username</label>
+                        <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username" required>
+                    </div>
 
-        <!-- Password Settings -->
-        <div class="settings-section">
-            <h2 class="section-title">Password</h2>
-            
-            <form method="post" action="settings">
-                <input type="hidden" name="action" value="updatePassword">
+                    <button type="submit" class="form-btn">Update Username</button>
+                </form>
+            </div>
+
+            <!-- Password Settings -->
+            <div class="settings-section">
+                <h2 class="section-title">Password</h2>
                 
-                <div class="form-group">
-                    <label for="currentPassword">Current Password</label>
-                    <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter current password" required>
-                </div>
+                <form method="post" action="settings">
+                    <input type="hidden" name="action" value="updatePassword">
+                    
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter current password" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required>
-                </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm New Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" required>
-                </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" required>
+                    </div>
 
-                <button type="submit" class="btn">Update Password</button>
-            </form>
+                    <button type="submit" class="form-btn">Update Password</button>
+                </form>
+            </div>
+
+            <!-- Delete Account Section -->
+            <div class="settings-section danger-section">
+                <h2 class="section-title">Delete Account</h2>
+                <div class="warning-text">
+                    <strong>Warning:</strong> This action cannot be undone. All your data will be permanently deleted.
+                </div>
+                
+                <form method="post" action="settings" id="deleteAccountForm">
+                    <input type="hidden" name="action" value="deleteAccount">
+                    <button type="submit" class="form-btn danger">
+                        Delete My Account
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <!-- Delete Account Section -->
-        <div class="settings-section" style="border: 2px solid #e74c3c; background: rgba(231, 76, 60, 0.1);">
-            <h2 class="section-title" style="color: #e74c3c;">Delete Account</h2>
-            <p style="color: #e74c3c; margin-bottom: 20px; font-weight: 500;">
-                Warning: This action cannot be undone. All your data will be permanently deleted.
-            </p>
-            
-            <form method="post" action="settings" id="deleteAccountForm">
-                <input type="hidden" name="action" value="deleteAccount">
-                <button type="submit" class="btn" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none;">
-                    Delete My Account
-                </button>
-            </form>
-        </div>
-    </div>
+    </main>
 
     <script>
         // Clear form fields after successful submission
@@ -380,8 +412,10 @@
             }
         }
 
-        newPasswordInput.addEventListener('input', validatePasswords);
-        confirmPasswordInput.addEventListener('input', validatePasswords);
+        if (newPasswordInput && confirmPasswordInput) {
+            newPasswordInput.addEventListener('input', validatePasswords);
+            confirmPasswordInput.addEventListener('input', validatePasswords);
+        }
 
         // Delete account confirmation
         const deleteAccountForm = document.getElementById('deleteAccountForm');

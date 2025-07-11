@@ -142,7 +142,6 @@ public class UserDao {
                 String passwordHash = rs.getString("password_hash");
                 String remember_token = rs.getString("remember_token");
 
-                // Safely get verification fields (columns might not exist in older databases)
                 boolean verified = false;
                 String verificationCode = null;
                 Timestamp verificationCodeExpiry = null;
@@ -151,15 +150,11 @@ public class UserDao {
                     verificationCode = rs.getString("verification_code");
                     verificationCodeExpiry = rs.getTimestamp("verification_code_expiry");
                 } catch (SQLException e) {
-                    // Columns don't exist yet, use defaults
                 }
-
-                // Safely get profile picture (column might not exist in older databases)
                 String profilePicture = null;
                 try {
                     profilePicture = rs.getString("profile_picture");
                 } catch (SQLException e) {
-                    // Column doesn't exist yet, use null
                 }
 
                 User user = new User(id, username, email, passwordHash, remember_token);

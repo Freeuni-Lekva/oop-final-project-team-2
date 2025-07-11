@@ -166,7 +166,16 @@
         <ul class="request-list">
             <% for (User friend : allFriends) { %>
             <li class="friend-request">
-                <span> <%= friend.getUsername() %></span>
+                <div class="user-info">
+                    <div class="profile-picture">
+                        <% if (friend.getProfilePicture() != null && !friend.getProfilePicture().isEmpty()) { %>
+                            <img src="/profile-picture/<%= friend.getProfilePicture() %>" alt="<%= friend.getUsername() %>'s Profile Picture">
+                        <% } else { %>
+                            <div class="default-avatar"><%= friend.getUsername().substring(0, 1).toUpperCase() %></div>
+                        <% } %>
+                    </div>
+                    <span class="username"><%= friend.getUsername() %></span>
+                </div>
                 <div class="button-group">
                     <a href="profile?user=<%= friend.getUsername() %>" class="view-profile-button">View Profile</a>
                     <form method="post" action="unfriend" style="display: inline;">
@@ -207,16 +216,27 @@
         <ul class="request-list">
             <% for (FriendSuggestion suggestion : friendSuggestions) { %>
             <li class="friend-request">
-                <span>
-                    <%= suggestion.getUser().getUsername() %>
-                    <% if (suggestion.getMutualFriendCount() == 0) { %>
-                        • No mutual friends
-                    <% } else if (suggestion.getMutualFriendCount() == 1) { %>
-                        • 1 mutual friend
-                    <% } else { %>
-                        • <%= suggestion.getMutualFriendCount() %> mutual friends
-                    <% } %>
-                </span>
+                <div class="user-info">
+                    <div class="profile-picture">
+                        <% if (suggestion.getUser().getProfilePicture() != null && !suggestion.getUser().getProfilePicture().isEmpty()) { %>
+                            <img src="/profile-picture/<%= suggestion.getUser().getProfilePicture() %>" alt="<%= suggestion.getUser().getUsername() %>'s Profile Picture">
+                        <% } else { %>
+                            <div class="default-avatar"><%= suggestion.getUser().getUsername().substring(0, 1).toUpperCase() %></div>
+                        <% } %>
+                    </div>
+                    <div class="user-details">
+                        <span class="username"><%= suggestion.getUser().getUsername() %></span>
+                        <span class="mutual-friends">
+                            <% if (suggestion.getMutualFriendCount() == 0) { %>
+                                • No mutual friends
+                            <% } else if (suggestion.getMutualFriendCount() == 1) { %>
+                                • 1 mutual friend
+                            <% } else { %>
+                                • <%= suggestion.getMutualFriendCount() %> mutual friends
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
                 <div class="button-group">
                     <form method="post" action="send-friend-request" style="display: inline;">
                         <input type="hidden" name="receiverUsername" value="<%= suggestion.getUser().getUsername() %>">

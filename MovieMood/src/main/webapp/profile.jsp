@@ -9,11 +9,13 @@
     Integer watchlistCount = (Integer) request.getAttribute("watchlistCount");
     Integer reviewsCount = (Integer) request.getAttribute("reviewsCount");
     Integer favoritesCount = (Integer) request.getAttribute("favoritesCount");
+    Integer friendsCount = (Integer) request.getAttribute("friendsCount");
     
     // Default to 0 if null
     if (watchlistCount == null) watchlistCount = 0;
     if (reviewsCount == null) reviewsCount = 0;
     if (favoritesCount == null) favoritesCount = 0;
+    if (friendsCount == null) friendsCount = 0;
 %>
 
 <!DOCTYPE html>
@@ -63,8 +65,8 @@
                     <span class="stat-number"><%= reviewsCount %></span>
                     <div class="stat-label">Reviews</div>
                 </a>
-                <a href="friends" class="stat-card">
-                    <span class="stat-number">0</span>
+                <a href="friend-requests" class="stat-card">
+                    <span class="stat-number"><%= friendsCount %></span>
                     <div class="stat-label">Friends</div>
                 </a>
                 <div class="stat-card disabled">

@@ -154,25 +154,5 @@ public class UserFavoritesDao {
         return 0;
     }
 
-    /**
-     * Clear all movies from user's favorites
-     * @param userId The user ID
-     * @return true if successfully cleared, false otherwise
-     */
-    public boolean clearFavorites(int userId) {
-        String sql = "DELETE FROM user_favorites WHERE user_id = ?";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setInt(1, userId);
-            statement.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            System.err.println("Error clearing favorites for user ID: " + userId);
-            e.printStackTrace();
-            return false;
-        }
-    }
 } 

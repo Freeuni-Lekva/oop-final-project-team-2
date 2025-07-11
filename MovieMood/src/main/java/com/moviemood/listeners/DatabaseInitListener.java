@@ -34,6 +34,7 @@ public class DatabaseInitListener implements ServletContextListener {
             UserListDao listsDao = new UserListDao(dataSource);
             FriendActivityDao activityDao = new FriendActivityDao(dataSource);
             UserMoviePreferencesDao  moviePreferencesDao = new UserMoviePreferencesDao(dataSource);
+            MovieRatingsDao movieRatingsDao = new MovieRatingsDao(dataSource);
 
             servletContextEvent.getServletContext().setAttribute("userDao", userDao);
             servletContextEvent.getServletContext().setAttribute("friendRequestDao", friendRequestDAO);
@@ -45,6 +46,7 @@ public class DatabaseInitListener implements ServletContextListener {
             servletContextEvent.getServletContext().setAttribute("activityDao", activityDao);
             servletContextEvent.getServletContext().setAttribute("dataSource", dataSource);
             servletContextEvent.getServletContext().setAttribute("moviePreferencesDao", moviePreferencesDao);
+            servletContextEvent.getServletContext().setAttribute("movieRatingsDao", movieRatingsDao);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
         }

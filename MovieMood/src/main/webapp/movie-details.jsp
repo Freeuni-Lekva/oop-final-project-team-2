@@ -232,17 +232,8 @@
     <section class="details-section">
         <h2 class="section-title">Movie Details</h2>
         <div class="details-grid">
-<%--            <div class="detail-card">--%>
-<%--                <h3>Production Information</h3>--%>
-<%--                <p><strong>Budget:</strong> $<%= movie.getBudget() %></p>--%>
-<%--                <p><strong>Revenue:</strong> $<%= movie.getRevenue() %></p>--%>
-<%--                <p><strong>Status:</strong> <%= movie.getStatus() %></p>--%>
-<%--                <p><strong>Original Language:</strong> <%= movie.getOriginalLanguage() %></p>--%>
-<%--            </div>--%>
             <div class="detail-card">
                 <h3>Ratings & Popularity</h3>
-<%--                <p><strong>TMDB Rating:</strong> <%= movie.getVoteAverage() %>/10</p>--%>
-<%--                <p><strong>Vote Count:</strong> <%= movie.getVoteCount() %></p>--%>
                 <p><strong>Popularity Score:</strong> <%= movie.getPopularity() %></p>
             </div>
             <div class="detail-card">
@@ -257,7 +248,7 @@
     <% if (user != null) { %>
     <section class="rating-section">
         <h2 class="section-title">Rate This Movie</h2>
-        <div class="rating-container">
+        <div class="rating-container" data-movie-id="<%= movie.getId() %>">
             <div class="rating-stars" id="ratingStars">
                 <span class="star" data-rating="1">★</span>
                 <span class="star" data-rating="2">★</span>
@@ -310,7 +301,6 @@
                             <div class="review-date"><%= review.getFormattedDate() %></div>
                         </div>
                     </div>
-                    <div class="review-rating">★★★★☆</div> <!-- You can customize this if you add rating support -->
                 </div>
                 <div class="review-text"><%= review.getReviewText() %></div>
             </div>
@@ -321,5 +311,8 @@
         </div>
     </section>
 </main>
+<script>
+    window.contextPath = '<%= request.getContextPath() %>';
+</script>
 </body>
 </html>

@@ -8,8 +8,6 @@
 </head>
 <body>
 <div class="container">
-    <h1>Log in</h1>
-
     <%-- Show error message if exists --%>
     <%
         String error = (String) request.getAttribute("error");
@@ -41,9 +39,10 @@
         <span>or</span>
     </div>
 
+    <h1>Log in</h1>
+
     <%
         String keepUsername = (String) request.getAttribute("keepUsername");
-        String keepPassword = (String) request.getAttribute("keepPassword");
     %>
 
     <form method="post" action="login">
@@ -53,13 +52,12 @@
         <label for="password">Password:</label><br/>
         <input type="password" id="password" name="password" required><br/>
 
-        <input type="submit" value="Log in"><br/>
-
         <div class="remember-me">
             <input type="checkbox" id="rememberMe" name="rememberMe" value="true">
             <label for="rememberMe">Remember me</label>
         </div>
 
+        <input type="submit" value="Log in"><br/>
     </form>
 
     <div class="signup-link">

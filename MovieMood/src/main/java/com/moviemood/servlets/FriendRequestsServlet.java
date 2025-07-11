@@ -22,8 +22,8 @@ import java.util.HashSet;
 public class FriendRequestsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        User user = (User) request.getSession().getAttribute("user");
-        if (user == null) {
+        User currentUser = (User) request.getSession().getAttribute("user");
+        if (currentUser == null) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -33,12 +33,36 @@ public class FriendRequestsServlet extends HttpServlet {
             FriendshipDao friendshipDao = (FriendshipDao) getServletContext().getAttribute("friendshipDao");
             UserDao userDao = (UserDao) getServletContext().getAttribute("userDao");
 
-            int userId = user.getId();
+            // Determine whose friends to show
+            String username = request.getParameter("user");
+            User targetUser = currentUser; // Default to current user
+            boolean isOwnFriends = true;
+            
+            if (username != null && !username.trim().isEmpty()) {
+                // Viewing someone else's friends
+                User foundUser = userDao.getUserByUsername(username);
+                if (foundUser != null) {
+                    targetUser = foundUser;
+                    isOwnFriends = (currentUser.getId() == foundUser.getId());
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+                    return;
+                }
+            }
 
-            List<FriendRequest> incomingRequests = friendRequestDao.getIncomingRequests(userId);
-            List<FriendRequest> sentRequests = friendRequestDao.getSentRequests(userId);
+            int userId = targetUser.getId();
             List<User> allFriends = friendshipDao.getFriendsByUserId(userId);
-            List<FriendSuggestion> friendSuggestions = friendshipDao.getFriendSuggestions(userId, 10); // Get top 10 suggestions
+
+            // Only show private data for current user
+            List<FriendRequest> incomingRequests = new ArrayList<>();
+            List<FriendRequest> sentRequests = new ArrayList<>();
+            List<FriendSuggestion> friendSuggestions = new ArrayList<>();
+            
+            if (isOwnFriends) {
+                incomingRequests = friendRequestDao.getIncomingRequests(currentUser.getId());
+                sentRequests = friendRequestDao.getSentRequests(currentUser.getId());
+                friendSuggestions = friendshipDao.getFriendSuggestions(currentUser.getId(), 10);
+            }
 
             String searchQuery = request.getParameter("search");
             if (searchQuery != null && !searchQuery.trim().isEmpty()) {
@@ -47,8 +71,8 @@ public class FriendRequestsServlet extends HttpServlet {
                 
                 if ("your_friends".equals(currentTab)) {
                     allFriends = searchFriends(allFriends, searchQuery);
-                } else if ("suggestions".equals(currentTab)) {
-                    friendSuggestions = searchInSuggestionsAndOthers(friendSuggestions, searchQuery, userId, userDao, friendshipDao);
+                } else if ("suggestions".equals(currentTab) && isOwnFriends) {
+                    friendSuggestions = searchInSuggestionsAndOthers(friendSuggestions, searchQuery, currentUser.getId(), userDao, friendshipDao);
                 }
             }
 
@@ -56,6 +80,9 @@ public class FriendRequestsServlet extends HttpServlet {
             request.setAttribute("sentRequests", sentRequests);
             request.setAttribute("allFriends", allFriends);
             request.setAttribute("friendSuggestions", friendSuggestions);
+            request.setAttribute("currentUser", currentUser);
+            request.setAttribute("targetUser", targetUser);
+            request.setAttribute("isOwnFriends", isOwnFriends);
             request.getRequestDispatcher("friend-requests.jsp").forward(request, response);
 
         }catch(Exception e) {

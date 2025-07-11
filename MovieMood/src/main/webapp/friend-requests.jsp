@@ -33,11 +33,23 @@
         if (tab == null) {
             tab = "your_friends";
         }
+        
+        // Check if viewing another user's friends
+        Boolean isOwnFriends = (Boolean) request.getAttribute("isOwnFriends");
+        User targetUser = (User) request.getAttribute("targetUser");
+        User currentUser = (User) request.getAttribute("currentUser");
+        
+        if (isOwnFriends == null) isOwnFriends = true;
     %>
 
     <div class="friends-container">
-        <h1><span class="highlight">Friends</span></h1>
-        <p>Manage your connections and discover new people</p>
+        <% if (isOwnFriends) { %>
+            <h1><span class="highlight">Friends</span></h1>
+            <p>Manage your connections and discover new people</p>
+        <% } else { %>
+            <h1><span class="highlight"><%= targetUser.getUsername() %>'s</span> Friends</h1>
+            <p>View <%= targetUser.getUsername() %>'s connections</p>
+        <% } %>
         
         <% 
             String message = request.getParameter("message");
@@ -53,14 +65,16 @@
             </div>
         <% } %>
 
+        <% if (isOwnFriends) { %>
         <div class="tabs">
             <a href="friend-requests?tab=your_friends" class="<%= "your_friends".equals(tab) ? "active" : "" %>"><button>Your Friends</button></a>
             <a href="friend-requests?tab=suggestions" class="<%= "suggestions".equals(tab) ? "active" : "" %>"><button>Suggestions</button></a>
             <a href="friend-requests?tab=incoming" class="<%= "incoming".equals(tab) ? "active" : "" %>"><button>Friend Requests</button></a>
             <a href="friend-requests?tab=sent" class="<%= "sent".equals(tab) ? "active" : "" %>"><button>Sent Requests</button></a>
         </div>
+        <% } %>
 
-        <% if ("your_friends".equals(tab) || "suggestions".equals(tab)) { %>
+        <% if (("your_friends".equals(tab) || "suggestions".equals(tab)) && isOwnFriends) { %>
         <div class = "search-bar">
             <form action="friend-requests" method="get">
                 <div class="search-wrapper">
@@ -152,8 +166,13 @@
             }
         %>
 
-        <% } else if ("your_friends".equals(tab)) { %>
+        <% } else if ("your_friends".equals(tab) || !isOwnFriends) { %>
+        <% if (isOwnFriends) { %>
         <h2>Your Friends</h2>
+        <% } else { %>
+        <a href="profile?user=<%= targetUser.getUsername() %>" style="color: #f39c12; text-decoration: none; font-size: 14px; margin-bottom: 20px; display: inline-block;">← Back to <%= targetUser.getUsername() %>'s Profile</a>
+        <h2><%= targetUser.getUsername() %>'s Friends</h2>
+        <% } %>
         <%
             String searchQuery = request.getParameter("search");
             if (searchQuery != null && !searchQuery.trim().isEmpty()) {
@@ -179,10 +198,12 @@
                 </div>
                 <div class="button-group">
                     <a href="profile?user=<%= friend.getUsername() %>" class="view-profile-button">View Profile</a>
+                    <% if (isOwnFriends) { %>
                     <form method="post" action="unfriend" style="display: inline;">
                         <input type="hidden" name="friendUsername" value="<%= friend.getUsername() %>">
                         <button type="submit" class="unfriend-button">Unfriend</button>
                     </form>
+                    <% } %>
                 </div>
             </li>
             <% } %>

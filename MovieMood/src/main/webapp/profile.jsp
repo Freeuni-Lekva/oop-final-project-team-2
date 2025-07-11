@@ -26,9 +26,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= profileUser.getUsername() %>'s Profile - MovieMood</title>
-    <link rel="stylesheet" href="assets/css/navbar.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/mainpage.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/profile.css">
+    <link rel="stylesheet" href="assets/css/navbar.css?v=<%= System.currentTimeMillis() %>">
+    <link rel="stylesheet" type="text/css" href="assets/css/mainpage.css?v=<%= System.currentTimeMillis() %>">
+    <link rel="stylesheet" type="text/css" href="assets/css/profile.css?v=<%= System.currentTimeMillis() %>">
 </head>
 <body>
     <!-- Include Navigation Bar -->
@@ -65,7 +65,7 @@
                     <span class="stat-number"><%= reviewsCount %></span>
                     <div class="stat-label">Reviews</div>
                 </a>
-                <a href="friend-requests" class="stat-card">
+                <a href="friend-requests<%= userParam %>" class="stat-card">
                     <span class="stat-number"><%= friendsCount %></span>
                     <div class="stat-label">Friends</div>
                 </a>

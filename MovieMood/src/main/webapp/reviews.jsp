@@ -164,6 +164,7 @@
                             Movie movie = movieMap.get(review.getMovieId());
                             if (movie != null) {
                     %>
+                    <a href="/movie/details?id=<%= movie.getId() %>" style="text-decoration: none; color: inherit;">
                     <div class="review-card">
                         <div class="review-poster">
                             <% if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) { %>
@@ -173,9 +174,9 @@
                             <% } %>
                         </div>
                         <div class="review-content">
-                            <a href="/movie/details?id=<%= movie.getId() %>" class="review-movie-title">
+                            <div class="review-movie-title">
                                 <%= movie.getTitle() %>
-                            </a>
+                            </div>
                             <div class="review-meta">
                                 <% if (movie.getReleaseDate() != null) { %>
                                     <span>Released: <%= movie.getReleaseDate().toString().substring(0, 4) %></span>
@@ -192,6 +193,7 @@
                             </div>
                         </div>
                     </div>
+                    </a>
                     <%
                             }
                         }

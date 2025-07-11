@@ -339,6 +339,21 @@
                 <button type="submit" class="btn">Update Password</button>
             </form>
         </div>
+
+        <!-- Delete Account Section -->
+        <div class="settings-section" style="border: 2px solid #e74c3c; background: rgba(231, 76, 60, 0.1);">
+            <h2 class="section-title" style="color: #e74c3c;">Delete Account</h2>
+            <p style="color: #e74c3c; margin-bottom: 20px; font-weight: 500;">
+                Warning: This action cannot be undone. All your data will be permanently deleted.
+            </p>
+            
+            <form method="post" action="settings" id="deleteAccountForm">
+                <input type="hidden" name="action" value="deleteAccount">
+                <button type="submit" class="btn" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none;">
+                    Delete My Account
+                </button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -367,6 +382,16 @@
 
         newPasswordInput.addEventListener('input', validatePasswords);
         confirmPasswordInput.addEventListener('input', validatePasswords);
+
+        // Delete account confirmation
+        const deleteAccountForm = document.getElementById('deleteAccountForm');
+        if (deleteAccountForm) {
+            deleteAccountForm.addEventListener('submit', function(e) {
+                if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                    e.preventDefault();
+                }
+            });
+        }
     </script>
 </body>
 </html> 

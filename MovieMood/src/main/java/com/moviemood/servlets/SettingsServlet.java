@@ -85,6 +85,8 @@ public class SettingsServlet extends HttpServlet {
                 handlePasswordUpdate(request, response, currentUser, userDao);
             } else if ("updateProfilePicture".equals(action)) {
                 handleProfilePictureUpdate(request, response, currentUser, userDao);
+            } else if ("deleteAccount".equals(action)) {
+                handleAccountDeletion(request, response, currentUser, userDao);
             } else {
                 request.setAttribute("errorMessage", "Invalid action");
                 request.setAttribute("currentUser", currentUser);
@@ -312,5 +314,48 @@ public class SettingsServlet extends HttpServlet {
             }
         }
         return null;
+    }
+    
+    private void handleAccountDeletion(HttpServletRequest request, HttpServletResponse response, 
+                                       User currentUser, UserDao userDao) 
+            throws ServletException, IOException {
+        
+        try {
+            // Delete profile picture file if it exists
+            if (currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) {
+                try {
+                    String userHome = System.getProperty("user.home");
+                    String uploadPath = userHome + File.separator + "moviemood-uploads" + File.separator + "profile-pictures";
+                    Path filePath = Paths.get(uploadPath, currentUser.getProfilePicture());
+                    Files.deleteIfExists(filePath);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
+            // Delete user from database (cascades to related data)
+            boolean deleted = userDao.deleteUser(currentUser.getId());
+            
+            if (deleted) {
+                // Invalidate session
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
+                
+                // Redirect to home page
+                response.sendRedirect(request.getContextPath() + "/Home");
+            } else {
+                request.setAttribute("errorMessage", "Failed to delete account. Please try again.");
+                request.setAttribute("currentUser", currentUser);
+                request.getRequestDispatcher("/settings.jsp").forward(request, response);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "An error occurred while deleting your account");
+            request.setAttribute("currentUser", currentUser);
+            request.getRequestDispatcher("/settings.jsp").forward(request, response);
+        }
     }
 } 

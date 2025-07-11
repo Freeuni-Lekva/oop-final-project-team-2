@@ -18,7 +18,6 @@
                 </a>
             </div>
             <div class="nav-links">
-                <a href="#">Popular Lists</a>
                 <%
                     User currentUser = (User) session.getAttribute("user");
                     if (currentUser != null) {

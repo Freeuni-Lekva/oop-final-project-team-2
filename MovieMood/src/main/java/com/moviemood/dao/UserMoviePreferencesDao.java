@@ -18,7 +18,7 @@ public class UserMoviePreferencesDao {
     }
 
     public void saveUserPreference(int userId, String username, int movieId) throws SQLException {
-        String sql = "MERGE INTO user_movie_preferences (user_id, username, movie_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO user_movie_preferences (user_id, username, movie_id) VALUES (?, ?, ?)";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -27,6 +27,16 @@ public class UserMoviePreferencesDao {
             stmt.setString(2, username);
             stmt.setInt(3, movieId);
             stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            String errorMessage = e.getMessage().toLowerCase();
+            if (errorMessage.contains("duplicate") ||
+                    errorMessage.contains("unique") ||
+                    errorMessage.contains("constraint")) {
+                // Ignore duplicate key errors (using this instead of insert ignore)
+                return;
+            }
+            throw e;
         }
     }
 

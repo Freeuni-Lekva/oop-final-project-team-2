@@ -271,7 +271,7 @@
                 <h4>Current Profile Picture</h4>
                 <div class="current-profile-pic">
                     <% if (currentUser.getProfilePicture() != null && !currentUser.getProfilePicture().isEmpty()) { %>
-                        <img src="<%= currentUser.getProfilePicture() %>" alt="Current Profile Picture" class="profile-preview">
+                        <img src="/profile-picture/<%= currentUser.getProfilePicture() %>" alt="Current Profile Picture" class="profile-preview">
                     <% } else { %>
                         <div class="profile-avatar-large">
                             <%= currentUser.getUsername().substring(0, 1).toUpperCase() %>

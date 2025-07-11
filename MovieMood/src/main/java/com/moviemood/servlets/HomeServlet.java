@@ -2,7 +2,9 @@ package com.moviemood.servlets;
 
 import com.moviemood.Enums.MovieCategory;
 import com.moviemood.bean.Movie;
+import com.moviemood.bean.User;
 import com.moviemood.config.Config;
+import com.moviemood.dao.UserMoviePreferencesDao;
 import com.moviemood.repository.tmdb.TmdbMovieRepository;
 
 import javax.servlet.ServletException;
@@ -11,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(urlPatterns = {"/Home", "/moviemood", "/movies", "/films"})
@@ -65,12 +69,22 @@ public class HomeServlet extends HttpServlet {
         else {
             movies = moviesRepo.discoverWithFilters(genreParam, yearParam, runtimeParam, page);
         }
+        UserMoviePreferencesDao preferencesDao = (UserMoviePreferencesDao) getServletContext().getAttribute("moviePreferencesDao");
+        User user=(User) req.getSession().getAttribute("user");
+        if(user!=null){
+            try {
+                List<Integer> preferedMovies=preferencesDao.getUserPreferences(user.getId());
+                List<Movie> recommendedMovies=new ArrayList<>();
+                for(int i=0;i<preferedMovies.size();i++){
+                    recommendedMovies.addAll(moviesRepo.fetchRecommendations(preferedMovies.get(i)));
+                }
+                req.setAttribute("recomededMovies", recommendedMovies);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
-        // Reuse base poster path and recommended movies
-        List<Movie> recommendedMovies = moviesRepo.fetchSimilar(278);
-
+        }
         req.setAttribute("movies", movies);
-        req.setAttribute("recomededMovies", recommendedMovies);
         req.setAttribute("POSTER_BASE", Config.get("posterPathBase"));
         req.setAttribute("currentPage", page);
         req.setAttribute("totalPages", 500);

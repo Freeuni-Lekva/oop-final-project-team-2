@@ -5,14 +5,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import com.moviemood.config.Config;
-import com.moviemood.dao.FriendRequestDao;
-import com.moviemood.dao.FriendshipDao;
-import com.moviemood.dao.MovieReviewsDao;
-import com.moviemood.dao.UserDao;
-import com.moviemood.dao.UserFavoritesDao;
-import com.moviemood.dao.UserListDao;
-import com.moviemood.dao.UserWatchlistDao;
-import com.moviemood.dao.FriendActivityDao;
+import com.moviemood.dao.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
@@ -40,6 +33,7 @@ public class DatabaseInitListener implements ServletContextListener {
             UserFavoritesDao favoritesDao = new UserFavoritesDao(dataSource);
             UserListDao listsDao = new UserListDao(dataSource);
             FriendActivityDao activityDao = new FriendActivityDao(dataSource);
+            UserMoviePreferencesDao  moviePreferencesDao = new UserMoviePreferencesDao(dataSource);
 
             servletContextEvent.getServletContext().setAttribute("userDao", userDao);
             servletContextEvent.getServletContext().setAttribute("friendRequestDao", friendRequestDAO);
@@ -50,6 +44,7 @@ public class DatabaseInitListener implements ServletContextListener {
             servletContextEvent.getServletContext().setAttribute("listsDao", listsDao);
             servletContextEvent.getServletContext().setAttribute("activityDao", activityDao);
             servletContextEvent.getServletContext().setAttribute("dataSource", dataSource);
+            servletContextEvent.getServletContext().setAttribute("moviePreferencesDao", moviePreferencesDao);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize database", e);
         }
@@ -245,10 +240,10 @@ public class DatabaseInitListener implements ServletContextListener {
             statement.executeUpdate("DROP VIEW IF EXISTS friends_activity_view");
         } catch (SQLException e) {
         }
-        
+
         statement.executeUpdate(
             "CREATE VIEW friends_activity_view AS " +
-            
+
             // Favorites/Likes
             "SELECT 'liked' as activity_type, " +
             "       u.id as user_id, u.username, u.profile_picture, " +
@@ -256,19 +251,19 @@ public class DatabaseInitListener implements ServletContextListener {
             "       f.added_date as activity_time, NULL as additional_info " +
             "FROM user_favorites f " +
             "JOIN users u ON f.user_id = u.id " +
-            
+
             "UNION ALL " +
-            
-            // Watchlist additions  
+
+            // Watchlist additions
             "SELECT 'added_to_watchlist' as activity_type, " +
             "       u.id as user_id, u.username, u.profile_picture, " +
             "       w.movie_id, NULL as list_id, NULL as list_name, " +
             "       w.added_date as activity_time, NULL as additional_info " +
             "FROM user_watchlist w " +
             "JOIN users u ON w.user_id = u.id " +
-            
+
             "UNION ALL " +
-            
+
             // List creations
             "SELECT 'created_list' as activity_type, " +
             "       u.id as user_id, u.username, u.profile_picture, " +
@@ -277,9 +272,9 @@ public class DatabaseInitListener implements ServletContextListener {
             "FROM user_lists ul " +
             "JOIN users u ON ul.user_id = u.id " +
             "WHERE ul.is_public = 1 " +
-            
+
             "UNION ALL " +
-            
+
             // Movie additions to lists
             "SELECT 'added_to_list' as activity_type, " +
             "       u.id as user_id, u.username, u.profile_picture, " +
@@ -289,9 +284,9 @@ public class DatabaseInitListener implements ServletContextListener {
             "JOIN user_lists ul ON uli.list_id = ul.id " +
             "JOIN users u ON ul.user_id = u.id " +
             "WHERE ul.is_public = 1 " +
-            
+
             "UNION ALL " +
-            
+
             // Reviews
             "SELECT 'reviewed' as activity_type, " +
             "       u.id as user_id, u.username, u.profile_picture, " +

@@ -30,6 +30,12 @@
     <div class="container">
         <h1 class="hero-title">Find Your Perfect <span class="highlight">Movie Mood</span></h1>
 
+        <%
+            User user = (User) request.getSession().getAttribute("user");
+            List<Movie> recomededMovies = (List<Movie>) request.getAttribute("recomededMovies");
+            String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
+            if (user != null && recomededMovies != null && !recomededMovies.isEmpty()) {
+        %>
         <section class="suggested-section">
             <h2 class="section-title">Suggested For You</h2>
             <div class="slider-container">
@@ -37,11 +43,7 @@
                 <div class="slider-wrapper">
                     <div class="movies-slider" id="recommendedSlider">
                         <%
-                            List<Movie> recomededMovies = (List<Movie>) request.getAttribute("recomededMovies");
-                            String posterBaseUrl = (String) request.getAttribute("POSTER_BASE");
-                            if (recomededMovies != null) {
-                                for (int i = 0; i < recomededMovies.size(); i++) {
-                                    Movie movie = recomededMovies.get(i);
+                            for (Movie movie : recomededMovies) {
                         %>
                         <a href="/movie/details?id=<%= movie.getId() %>" style="text-decoration: none; color: inherit;">
                             <div class="movie-card">
@@ -64,7 +66,6 @@
                             </div>
                         </a>
                         <%
-                                }
                             }
                         %>
                     </div>
@@ -72,6 +73,8 @@
                 <button class="slider-arrow next" onclick="slideMovies(1)"></button>
             </div>
         </section>
+        <% } %>
+
 
         <%
             User currentUser = (User) session.getAttribute("user");

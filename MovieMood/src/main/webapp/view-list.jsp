@@ -220,7 +220,7 @@
         <% } else { %>
             <div class="movies-grid">
                 <% for (Movie movie : movies) { %>
-                    <div class="movie-card" onclick="location.href='<%= request.getContextPath() %>/movie-details?id=<%= movie.getId() %>'">
+                    <div class="movie-card" onclick="location.href='<%= request.getContextPath() %>/movie/details?id=<%= movie.getId() %>'">
                         <img src="<%= posterBase %><%= movie.getPosterPath() %>" 
                              alt="<%= movie.getTitle() %>" 
                              class="movie-poster"

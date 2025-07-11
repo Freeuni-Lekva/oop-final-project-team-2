@@ -81,8 +81,6 @@ public class MovieDetailsServlet extends HttpServlet {
                     // Continue with default false values
                 }
             }
-
-            req.setAttribute("currentUser", currentUser);
             req.setAttribute("isInWatchlist", isInWatchlist);
             req.setAttribute("isInFavorites", isInFavorites);
 

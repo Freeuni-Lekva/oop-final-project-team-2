@@ -13,12 +13,6 @@ import java.sql.*;
  * - Retrieving a user by email
  * - Inserting a new user
  * This class assumes that the "users" table exists in the connected MySQL database.
- *
- * IMPORTANT!!!!
- * As of now, for safety reasons there are two versions of insertUser.
- * One is overloaded version of other. This may be temporary
- * and after completing implementation of email verification,
- * it may be changed!!!
  */
 
 public class UserDao {
@@ -170,10 +164,6 @@ public class UserDao {
      * Inserts the user in the database.
      * takes username, email password (hashed). In this overloaded
      * version this method also takes verificationCode and expiry as parameters
-     *
-     * This method may be temporary
-     * and after completing implementation of email verification,
-     * it may be changed!!!
      */
     public void insertUser(String username, String email, String passwordHash,
                            String verificationCode, Timestamp expiry) throws UserAlreadyExistsException {
@@ -389,6 +379,10 @@ public class UserDao {
             return false;
         }
     }
+
+
+
+
 
 
 

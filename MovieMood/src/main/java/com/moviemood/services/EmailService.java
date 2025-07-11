@@ -59,7 +59,7 @@ public class EmailService {
 
         String host = "smtp.gmail.com";
         int port = 587;
-        final String usernameSMTP = "official.moviemood@gmail.com";  // Your Gmail address
+        final String usernameSMTP = "official.moviemood@gmail.com";
         final String passwordSMTP = "efmr qbuk ichb lnpy";
 
         String fromEmail = "official.moviemood@gmail.com";

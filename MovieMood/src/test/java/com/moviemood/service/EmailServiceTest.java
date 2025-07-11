@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 /**
  * This is unit tests for EmailService class.
- *
+ * Using Mock mode - no real emails sent!
  * Covers:
  * - Code generation
  * - Input validation

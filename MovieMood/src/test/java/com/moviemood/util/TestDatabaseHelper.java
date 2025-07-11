@@ -52,6 +52,42 @@ public class TestDatabaseHelper {
 
 
     /**
+     * Creates the user_movie_preferences table in the test database.
+     * Table structure matches the real production MySQL database.
+     */
+    public static void createUserMoviePreferencesTable(BasicDataSource dataSource) throws SQLException {
+        String createPreferencesTableSQL =
+                "CREATE TABLE IF NOT EXISTS user_movie_preferences (\n" +
+                        "    user_id INT NOT NULL,\n" +
+                        "    username VARCHAR(100) NOT NULL,\n" +
+                        "    movie_id INT NOT NULL,\n" +
+                        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n" +
+                        "    PRIMARY KEY (user_id, movie_id),\n" +
+                        "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE\n" +
+                        ");";
+
+        executeSQL(dataSource, createPreferencesTableSQL);
+    }
+
+    /**
+     * Creates the movie_reviews table in the test database.
+     * Table structure matches the real production MySQL database.
+     */
+    public static void createMovieReviewsTable(BasicDataSource dataSource) throws SQLException {
+        String createMovieReviewsTableSQL =
+                "CREATE TABLE IF NOT EXISTS movie_reviews (" +
+                        "    id INT PRIMARY KEY AUTO_INCREMENT, " +
+                        "    user_id INT NOT NULL, " +
+                        "    movie_id INT NOT NULL, " +
+                        "    review_text TEXT NOT NULL, " +
+                        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE" +
+                        ");";
+
+        executeSQL(dataSource, createMovieReviewsTableSQL);
+    }
+
+    /**
      * Inserts sample test data into users table.
      */
     public static void insertSampleUsers(BasicDataSource dataSource) throws SQLException {
@@ -79,6 +115,8 @@ public class TestDatabaseHelper {
      */
     public static void dropAllTables(BasicDataSource dataSource) throws SQLException {
         try {
+            executeSQL(dataSource, "DROP TABLE IF EXISTS movie_reviews");
+            executeSQL(dataSource, "DROP TABLE IF EXISTS user_movie_preferences");
             executeSQL(dataSource, "DROP TABLE IF EXISTS users");
         } catch (SQLException e) {
         }
@@ -110,3 +148,5 @@ public class TestDatabaseHelper {
         }
     }
 }
+
+

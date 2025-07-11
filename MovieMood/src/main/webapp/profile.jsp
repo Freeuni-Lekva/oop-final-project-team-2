@@ -31,60 +31,60 @@
     <link rel="stylesheet" type="text/css" href="assets/css/profile.css">
 </head>
 <body>
-<!-- Include Navigation Bar -->
-<jsp:include page="WEB-INF/includes/navbar.jsp" />
+    <!-- Include Navigation Bar -->
+    <jsp:include page="WEB-INF/includes/navbar.jsp" />
 
-<main class="main-content">
-    <div class="container">
-        <!-- Navigation Button -->
-        <a href="Home" class="nav-btn">Back to Movies</a>
+    <main class="main-content">
+        <div class="container">
+            <!-- Navigation Button -->
+            <a href="Home" class="nav-btn">Back to Movies</a>
 
-        <!-- First Row: Photo and Name -->
-        <div class="profile-header">
-            <div class="profile-avatar">
-                <% if (profileUser.getProfilePicture() != null && !profileUser.getProfilePicture().isEmpty()) { %>
-                <img src="/profile-picture/<%= profileUser.getProfilePicture() %>" alt="<%= profileUser.getUsername() %>'s Profile Picture" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                <% } else { %>
-                <%= profileUser.getUsername().substring(0, 1).toUpperCase() %>
-                <% } %>
+            <!-- First Row: Photo and Name -->
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <% if (profileUser.getProfilePicture() != null && !profileUser.getProfilePicture().isEmpty()) { %>
+                        <img src="/profile-picture/<%= profileUser.getProfilePicture() %>" alt="<%= profileUser.getUsername() %>'s Profile Picture" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    <% } else { %>
+                        <%= profileUser.getUsername().substring(0, 1).toUpperCase() %>
+                    <% } %>
+                </div>
+                <div class="profile-name">
+                    <%= profileUser.getUsername() %>
+                </div>
             </div>
-            <div class="profile-name">
-                <%= profileUser.getUsername() %>
+
+            <!-- Second Row: Statistics -->
+            <div class="profile-stats">
+                <a href="watchlist" class="stat-card">
+                    <span class="stat-number"><%= watchlistCount %></span>
+                    <div class="stat-label">Watchlist</div>
+                </a>
+                <a href="favorites" class="stat-card">
+                    <span class="stat-number"><%= favoritesCount %></span>
+                    <div class="stat-label">Favorites</div>
+                </a>
+                <a href="reviews" class="stat-card">
+                    <span class="stat-number"><%= reviewsCount %></span>
+                    <div class="stat-label">Reviews</div>
+                </a>
+                <a href="friend-requests" class="stat-card">
+                    <span class="stat-number"><%= friendsCount %></span>
+                    <div class="stat-label">Friends</div>
+                </a>
+                <a href="lists" class="stat-card">
+                    <span class="stat-number"><%= listsCount %></span>
+                    <div class="stat-label">Lists</div>
+                </a>
             </div>
-        </div>
 
-        <!-- Second Row: Statistics -->
-        <div class="profile-stats">
-            <a href="watchlist" class="stat-card">
-                <span class="stat-number"><%= watchlistCount %></span>
-                <div class="stat-label">Watchlist</div>
-            </a>
-            <a href="favorites" class="stat-card">
-                <span class="stat-number"><%= favoritesCount %></span>
-                <div class="stat-label">Favorites</div>
-            </a>
-            <a href="reviews" class="stat-card">
-                <span class="stat-number"><%= reviewsCount %></span>
-                <div class="stat-label">Reviews</div>
-            </a>
-            <a href="friend-requests" class="stat-card">
-                <span class="stat-number"><%= friendsCount %></span>
-                <div class="stat-label">Friends</div>
-            </a>
-            <a href="lists" class="stat-card">
-                <span class="stat-number"><%= listsCount %></span>
-                <div class="stat-label">Lists</div>
-            </a>
+            <!-- Third Row: Action Buttons -->
+            <% if (isOwnProfile) { %>
+            <div class="profile-actions">
+                <a href="settings" class="action-btn secondary">Settings</a>
+                <a href="logout" class="action-btn secondary">Logout</a>
+            </div>
+            <% } %>
         </div>
-
-        <!-- Third Row: Action Buttons -->
-        <% if (isOwnProfile) { %>
-        <div class="profile-actions">
-            <a href="settings" class="action-btn secondary">Settings</a>
-            <a href="logout" class="action-btn secondary">Logout</a>
-        </div>
-        <% } %>
-    </div>
-</main>
+    </main>
 </body>
 </html>

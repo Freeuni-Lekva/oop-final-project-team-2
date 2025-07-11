@@ -18,7 +18,7 @@ public class UserMoviePreferencesDao {
     }
 
     public void saveUserPreference(int userId, String username, int movieId) throws SQLException {
-        String sql = "INSERT IGNORE INTO user_movie_preferences (user_id, username, movie_id) VALUES (?, ?, ?)";
+        String sql = "MERGE INTO user_movie_preferences (user_id, username, movie_id) VALUES (?, ?, ?)";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

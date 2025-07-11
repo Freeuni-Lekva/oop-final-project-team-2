@@ -47,11 +47,9 @@ public class HomeServlet extends HttpServlet {
 
         List<Movie> movies;
 
-        // 🔍 1. Search by title if title is present
         if (titleParam != null && !titleParam.isEmpty()) {
             movies = moviesRepo.search(titleParam, page);
         }
-        // 🎯 2. If ONLY category is selected (no genre/year/runtime), fetch by category
         else if (
                 categoryParam != null && !categoryParam.isEmpty() &&
                         (genreParam == null || genreParam.isEmpty()) &&
@@ -65,7 +63,6 @@ public class HomeServlet extends HttpServlet {
                 movies = moviesRepo.fetchAll(page); // fallback
             }
         }
-        // 🛠️ 3. Else use discover with genre/year/runtime
         else {
             movies = moviesRepo.discoverWithFilters(genreParam, yearParam, runtimeParam, page);
         }

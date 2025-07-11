@@ -30,11 +30,6 @@ public class AcceptFriendRequestServlet extends HttpServlet {
             int senderId = Integer.parseInt(request.getParameter("senderId"));
             int receiverId = Integer.parseInt(request.getParameter("receiverId"));
 
-//            if (user.getId() != receiverId) {
-//                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You can only accept requests sent to you");
-//                return;
-//            }
-
             friendRequestDao.updateRequestStatus(requestId, "accepted");
 
             friendshipDao.createFriendship(senderId, receiverId);

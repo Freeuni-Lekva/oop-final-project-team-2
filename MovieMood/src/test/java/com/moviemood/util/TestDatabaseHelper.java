@@ -149,7 +149,7 @@ public class TestDatabaseHelper {
                         "    id INT PRIMARY KEY AUTO_INCREMENT, " +
                         "    user_id INT NOT NULL, " +
                         "    movie_id INT NOT NULL, " +
-                        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                         "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, " +
                         "    UNIQUE (user_id, movie_id)" +
                         ");";
@@ -167,7 +167,7 @@ public class TestDatabaseHelper {
                         "    id INT PRIMARY KEY AUTO_INCREMENT, " +
                         "    user_id INT NOT NULL, " +
                         "    movie_id INT NOT NULL, " +
-                        "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                        "    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                         "    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, " +
                         "    UNIQUE (user_id, movie_id)" +
                         ");";
@@ -227,7 +227,7 @@ public class TestDatabaseHelper {
                 "    f.movie_id, " +
                 "    NULL as list_id, " +
                 "    NULL as list_name, " +
-                "    f.created_at as activity_time, " +
+                "    f.added_date as activity_time, " +
                 "    NULL as additional_info " +
                 "FROM user_favorites f " +
                 "JOIN users u ON f.user_id = u.id " +
@@ -240,7 +240,7 @@ public class TestDatabaseHelper {
                 "    w.movie_id, " +
                 "    NULL as list_id, " +
                 "    NULL as list_name, " +
-                "    w.created_at as activity_time, " +
+                "    w.added_date as activity_time, " +
                 "    NULL as additional_info " +
                 "FROM user_watchlist w " +
                 "JOIN users u ON w.user_id = u.id " +

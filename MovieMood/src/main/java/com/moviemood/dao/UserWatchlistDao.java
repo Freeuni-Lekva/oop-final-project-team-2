@@ -83,6 +83,7 @@ public class UserWatchlistDao {
      * @return true if successfully removed, false if not found or error occurred
      */
     public boolean removeMovieFromWatchList(int userId, int movieId) {
+
         String sql = "DELETE FROM user_watchlist WHERE user_id = ? AND movie_id = ?";
 
         try (Connection connection = dataSource.getConnection();
@@ -154,25 +155,5 @@ public class UserWatchlistDao {
         return 0;
     }
 
-    /**
-     * Clear all movies from user's watchlist
-     * @param userId The user ID
-     * @return true if successfully cleared, false otherwise
-     */
-    public boolean clearWatchlist(int userId) {
-        String sql = "DELETE FROM user_watchlist WHERE user_id = ?";
 
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setInt(1, userId);
-            statement.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            System.err.println("Error clearing watchlist for user ID: " + userId);
-            e.printStackTrace();
-            return false;
-        }
-    }
 }

@@ -2,6 +2,7 @@ package com.moviemood.dao;
 
 import com.moviemood.bean.UserList;
 import org.apache.commons.dbcp2.BasicDataSource;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class UserListDao {
 
     /**
      * Create a new user list
+     *
      * @param userList The UserList object to create
      * @return The created UserList with generated ID, or null if failed
      */
@@ -31,7 +33,7 @@ public class UserListDao {
             statement.setBoolean(4, userList.isPublic());
 
             int rowsAffected = statement.executeUpdate();
-            
+
             if (rowsAffected > 0) {
                 try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
@@ -52,13 +54,14 @@ public class UserListDao {
 
     /**
      * Get all lists for a specific user
+     *
      * @param userId The user ID
      * @return List of UserList objects
      */
     public List<UserList> getUserLists(int userId) {
         List<UserList> lists = new ArrayList<>();
         String sql = "SELECT id, user_id, name, description, is_public, created_at, updated_at " +
-                    "FROM user_lists WHERE user_id = ? ORDER BY updated_at DESC";
+                "FROM user_lists WHERE user_id = ? ORDER BY updated_at DESC";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -68,13 +71,13 @@ public class UserListDao {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     UserList list = new UserList(
-                        resultSet.getInt("id"),
-                        resultSet.getInt("user_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getBoolean("is_public"),
-                        resultSet.getTimestamp("created_at"),
-                        resultSet.getTimestamp("updated_at")
+                            resultSet.getInt("id"),
+                            resultSet.getInt("user_id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getBoolean("is_public"),
+                            resultSet.getTimestamp("created_at"),
+                            resultSet.getTimestamp("updated_at")
                     );
                     lists.add(list);
                 }
@@ -91,13 +94,14 @@ public class UserListDao {
 
     /**
      * Get only public lists for a specific user (for viewing other users' profiles)
+     *
      * @param userId The user ID
      * @return List of public UserList objects
      */
     public List<UserList> getPublicUserLists(int userId) {
         List<UserList> lists = new ArrayList<>();
         String sql = "SELECT id, user_id, name, description, is_public, created_at, updated_at " +
-                    "FROM user_lists WHERE user_id = ? AND is_public = 1 ORDER BY updated_at DESC";
+                "FROM user_lists WHERE user_id = ? AND is_public = 1 ORDER BY updated_at DESC";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -107,13 +111,13 @@ public class UserListDao {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     UserList list = new UserList(
-                        resultSet.getInt("id"),
-                        resultSet.getInt("user_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getBoolean("is_public"),
-                        resultSet.getTimestamp("created_at"),
-                        resultSet.getTimestamp("updated_at")
+                            resultSet.getInt("id"),
+                            resultSet.getInt("user_id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getBoolean("is_public"),
+                            resultSet.getTimestamp("created_at"),
+                            resultSet.getTimestamp("updated_at")
                     );
                     lists.add(list);
                 }
@@ -130,12 +134,13 @@ public class UserListDao {
 
     /**
      * Get a specific list by ID
+     *
      * @param listId The list ID
      * @return UserList object or null if not found
      */
     public UserList getListById(int listId) {
         String sql = "SELECT id, user_id, name, description, is_public, created_at, updated_at " +
-                    "FROM user_lists WHERE id = ?";
+                "FROM user_lists WHERE id = ?";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -145,13 +150,13 @@ public class UserListDao {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return new UserList(
-                        resultSet.getInt("id"),
-                        resultSet.getInt("user_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getBoolean("is_public"),
-                        resultSet.getTimestamp("created_at"),
-                        resultSet.getTimestamp("updated_at")
+                            resultSet.getInt("id"),
+                            resultSet.getInt("user_id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("description"),
+                            resultSet.getBoolean("is_public"),
+                            resultSet.getTimestamp("created_at"),
+                            resultSet.getTimestamp("updated_at")
                     );
                 }
             }
@@ -166,6 +171,7 @@ public class UserListDao {
 
     /**
      * Update a list's details
+     *
      * @param userList The UserList object with updated information
      * @return true if successfully updated, false otherwise
      */
@@ -192,6 +198,7 @@ public class UserListDao {
 
     /**
      * Delete a list and all its items
+     *
      * @param listId The list ID to delete
      * @return true if successfully deleted, false otherwise
      */
@@ -215,7 +222,8 @@ public class UserListDao {
 
     /**
      * Add a movie to a list
-     * @param listId The list ID
+     *
+     * @param listId  The list ID
      * @param movieId The movie ID to add
      * @return true if successfully added, false if already exists or error occurred
      */
@@ -246,7 +254,8 @@ public class UserListDao {
 
     /**
      * Remove a movie from a list
-     * @param listId The list ID
+     *
+     * @param listId  The list ID
      * @param movieId The movie ID to remove
      * @return true if successfully removed, false if not found or error occurred
      */
@@ -271,6 +280,7 @@ public class UserListDao {
 
     /**
      * Get all movie IDs in a specific list
+     *
      * @param listId The list ID
      * @return List of movie IDs in the list
      */
@@ -300,7 +310,8 @@ public class UserListDao {
 
     /**
      * Check if a movie is in a specific list
-     * @param listId The list ID
+     *
+     * @param listId  The list ID
      * @param movieId The movie ID to check
      * @return true if movie is in list, false otherwise
      */
@@ -326,6 +337,7 @@ public class UserListDao {
 
     /**
      * Get the count of lists for a user
+     *
      * @param userId The user ID
      * @return Number of lists the user has created
      */
@@ -353,6 +365,7 @@ public class UserListDao {
 
     /**
      * Get the count of movies in a specific list
+     *
      * @param listId The list ID
      * @return Number of movies in the list
      */

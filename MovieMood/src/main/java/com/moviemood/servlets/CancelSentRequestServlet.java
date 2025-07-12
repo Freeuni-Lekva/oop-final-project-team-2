@@ -22,7 +22,7 @@ public class CancelSentRequestServlet extends HttpServlet {
         
         String receiverUsername = request.getParameter("receiverUsername");
         if (receiverUsername == null || receiverUsername.trim().isEmpty()) {
-            response.sendRedirect("profile?error=Invalid user specified");
+            response.sendRedirect("friend-requests?tab=sent&error=Invalid user specified");
             return;
         }
         
@@ -31,15 +31,31 @@ public class CancelSentRequestServlet extends HttpServlet {
             
             boolean success = friendRequestDao.cancelSentRequest(user.getId(), receiverUsername);
             
-            if (success) {
-                response.sendRedirect("profile?user=" + receiverUsername + "&message=Friend request cancelled");
+            // Check if this was called from profile page
+            String redirectTo = request.getParameter("redirectTo");
+            if ("profile".equals(redirectTo)) {
+                if (success) {
+                    response.sendRedirect("profile?user=" + receiverUsername + "&message=Friend request cancelled");
+                } else {
+                    response.sendRedirect("profile?user=" + receiverUsername + "&error=Failed to cancel friend request");
+                }
             } else {
-                response.sendRedirect("profile?user=" + receiverUsername + "&error=Failed to cancel friend request");
+                // Default redirect to sent requests tab
+                if (success) {
+                    response.sendRedirect("friend-requests?tab=sent&message=Friend request cancelled");
+                } else {
+                    response.sendRedirect("friend-requests?tab=sent&error=Failed to cancel friend request");
+                }
             }
             
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("profile?user=" + receiverUsername + "&error=Failed to cancel friend request");
+            String redirectTo = request.getParameter("redirectTo");
+            if ("profile".equals(redirectTo)) {
+                response.sendRedirect("profile?user=" + receiverUsername + "&error=Failed to cancel friend request");
+            } else {
+                response.sendRedirect("friend-requests?tab=sent&error=Failed to cancel friend request");
+            }
         }
     }
 }

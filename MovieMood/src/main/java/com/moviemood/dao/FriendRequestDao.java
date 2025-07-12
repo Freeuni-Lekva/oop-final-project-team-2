@@ -152,14 +152,14 @@ public class FriendRequestDao {
 
 
     /**
-     * Cancels a sent friend request by updating its status to 'cancelled'
+     * Cancels a sent friend request by deleting it from the database
      * 
      * @param senderId The ID of the user who sent the request
      * @param receiverUsername The username of the user who would receive the request
      * @return true if the request was successfully cancelled, false otherwise
      */
     public boolean cancelSentRequest(int senderId, String receiverUsername) {
-        String query = "UPDATE friend_requests SET status = 'cancelled' " +
+        String query = "DELETE FROM friend_requests " +
                 "WHERE sender_id = ? AND receiver_id = (SELECT id FROM users WHERE username = ?) AND status = 'pending'";
         
         try (Connection con = dataSource.getConnection();
